@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "frontend"
+		},
+		{
+			"path": "src-tauri"
+		}
+	],
+	"settings": {
+		"typescript.tsdk": "frontend/.yarn/sdks/typescript/lib",
+		"typescript.enablePromptUseWorkspaceTsdk": true
+	}
+}
