@@ -5,16 +5,26 @@
     margin: 3px 5px;
     height: 100%;
     & > .link {
+        color: inherit;
+        &:active {
+            color: inherit;
+        }
+        border: lightgray solid 1px;
         display: block;
-        background: aqua;
         text-decoration: none;
         padding: 5px;
         border-radius: 5px;
         width: 150px;
         text-align: center;
+        &:not(:first-child) {
+            margin-top: 5px;
+        }
+
         &.active {
-            background-color: aquamarine;
-            color: green;
+            &:before {
+                content: "> ";
+                color: red;
+            }
         }
     }
 }

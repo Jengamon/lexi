@@ -29,9 +29,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["@parcel/core", "npm:2.9.3"],\
+            ["@tauri-apps/api", "npm:1.4.0"],\
             ["@types/react", "npm:18.2.15"],\
             ["@types/react-dom", "npm:18.2.7"],\
             ["classnames", "npm:2.3.2"],\
+            ["immer", "npm:10.0.2"],\
             ["normalize.css", "npm:8.0.1"],\
             ["parcel", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:2.9.3"],\
             ["prettier", "npm:3.0.0"],\
@@ -41,7 +43,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-router-dom", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:6.14.1"],\
             ["runtypes", "npm:6.7.0"],\
             ["typescript", "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"],\
-            ["typescript-plugin-css-modules", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:5.0.1"]\
+            ["typescript-plugin-css-modules", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:5.0.1"],\
+            ["use-immer", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:0.9.0"],\
+            ["zustand", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:4.3.9"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1433,6 +1437,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@tauri-apps/api", [\
+        ["npm:1.4.0", {\
+          "packageLocation": "./.yarn/cache/@tauri-apps-api-npm-1.4.0-152f8109f9-0c24b72d6b.zip/node_modules/@tauri-apps/api/",\
+          "packageDependencies": [\
+            ["@tauri-apps/api", "npm:1.4.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@tootallnate/once", [\
         ["npm:2.0.0", {\
           "packageLocation": "./.yarn/cache/@tootallnate-once-npm-2.0.0-e36cf4f140-ad87447820.zip/node_modules/@tootallnate/once/",\
@@ -2302,9 +2315,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["frontend", "workspace:."],\
             ["@parcel/core", "npm:2.9.3"],\
+            ["@tauri-apps/api", "npm:1.4.0"],\
             ["@types/react", "npm:18.2.15"],\
             ["@types/react-dom", "npm:18.2.7"],\
             ["classnames", "npm:2.3.2"],\
+            ["immer", "npm:10.0.2"],\
             ["normalize.css", "npm:8.0.1"],\
             ["parcel", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:2.9.3"],\
             ["prettier", "npm:3.0.0"],\
@@ -2314,7 +2329,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-router-dom", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:6.14.1"],\
             ["runtypes", "npm:6.7.0"],\
             ["typescript", "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"],\
-            ["typescript-plugin-css-modules", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:5.0.1"]\
+            ["typescript-plugin-css-modules", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:5.0.1"],\
+            ["use-immer", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:0.9.0"],\
+            ["zustand", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:4.3.9"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -2608,6 +2625,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/image-size-npm-0.5.5-4dec53b956-6709d5cb73.zip/node_modules/image-size/",\
           "packageDependencies": [\
             ["image-size", "npm:0.5.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["immer", [\
+        ["npm:10.0.2", {\
+          "packageLocation": "./.yarn/cache/immer-npm-10.0.2-c5dc19bd45-525a3b1421.zip/node_modules/immer/",\
+          "packageDependencies": [\
+            ["immer", "npm:10.0.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -4416,6 +4442,54 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["use-immer", [\
+        ["npm:0.9.0", {\
+          "packageLocation": "./.yarn/cache/use-immer-npm-0.9.0-7e7d7bf502-3f02e31d38.zip/node_modules/use-immer/",\
+          "packageDependencies": [\
+            ["use-immer", "npm:0.9.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:0.9.0", {\
+          "packageLocation": "./.yarn/__virtual__/use-immer-virtual-b14b0d3e54/0/cache/use-immer-npm-0.9.0-7e7d7bf502-3f02e31d38.zip/node_modules/use-immer/",\
+          "packageDependencies": [\
+            ["use-immer", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:0.9.0"],\
+            ["@types/immer", null],\
+            ["@types/react", "npm:18.2.15"],\
+            ["immer", "npm:10.0.2"],\
+            ["react", "npm:18.2.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/immer",\
+            "@types/react",\
+            "immer",\
+            "react"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["use-sync-external-store", [\
+        ["npm:1.2.0", {\
+          "packageLocation": "./.yarn/cache/use-sync-external-store-npm-1.2.0-44f75d2564-5c639e0f8d.zip/node_modules/use-sync-external-store/",\
+          "packageDependencies": [\
+            ["use-sync-external-store", "npm:1.2.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:14597f0ad2b380c699330eed9a49016cfe5396347feb1aa3448ccc7a4b422d2dbabc3c7c3eb9a1c71e7a9b08049ad97c1e7519726575b3a58662f444ae687f0f#npm:1.2.0", {\
+          "packageLocation": "./.yarn/__virtual__/use-sync-external-store-virtual-b8757c52ee/0/cache/use-sync-external-store-npm-1.2.0-44f75d2564-5c639e0f8d.zip/node_modules/use-sync-external-store/",\
+          "packageDependencies": [\
+            ["use-sync-external-store", "virtual:14597f0ad2b380c699330eed9a49016cfe5396347feb1aa3448ccc7a4b422d2dbabc3c7c3eb9a1c71e7a9b08049ad97c1e7519726575b3a58662f444ae687f0f#npm:1.2.0"],\
+            ["@types/react", "npm:18.2.15"],\
+            ["react", "npm:18.2.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/react",\
+            "react"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["util-deprecate", [\
         ["npm:1.0.2", {\
           "packageLocation": "./.yarn/cache/util-deprecate-npm-1.0.2-e3fe1a219c-474acf1146.zip/node_modules/util-deprecate/",\
@@ -4517,6 +4591,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/yaml-npm-1.10.2-0e780aebdf-ce4ada136e.zip/node_modules/yaml/",\
           "packageDependencies": [\
             ["yaml", "npm:1.10.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["zustand", [\
+        ["npm:4.3.9", {\
+          "packageLocation": "./.yarn/cache/zustand-npm-4.3.9-c1730d0244-fc83d65391.zip/node_modules/zustand/",\
+          "packageDependencies": [\
+            ["zustand", "npm:4.3.9"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:4.3.9", {\
+          "packageLocation": "./.yarn/__virtual__/zustand-virtual-14597f0ad2/0/cache/zustand-npm-4.3.9-c1730d0244-fc83d65391.zip/node_modules/zustand/",\
+          "packageDependencies": [\
+            ["zustand", "virtual:d9650954c7f1725ea712d2e40695de9ea5d1c0fa9b89379134c62909d440d91b03d6c37e2823804a3404472b90a5bec73c82193190dd3c4db4c9e9edd75db91e#npm:4.3.9"],\
+            ["@types/immer", null],\
+            ["@types/react", "npm:18.2.15"],\
+            ["immer", "npm:10.0.2"],\
+            ["react", "npm:18.2.0"],\
+            ["use-sync-external-store", "virtual:14597f0ad2b380c699330eed9a49016cfe5396347feb1aa3448ccc7a4b422d2dbabc3c7c3eb9a1c71e7a9b08049ad97c1e7519726575b3a58662f444ae687f0f#npm:1.2.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/immer",\
+            "@types/react",\
+            "immer",\
+            "react"\
           ],\
           "linkType": "HARD"\
         }]\

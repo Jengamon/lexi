@@ -1,7 +1,10 @@
 {
     "compilerOptions": {
+        "module": "ES2020",
+        "lib": ["DOM", "ES2022"],
         "isolatedModules": true,
         "jsx": "react-jsx",
+        "moduleResolution": "Node",
         "strict": true,
         "baseUrl": "./",
         "paths": {
