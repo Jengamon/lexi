@@ -1,7 +1,13 @@
 {
   "build": {
-    "beforeBuildCommand": "just build",
-    "beforeDevCommand": "just dev",
+    "beforeDevCommand": {
+      "cwd": "../frontend",
+      "script": "yarn dev"
+    },
+    "beforeBuildCommand": {
+      "cwd": "../frontend",
+      "script": "yarn build"
+    },
     "devPath": "http://localhost:1234",
     "distDir": "../frontend/dist"
   },

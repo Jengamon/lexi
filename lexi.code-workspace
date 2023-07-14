@@ -7,7 +7,18 @@
 			"path": "src-tauri"
 		}
 	],
+	"extensions": {
+		"recommendations": [
+			"arcanis.vscode-zipfs",
+			"esbenp.prettier-vscode"
+		]
+	},
 	"settings": {
+		"search.exclude": {
+			"**/.yarn": true,
+			"**/.pnp.*": true
+		},
+		"prettier.prettierPath": ".yarn/sdks/prettier/index.js",
 		"typescript.tsdk": "frontend/.yarn/sdks/typescript/lib",
 		"typescript.enablePromptUseWorkspaceTsdk": true
 	}

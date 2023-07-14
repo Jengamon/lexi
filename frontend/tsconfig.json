@@ -1,12 +1,13 @@
 {
-  "compilerOptions": {
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "baseUrl": "./",
-    "paths": {
-      "~/*": ["./*"]
-    }
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+    "compilerOptions": {
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        "strict": true,
+        "baseUrl": "./",
+        "paths": {
+            "~/*": ["./*"]
+        },
+        "plugins": [{ "name": "typescript-plugin-css-modules" }]
+    },
+    "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

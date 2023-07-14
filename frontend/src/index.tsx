@@ -7,10 +7,11 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import { ROUTES } from "./routes";
+import { NavBar } from "~/src/components/navbar";
 
 const node = document.getElementById("app");
 
-if (node !== null) {
+if (node != null) {
     const root = createRoot(node);
 
     const router = createBrowserRouter(ROUTES as RouteObject[], {});
@@ -21,5 +22,5 @@ if (node !== null) {
         </StrictMode>,
     );
 } else {
-    console.error("Failed to find app root.")
+    console.error("Failed to find app root.");
 }

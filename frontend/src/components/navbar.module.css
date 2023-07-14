@@ -1,0 +1,20 @@
+.navbar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin: 3px 5px;
+    height: 100%;
+    & > .link {
+        display: block;
+        background: aqua;
+        text-decoration: none;
+        padding: 5px;
+        border-radius: 5px;
+        width: 150px;
+        text-align: center;
+        &.active {
+            background-color: aquamarine;
+            color: green;
+        }
+    }
+}
