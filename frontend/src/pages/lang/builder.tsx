@@ -1,19 +1,23 @@
 import * as classes from "./builder.module.css";
 
-import {OnChangePlugin} from "@lexical/react/LexicalOnChangePlugin";
-import {$getRoot, $getSelection, EditorState, LexicalEditor} from "lexical";
-import {InitialConfigType, LexicalComposer} from "@lexical/react/LexicalComposer";
-import {PlainTextPlugin} from "@lexical/react/LexicalPlainTextPlugin";
-import {ContentEditable} from "@lexical/react/LexicalContentEditable";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+import { $getRoot, $getSelection, EditorState, LexicalEditor } from "lexical";
+import {
+    InitialConfigType,
+    LexicalComposer,
+} from "@lexical/react/LexicalComposer";
+import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
-import {HistoryPlugin} from "@lexical/react/LexicalHistoryPlugin";
-import {useLexicalComposerContext} from "@lexical/react/LexicalComposerContext";
-import {useEffect, useRef} from "react";
-import {EditorRefPlugin} from "@lexical/react/LexicalEditorRefPlugin";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useEffect, useRef } from "react";
+import { NavBar } from "~/src/components/navbar";
+import { useLanguage } from "~/src/views/lang_editor";
+import { capitalize } from "lodash-es";
+import { Typography } from "@mui/material";
 
-const theme = {
-
-};
+const theme = {};
 
 function onChange(editorState: EditorState) {
     editorState.read(() => {
@@ -22,7 +26,7 @@ function onChange(editorState: EditorState) {
         const selection = $getSelection();
 
         console.log(root, selection);
-    })
+    });
 }
 
 function onError(error: any) {
@@ -36,15 +40,34 @@ export default function Builder() {
         onError,
     };
     const editorStateRef = useRef<EditorState>();
+    const { lang } = useLanguage();
 
-    return (
-        <LexicalComposer initialConfig={initialConfig}>
-            <PlainTextPlugin contentEditable={<ContentEditable className={classes.contentEditable} />} placeholder={
-                <div>Enter some text...</div>
-            } ErrorBoundary={LexicalErrorBoundary} />
-            <OnChangePlugin onChange={onChange}/>
-            <OnChangePlugin onChange={editorState => editorStateRef.current = editorState} />
-            <HistoryPlugin/>
-        </LexicalComposer>
-    )
+    return lang !== undefined ? (
+        <>
+            <NavBar title={`${capitalize(lang.name)}'s Builder`} />
+            <LexicalComposer initialConfig={initialConfig}>
+                <PlainTextPlugin
+                    contentEditable={
+                        <ContentEditable className={classes.contentEditable} />
+                    }
+                    placeholder={<div>Enter some text...</div>}
+                    ErrorBoundary={LexicalErrorBoundary}
+                />
+                <OnChangePlugin onChange={onChange} />
+                <OnChangePlugin
+                    onChange={(editorState) =>
+                        (editorStateRef.current = editorState)
+                    }
+                />
+                <HistoryPlugin />
+            </LexicalComposer>
+        </>
+    ) : (
+        <>
+            <NavBar title="Builder" />
+            <Typography variant="body1">
+                Cannot edit without an active (proto-)language
+            </Typography>
+        </>
+    );
 }

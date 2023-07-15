@@ -24,7 +24,7 @@ export const ROUTES: readonly RouteObject[] = [
                 element: <AboutPage />,
             },
             {
-                path: "/proto/:langId?",
+                path: "/proto/:plangId?",
                 element: <ProtolangEditor />,
                 children: [
                     {

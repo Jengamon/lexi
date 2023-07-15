@@ -5,10 +5,25 @@ import { getErrorMessage } from "~/src/util";
 import * as classes from "./home.module.css";
 import useSWR from "swr";
 import { fetcher } from "~/src/stores";
+import {
+    Alert,
+    Button,
+    Container,
+    Snackbar,
+    TextField,
+    Typography,
+} from "@mui/material";
+import { NavBar } from "~/src/components/navbar";
 
 export default function HomePage() {
     const [languageGroupNames, setLanguageGroupNames] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [showError, setShowError] = useState<boolean>(false);
+
+    function createError(error: any) {
+        setError(getErrorMessage(error));
+        setShowError(true);
+    }
 
     const {
         data: projectName,
@@ -21,7 +36,7 @@ export default function HomePage() {
 
     async function setProjectName(to: string) {
         await invoke("set_project_name", {
-            name: to
+            name: to,
         });
         await nameMutate(to);
     }
@@ -41,7 +56,7 @@ export default function HomePage() {
             retrieveLanguageGroupNames();
             setError(null);
         } catch (e) {
-            setError(getErrorMessage(e));
+            createError(e);
         }
 
         // Output that we've succeeded saving
@@ -50,9 +65,10 @@ export default function HomePage() {
     async function newProject() {
         try {
             await invoke("new_language_group", {});
+            await setProjectName("");
             setError(null);
         } catch (e) {
-            setError(getErrorMessage(e));
+            createError(e);
         }
     }
 
@@ -61,7 +77,7 @@ export default function HomePage() {
             await invoke("export_language_group", {});
             setError(null);
         } catch (e) {
-            setError(getErrorMessage(e));
+            createError(e);
         }
 
         // Output that we've succeeded saving
@@ -75,8 +91,7 @@ export default function HomePage() {
             await nameMutate(name);
             setError(null);
         } catch (e) {
-            setError(getErrorMessage(e));
-            return;
+            createError(e);
         }
     }
 
@@ -86,7 +101,7 @@ export default function HomePage() {
                 filename: name,
             });
         } catch (e) {
-            setError(getErrorMessage(e));
+            createError(e);
             return;
         }
 
@@ -94,56 +109,61 @@ export default function HomePage() {
         setError(null);
     }
 
-    if (isLoading) {
-        return (
-            <div>
-                <h1>Home</h1>
-                <p>Loading...</p>
-            </div>
-        )
-    }
-
     return (
-        <div>
-            <h1>Home</h1>
-            <div>
-                <input
-                    autoCorrect="off"
-                    onChange={(ev) => setProjectName(ev.target.value)}
-                    value={projectName}
-                />
-                <button onClick={saveProject}>
-                    Save Project (Language Group)
-                </button>
-                <button onClick={exportProject}>
-                    Export Project (Language Group)
-                </button>
-                <button onClick={newProject}>
-                    New Project (Language Group)
-                </button>
-            </div>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <button onClick={retrieveLanguageGroupNames}>Refresh</button>
-            <ul>
-                {languageGroupNames.map((name) => (
-                    <li key={name}>
-                        <div className={classes.langNameItem}>
-                            <div
-                                className="label"
-                                onClick={() => loadProject(name)}
-                            >
-                                {name}
-                            </div>
-                            <div
-                                className={classes.remove}
-                                onClick={() => deleteProject(name)}
-                            >
-                                DELETE
-                            </div>
+        <>
+            <NavBar title="Home" />
+            <Container maxWidth="lg" sx={{ pt: 2 }}>
+                {isLoading ? (
+                    <></>
+                ) : (
+                    <>
+                        <div>
+                            <TextField
+                                onChange={(ev) =>
+                                    setProjectName(ev.target.value)
+                                }
+                                value={projectName}
+                            />
                         </div>
-                    </li>
-                ))}
-            </ul>
-        </div>
+                        <div>
+                            <Button onClick={saveProject}>Save Project</Button>
+                            <Button onClick={exportProject}>
+                                Export Project
+                            </Button>
+                            <Button onClick={newProject}>New Project</Button>
+                        </div>
+                    </>
+                )}
+                <Snackbar
+                    open={showError}
+                    autoHideDuration={6000}
+                    onClose={() => setShowError(false)}
+                >
+                    <Alert onClose={() => setShowError(false)} severity="error">
+                        Error: {error}
+                    </Alert>
+                </Snackbar>
+                <ul>
+                    {languageGroupNames.map((name) => (
+                        <li key={name}>
+                            <div className={classes.langNameItem}>
+                                <div
+                                    className="label"
+                                    onClick={() => loadProject(name)}
+                                >
+                                    {name}
+                                </div>
+                                <div
+                                    className={classes.remove}
+                                    onClick={() => deleteProject(name)}
+                                >
+                                    DELETE
+                                </div>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </Container>
+        </>
     );
 }

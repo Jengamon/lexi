@@ -2,10 +2,16 @@ import { useCallback, useEffect, useState } from "react";
 import * as classes from "./about.module.css";
 import { invoke } from "@tauri-apps/api";
 import { String } from "runtypes";
-import { displayPhone, displayPhoneBranner, fromBranner, getErrorMessage } from "~/src/util";
+import {
+    displayPhone,
+    displayPhoneBranner,
+    fromBranner,
+    getErrorMessage,
+} from "~/src/util";
 import { Phone } from "~/src/data";
 import useSWR from "swr";
 import { fetcher } from "../stores";
+import { NavBar } from "../components/navbar";
 
 export default function AboutPage() {
     const [testExport, setTestExport] = useState<
@@ -14,10 +20,8 @@ export default function AboutPage() {
     const [brannerInput, setBrannerInput] = useState("");
     const [branner, setBranner] = useState("");
 
-    const {
-        data: dumpedLangGroup,
-        error: dumpedLangGroupError,
-    } = useSWR<string>(["dump_language_group", String, {}], fetcher);
+    const { data: dumpedLangGroup, error: dumpedLangGroupError } =
+        useSWR<string>(["dump_language_group", String, {}], fetcher);
 
     const updateBranner = useCallback(
         async () => await fromBranner(brannerInput),
@@ -40,10 +44,12 @@ export default function AboutPage() {
             },
         };
 
-        displayPhone(phone).then(async ipa => ({
-            ipa,
-            branner: await displayPhoneBranner(phone)
-        })).then((output) => setDisplayPhone(output));
+        displayPhone(phone)
+            .then(async (ipa) => ({
+                ipa,
+                branner: await displayPhoneBranner(phone),
+            }))
+            .then((output) => setDisplayPhone(output));
     });
 
     async function testExportCurrentProject() {
@@ -57,8 +63,10 @@ export default function AboutPage() {
 
     return (
         <div>
-            <h1>About</h1>
-            <p>{testDisplayPhone.ipa} {testDisplayPhone.branner}</p>
+            <NavBar title="About" />
+            <p>
+                {testDisplayPhone.ipa} {testDisplayPhone.branner}
+            </p>
             <p>
                 Lexi is about making coming up with conlangs easier by providing
                 a programmatic way to store and explore conlangs both
@@ -94,9 +102,13 @@ export default function AboutPage() {
             </div>
             <div>
                 <pre className={classes.debug}>
-                    {dumpedLangGroup ?
-                        <code>{dumpedLangGroup}</code> :
-                        <code className={classes.error}>{getErrorMessage(dumpedLangGroupError)}</code>}
+                    {dumpedLangGroup ? (
+                        <code>{dumpedLangGroup}</code>
+                    ) : (
+                        <code className={classes.error}>
+                            {getErrorMessage(dumpedLangGroupError)}
+                        </code>
+                    )}
                 </pre>
             </div>
         </div>

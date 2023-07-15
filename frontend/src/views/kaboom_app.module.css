@@ -1,3 +1,0 @@
-.app {
-    composes: app from "./app.module.css";
-}

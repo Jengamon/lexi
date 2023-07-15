@@ -35,6 +35,10 @@ fn main() {
             interact::delete_language,
             interact::get_language,
             interact::init_languages_server,
+            interact::create_protolanguage,
+            interact::delete_protolanguage,
+            interact::get_protolanguage,
+            interact::init_protolanguages_server,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

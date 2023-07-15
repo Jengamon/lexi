@@ -37,8 +37,8 @@ export const Phone = Union(
             end_place: Place,
             voiced: Boolean,
             attachments: Array(ObstruentAttachment),
-        })
-    })
+        }),
+    }),
 );
 export const Phoneme = Record({
     ortho: String,

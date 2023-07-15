@@ -1,115 +1,144 @@
 import { Link, Outlet, useOutletContext, useParams } from "react-router-dom";
-// import { useProjectStore } from "~/src/stores";
 import { useState } from "react";
+import { Array, String } from "runtypes";
+import useSWR, { KeyedMutator } from "swr";
+import useSWRSubscription from "swr/subscription";
 import { Protolanguage } from "~/src/data";
-import { Record, Static } from "runtypes";
-import * as classes from "./langproto_editor.module.css";
-import { fetcher } from "~/src/stores";
-import useSWR from "swr";
+import { fetcher, subscribeGenerator } from "~/src/stores";
 import { getErrorMessage } from "../util";
+import * as classes from "./langproto_editor.module.css";
+import { invoke } from "@tauri-apps/api";
+import { NavBar } from "../components/navbar";
+import { Typography } from "@mui/material";
 
-const ProtolangEditorContext = Record({
-    lang: Protolanguage,
-});
-export type ProtolangEditorContext = Static<typeof ProtolangEditorContext>;
-
-export default function ProtolangEditor() {
-    const { langId } = useParams();
-    const {
-        data: protoNames,
-        error,
-        isLoading,
-    } = useSWR<string[]>(["get_protolanguages", Array(String), {}], fetcher);
-    const {
-        data: proto,
-        error: langError,
-        mutate: langMutate,
-    } = useSWR<Protolanguage | null>(
+export function useProtolanguage() {
+    const { plangId } = useParams();
+    const { data, error, mutate } = useSWR<Protolanguage>(
         [
             "get_protolanguage",
-            Protolanguage.optional(),
+            Protolanguage,
             {
-                name: langId,
+                name: plangId,
             },
         ],
         fetcher,
     );
+
+    return {
+        protolang: data,
+        error,
+        mutate,
+    };
+}
+
+export default function ProtolangEditor() {
+    const { plangId } = useParams();
+    const { data: protoNames, error } = useSWRSubscription<string[]>(
+        "all_protolanguages",
+        subscribeGenerator(Array(String)),
+    );
     const [newName, setNewName] = useState("");
 
-    function createProtolanguage(name: string) {
+    const { error: protolangError, mutate: protolangMutate } =
+        useProtolanguage();
 
+    async function createProtolanguage(name: string) {
+        if (name === "") {
+            return;
+        }
+
+        await invoke("create_protolanguage", { name });
+
+        await protolangMutate(async () => {
+            const protolangData = await invoke("get_protolanguage", { name });
+            return Protolanguage.check(protolangData);
+        });
+
+        setNewName("");
     }
 
-    function deleteProtolanguage(name: string) {
-
-    }
-
-    // const proto = protos.find((lang) => lang.name === langId);
-    let context: ProtolangEditorContext | undefined;
-    if (proto == undefined) {
-        context = undefined;
-    } else {
-        context = { lang: proto };
+    async function deleteProtolanguage(name: string) {
+        await invoke("delete_protolanguage", { name });
     }
 
     if (error != undefined) {
-        return <p>{getErrorMessage(error)}</p>
+        return (
+            <>
+                <NavBar title="Protolanguages" />
+                <Typography variant="body1">
+                    {getErrorMessage(error)}
+                </Typography>
+            </>
+        );
     }
 
-    if (langError != undefined) {
-        return <p>{getErrorMessage(langError)}</p>
+    if (protolangError != undefined && plangId != undefined) {
+        return (
+            <>
+                <NavBar title="Protolanguages" />
+                <Typography variant="body1">
+                    {getErrorMessage(protolangError)}
+                </Typography>
+            </>
+        );
     }
 
-    return context !== undefined ? (
-        <Outlet context={context} />
+    return plangId !== undefined ? (
+        <Outlet />
     ) : (
-        <ul>
-            {protoNames && protoNames.map((proto) => (
-                <li key={proto}>
-                    {proto}
-                    <ul className={classes.protolangEditorItemNav}>
-                        <li>
-                            <Link to={`${proto}/phonemes`}>Phonemes</Link>
+        <>
+            <NavBar title="Protolanguages" />
+            <ul>
+                {protoNames &&
+                    protoNames.map((proto) => (
+                        <li key={proto}>
+                            {proto}
+                            <ul className={classes.protolangEditorItemNav}>
+                                <li>
+                                    <Link to={`${proto}/phonemes`}>
+                                        Phonemes
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to={`${proto}/phonotactics`}>
+                                        Phonotactics
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to={`${proto}/lexicon`}>Lexicon</Link>
+                                </li>
+                                <li
+                                    onClick={async () =>
+                                        await deleteProtolanguage(proto)
+                                    }
+                                >
+                                    <span className={classes.deleteLink}>
+                                        DELETE
+                                    </span>
+                                </li>
+                            </ul>
                         </li>
-                        <li>
-                            <Link to={`${proto}/phonotactics`}>
-                                Phonotactics
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to={`${proto}/lexicon`}>Lexicon</Link>
-                        </li>
-                        <li>
-                            <Link to={`${proto}/builder`}>Builder</Link>
-                        </li>
-                        <li onClick={() => deleteProtolanguage(proto)}>
-                            <span className={classes.deleteLink}>DELETE</span>
-                        </li>
-                    </ul>
-                </li>
-            ))}
-            <li>
-                <div>
+                    ))}
+                <li>
                     <div>
-                        <input
-                            value={newName}
-                            autoCorrect="off"
-                            onChange={(ev) => setNewName(ev.target.value)}
-                        />
-                        {error && (
-                            <p style={{ margin: 0, color: "red" }}>{error}</p>
-                        )}
+                        <div>
+                            <input
+                                value={newName}
+                                autoCorrect="off"
+                                onChange={(ev) => setNewName(ev.target.value)}
+                            />
+                            {error && (
+                                <p style={{ margin: 0, color: "red" }}>
+                                    {error}
+                                </p>
+                            )}
+                        </div>
+                        <button onClick={() => createProtolanguage(newName)}>
+                            Create Protolanguage
+                        </button>
                     </div>
-                    <button onClick={() => createProtolanguage(newName)}>
-                        Create Protolanguage
-                    </button>
-                </div>
-            </li>
-        </ul>
+                </li>
+            </ul>
+        </>
     );
-}
-
-export function useProtolangContext() {
-    const data = useOutletContext();
-    return ProtolangEditorContext.guard(data) ? data : undefined;
 }

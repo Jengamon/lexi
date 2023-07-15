@@ -45,4 +45,3 @@ export async function displayPhone(phone: Phone) {
 export async function displayPhoneBranner(phone: Phone) {
     return RString.check(await invoke("display_phone_branner", { phone }));
 }
-
