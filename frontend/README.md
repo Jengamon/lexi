@@ -22,35 +22,82 @@ Contains environment rules that control how phoneme sets or phonemes
 react when preceded or followed by a phoneme, member of a phoneme set, or a
 boundary.
 
+### Phoneme Sets
+
+Consist of member phonemes, property names, and a Member Allophone
+Property Mapping (MAPM).
+
+The MAPM is a HashMap of `<(property name, phoneme orthography), cellvalue>`
+where cellvalue is either `Null` for a mapping of null production,
+or `Allophone(usize)` to indicate a certain allophone of the phoneme.
+
+Invalid Allophone indices should be logged, and replaced with the primary allophone (
+the one used in the cellvalue is missing)
+
+Then you have an `HashMap<additional property name, Phone>` mapping, which
+is added to MAPM of an allophone to get the full production set for environments.
 
 ## Lexicon
 
 Contains the morphemes of a (proto-)language.
 
 A morpheme consists of 0 or more phonemes, and as many
-meaning sets as you want to attach.
+meanings as you want to attach.
 
-A meaning set can be:
-- base - this directly means X
-- derivational - this means X relative to some input morpheme
-- inflectional - this changes a property for an input morpheme
+A meaning can be:
+- base - this directly means or connotes X
+- derivational - this means or connotes X relative to some input morpheme
 
-This is also where you define properties of your lexicon,
-which determines the information that base sets can carry.
 Base properties are denotations (what a morpheme literally means),
 and connotation (what can this mean indirectly).
-
-Examples of properties that can be added to a lexicon are:
-- part of speech (Noun, Verb, Adjective, etc.)
-- gender (Inanimate, Animate, Feminine, 6th class - monetary objects, etc.)
-  - part of speech determines whether this is active for a morpheme
-- stress - If a stress level is marked as "manual", you can select as syllable for that stress level
 
 Derivational morphology can only *interact* with connotations and denotations,
 and can at most have 1 connotational change and 1 denotational change.
 
 We use Rust's `regex` crate internally to handle these changes, so the input for a change is
 a regex, and the output is a string with the captures named with `$N` or `$name`
+
+# Morphology
+
+A word part can either be a morpheme marked as "free", 
+a "compound" made of morpheme,
+or a "bound" morpheme. A denotation and a connotation
+is associated with the word part from the set that the member morphemes
+provide, or they can be explicitly set.
+
+Contains the minimum syllable count setting, and the way to resolve that.
+
+"Bound" morphemes add their properties to the word they are used in, and 
+can be a member of a syntax set.
+
+Morph sets are how morphemes are combined with other morphemes into words.
+
+Morph sets are formed for:
+- Part of Speech: Noun, Verb, Adjective, etc.
+- Gender: 6th class, Inanimate, etc. 
+
+All morphemes must be part of the available morph sets (if that set is enabled).
+Part of Speech cannot be disabled.
+
+# Syntax
+
+How are words put together into sentences?
+
+# Grapheme Mapping
+
+Maps graphemes in certain environments to phonemes or morphemes.
+
+Contains the word boundary character (stored as a unicode codepoint), 
+and the sentence boundary  character(s).
+
+Word boundary character defaults to `0x200b` (Zero-Width Space).
+If the loaded codepoint is invalid, this is what will be used.
+
+# Builder
+
+V1 end-goal: use graphemes to translate from text written in the language
+(with custom fonts allowed) to a phonemic and phonetic description
+of that text, and possible meanings of that text.
 
 # TODO
 

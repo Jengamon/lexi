@@ -1,16 +1,19 @@
-import { RouteObject } from "react-router-dom";
+import { RouteObject, useRouteError } from "react-router-dom";
 
-import HomePage from "~/src/pages/home";
 import AboutPage from "~/src/pages/about";
-import AppView from "~/src/views/app";
-import ProtolangEditor from "~/src/views/langproto_editor";
-import NotFound from "~/src/pages/not_found";
-import LangEditor from "~/src/views/lang_editor";
+import HomePage from "~/src/pages/home";
+import Builder from "~/src/pages/lang/builder";
 import PhonemesEditor from "~/src/pages/lang/phonemes_editor";
+import NotFound from "~/src/pages/not_found";
+import AppView from "~/src/views/app";
+import LangEditor from "~/src/views/lang_editor";
+import ProtolangEditor from "~/src/views/langproto_editor";
+import KaboomAppView from "./views/kaboom_app";
 
 export const ROUTES: readonly RouteObject[] = [
     {
         element: <AppView />,
+        errorElement: <KaboomAppView />,
         children: [
             {
                 path: "/",
@@ -36,6 +39,7 @@ export const ROUTES: readonly RouteObject[] = [
                     },
                     {
                         path: "builder",
+                        element: <Builder />,
                     },
                 ],
             },
@@ -61,6 +65,7 @@ export const ROUTES: readonly RouteObject[] = [
                     },
                     {
                         path: "builder",
+                        element: <Builder />,
                     },
                 ],
             },

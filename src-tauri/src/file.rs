@@ -1,9 +1,25 @@
+use std::sync::Mutex;
+use std::{fs::File, sync::Arc};
+
 use directories::ProjectDirs;
-use serde::{Serialize, Serializer};
-use std::fs::File;
 use regex::Regex;
-use tauri::command;
+use semver::{Version, VersionReq};
+use serde::{Serialize, Serializer};
+use tauri::{command, State};
+
 use crate::data::LanguageGroup;
+
+#[derive(Clone)]
+pub struct Project(pub(crate) Arc<Mutex<(String, LanguageGroup)>>);
+
+impl Project {
+    pub fn new() -> Self {
+        Self(Arc::new(Mutex::new((
+            String::new(),
+            LanguageGroup::default(),
+        ))))
+    }
+}
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -15,6 +31,8 @@ pub enum Error {
     Glob(#[from] glob::GlobError),
     #[error("cannot find project directory for this OS")]
     CannotFindProjectDir,
+    #[error("cannot load projects from version {0}")]
+    VersionMismatch(Version),
     #[error("cannot save to empty name")]
     EmptyName,
 }
@@ -34,7 +52,12 @@ pub async fn get_language_groups() -> Result<Vec<String>, Error> {
     let lg_suffix: Regex = Regex::new(r"\.lg$").unwrap();
 
     if let Some(project_dirs) = ProjectDirs::from("io.jengamon", "Muurmon", "Lexi") {
-        for result in glob::glob(&format!("{}/data/lang/*.lg.json", project_dirs.data_dir().display())).unwrap() {
+        for result in glob::glob(&format!(
+            "{}/data/lang/*.lg.json",
+            project_dirs.data_dir().display()
+        ))
+        .unwrap()
+        {
             let file_path = result?;
             let file_stem = file_path.file_stem().unwrap().to_string_lossy();
 
@@ -48,13 +71,13 @@ pub async fn get_language_groups() -> Result<Vec<String>, Error> {
 }
 
 #[command]
-pub fn save_language_group(filename: String, lang_group: LanguageGroup) -> Result<(), Error> {
+pub fn save_language_group(filename: String, project: State<Project>) -> Result<(), Error> {
     use std::io::Write;
 
     let sanitized = filename.replace("../", "");
 
     if sanitized.is_empty() {
-        return Err(Error::EmptyName)
+        return Err(Error::EmptyName);
     }
 
     if let Some(project_dirs) = ProjectDirs::from("io.jengamon", "Muurmon", "Lexi") {
@@ -65,7 +88,11 @@ pub fn save_language_group(filename: String, lang_group: LanguageGroup) -> Resul
         std::fs::create_dir_all(path.parent().unwrap())?;
         let mut file = File::create(path)?;
 
-        write!(file, "{}", serde_json::to_string(&lang_group)?)?;
+        write!(
+            file,
+            "{}",
+            serde_json::to_string(&project.0.lock().unwrap().1)?
+        )?;
 
         Ok(())
     } else {
@@ -74,7 +101,7 @@ pub fn save_language_group(filename: String, lang_group: LanguageGroup) -> Resul
 }
 
 #[command]
-pub fn load_language_group(filename: String) -> Result<LanguageGroup, Error> {
+pub fn load_language_group(filename: String, project: State<Project>) -> Result<(), Error> {
     let sanitized = filename.replace("../", "");
 
     if let Some(project_dirs) = ProjectDirs::from("io.jengamon", "Muurmon", "Lexi") {
@@ -86,7 +113,17 @@ pub fn load_language_group(filename: String) -> Result<LanguageGroup, Error> {
 
         let lang_group: LanguageGroup = serde_json::from_reader(file)?;
 
-        Ok(lang_group)
+        // Check for validity
+
+        let version_req =
+            VersionReq::parse("^0").expect("INTERNAL failed to compile version req string");
+
+        if version_req.matches(&lang_group.version) {
+            *project.0.lock().unwrap() = (filename, lang_group);
+            Ok(())
+        } else {
+            return Err(Error::VersionMismatch(lang_group.version));
+        }
     } else {
         Err(Error::CannotFindProjectDir)
     }

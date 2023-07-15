@@ -11,8 +11,13 @@ import {
     Boolean,
 } from "runtypes";
 
-export const Place = Union(Literal("Bilabial"));
+export const Place = Union(
+    Literal("Bilabial"),
+    Literal("Dental"),
+    Literal("Alveolar"),
+);
 export const ObstruentAttachment = Union(
+    Literal("Ejective"),
     Literal("Preaspirated"),
     Literal("Aspirated"),
     Literal("Breathy"),
@@ -26,6 +31,14 @@ export const Phone = Union(
             attachments: Array(ObstruentAttachment),
         }),
     }),
+    Record({
+        Affricative: Record({
+            start_place: Place,
+            end_place: Place,
+            voiced: Boolean,
+            attachments: Array(ObstruentAttachment),
+        })
+    })
 );
 export const Phoneme = Record({
     ortho: String,

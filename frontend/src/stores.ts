@@ -1,32 +1,27 @@
-import { create } from "zustand";
-import { LanguageGroup } from "~/src/data";
-import { produce } from "immer";
-import { mountStoreDevtool } from "simple-zustand-devtools";
+import { invoke } from "@tauri-apps/api";
+import { Runtype } from "runtypes";
+import type { SWRSubscription } from 'swr/subscription'
+import { listen } from "@tauri-apps/api/event"
 
-export interface Project {
-    name: string;
-    group: LanguageGroup;
-    setName: (name: string) => void;
-    updateGroup: (delta: (draft: LanguageGroup) => LanguageGroup) => void;
+export async function fetcher<R extends Runtype<T>, T>(
+    [id,
+        expected,
+        payload]: readonly [string, R, any]
+) {
+    return invoke(id, payload).then((data) => expected.check(data));
 }
 
-export const EMPTY_PROJECT: LanguageGroup = {
-    version: "alpha",
-    protolangs: [],
-    langs: [],
-};
-
-export const useProjectStore = create<Project>()((set) => ({
-    name: "",
-    group: EMPTY_PROJECT,
-    setName: (name: string) => set((proj) => ({ name, group: proj.group })),
-    updateGroup: (delta: (draft: LanguageGroup) => LanguageGroup) =>
-        set((proj) => ({
-            name: proj.name,
-            group: produce(proj.group, delta),
-        })),
-}));
-
-if (process.env.NODE_ENV === "development") {
-    mountStoreDevtool("Project", useProjectStore);
+export function subscribeGenerator<R extends Runtype<T>, T>(
+    expected: R
+): SWRSubscription<string, T, unknown> {
+    return (id, { next }) => {
+        return () => (async () => await listen(id, (event) => {
+            try {
+                let data = expected.check(event.payload);
+                next(null, data);
+            } catch (e) {
+                next(e)
+            }
+        }))();
+    }
 }

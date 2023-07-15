@@ -72,6 +72,7 @@ dependencies = [
  "ipa-translate",
  "oneshot",
  "regex",
+ "semver",
  "serde",
  "serde_json",
  "serde_regex",
@@ -1381,8 +1382,7 @@ dependencies = [
 [[package]]
 name = "ipa-translate"
 version = "0.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5042fbb70693c8d6368b2b7216ff336c1ba6c5e2f59883bb826eeb72701ecf0c"
+source = "git+https://github.com/Jengamon/ipa-translate.git#b12c69905895c4bbe582c0c934f8744998e2c1ba"
 dependencies = [
  "lazy_static",
  "regex",

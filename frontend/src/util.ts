@@ -1,6 +1,7 @@
 /* Error handling from https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript */
 import { invoke } from "@tauri-apps/api";
 import { String as RString } from "runtypes";
+import { Phone } from "~/src/data";
 
 type ErrorWithMessage = {
     message: string;
@@ -36,3 +37,12 @@ export function getErrorMessage(error: unknown) {
 export async function fromBranner(input: string) {
     return RString.check(await invoke("from_branner", { input }));
 }
+
+export async function displayPhone(phone: Phone) {
+    return RString.check(await invoke("display_phone", { phone }));
+}
+
+export async function displayPhoneBranner(phone: Phone) {
+    return RString.check(await invoke("display_phone_branner", { phone }));
+}
+

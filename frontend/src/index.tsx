@@ -7,7 +7,12 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import { ROUTES } from "./routes";
-import { NavBar } from "~/src/components/navbar";
+import { invoke } from "@tauri-apps/api";
+
+// Start services
+(async () => {
+    await invoke("init_languages_server", {});
+})();
 
 const node = document.getElementById("app");
 

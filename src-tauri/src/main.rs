@@ -1,15 +1,22 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::sync::Mutex;
+
 use tauri::generate_handler;
 
-mod file;
+use crate::data::LanguageGroup;
+use crate::file::Project;
+
 mod data;
 mod export;
+mod file;
+mod interact;
 mod util;
 
 fn main() {
     tauri::Builder::default()
+        .manage(Project::new())
         .invoke_handler(generate_handler![
             file::save_language_group,
             file::load_language_group,
@@ -18,6 +25,16 @@ fn main() {
             export::export_language_group,
             export::test_export_language_group,
             util::from_branner,
+            util::display_phone,
+            util::display_phone_branner,
+            interact::new_language_group,
+            interact::dump_language_group,
+            interact::get_project_name,
+            interact::set_project_name,
+            interact::create_language,
+            interact::delete_language,
+            interact::get_language,
+            interact::init_languages_server,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

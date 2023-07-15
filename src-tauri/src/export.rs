@@ -3,7 +3,8 @@ use askama::Template;
 use serde::{Serialize, Serializer};
 use std::fs::File;
 use tauri::api::dialog::FileDialogBuilder;
-use tauri::command;
+use tauri::{command, State};
+use crate::file::Project;
 
 #[derive(Template)]
 #[template(path = "export.typ.askama", escape = "none")]
@@ -70,14 +71,16 @@ impl Serialize for Error {
 }
 
 #[command]
-pub fn test_export_language_group(name: String, project: LanguageGroup) -> Result<String, Error> {
+pub fn test_export_language_group(project: State<Project>) -> Result<String, Error> {
+    let project = project.inner().0.lock().unwrap();
+
     let rendered = ExportTemplate {
-        name: name.as_str(),
-        project: (&project).into(),
+        name: &project.0,
+        project: (&project.1).into(),
     }
     .render()?;
 
-    if name.is_empty() {
+    if project.0.is_empty() {
         return Err(Error::EmptyName);
     }
 
@@ -85,14 +88,19 @@ pub fn test_export_language_group(name: String, project: LanguageGroup) -> Resul
 }
 
 #[command]
-pub async fn export_language_group(name: String, project: LanguageGroup) -> Result<(), Error> {
+pub async fn export_language_group<'a>(project: State<'a, Project>) -> Result<(), Error> {
     use std::io::Write;
+
+    let (tx, rx) = oneshot::channel();
+
+    let name = {
+        let project = project.inner().0.lock().unwrap();
+        project.0.clone()
+    };
 
     if name.is_empty() {
         return Err(Error::EmptyName);
     }
-
-    let (tx, rx) = oneshot::channel();
 
     FileDialogBuilder::new()
         .add_filter(&name, &["typ"])
@@ -101,9 +109,11 @@ pub async fn export_language_group(name: String, project: LanguageGroup) -> Resu
         });
 
     if let Some(file_path) = rx.await.unwrap() {
+        let project = project.inner().0.lock().unwrap();
+
         let rendered = ExportTemplate {
-            name: name.as_str(),
-            project: (&project).into(),
+            name: &name,
+            project: (&project.1).into(),
         }
         .render()?;
 

@@ -1,20 +1,30 @@
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
-import { EMPTY_PROJECT, useProjectStore } from "~/src/stores";
-import { LanguageGroup } from "~/src/data";
-import { String, Array, ValidationError } from "runtypes";
+import { Array, String } from "runtypes";
 import { getErrorMessage } from "~/src/util";
 import * as classes from "./home.module.css";
+import useSWR from "swr";
+import { fetcher } from "~/src/stores";
 
 export default function HomePage() {
-    const projectName = useProjectStore((proj) => proj.name);
-    const project = useProjectStore((proj) => proj.group);
-    const setProjectName = useProjectStore((proj) => proj.setName);
-    const updateProject = useProjectStore((proj) => proj.updateGroup);
     const [languageGroupNames, setLanguageGroupNames] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
 
+    const {
+        data: projectName,
+        error: nameError,
+        mutate: nameMutate,
+        isLoading,
+    } = useSWR<string>(["get_project_name", String, {}], fetcher);
+
     useEffect(retrieveLanguageGroupNames, []);
+
+    async function setProjectName(to: string) {
+        await invoke("set_project_name", {
+            name: to
+        });
+        await nameMutate(to);
+    }
 
     function retrieveLanguageGroupNames() {
         const input = Array(String);
@@ -27,7 +37,6 @@ export default function HomePage() {
         try {
             await invoke("save_language_group", {
                 filename: projectName,
-                langGroup: project,
             });
             retrieveLanguageGroupNames();
             setError(null);
@@ -39,16 +48,17 @@ export default function HomePage() {
     }
 
     async function newProject() {
-        updateProject((_) => EMPTY_PROJECT);
-        setProjectName("");
+        try {
+            await invoke("new_language_group", {});
+            setError(null);
+        } catch (e) {
+            setError(getErrorMessage(e));
+        }
     }
 
     async function exportProject() {
         try {
-            await invoke("export_language_group", {
-                name: projectName,
-                project,
-            });
+            await invoke("export_language_group", {});
             setError(null);
         } catch (e) {
             setError(getErrorMessage(e));
@@ -58,31 +68,15 @@ export default function HomePage() {
     }
 
     async function loadProject(name: string) {
-        let project;
         try {
-            project = await invoke("load_language_group", {
+            await invoke("load_language_group", {
                 filename: name,
             });
+            await nameMutate(name);
+            setError(null);
         } catch (e) {
             setError(getErrorMessage(e));
             return;
-        }
-
-        try {
-            const lg = LanguageGroup.check(project);
-            updateProject((_) => lg);
-            setProjectName(name);
-
-            // Output that we've succeeded loading
-            setError(null);
-        } catch (e) {
-            const err = e as ValidationError;
-            // Handle error (which will only be the runtypes error
-            const err_code = err.code;
-            const message = err.message;
-            const details = err.details;
-            console.error("INTERNAL", err_code, message, details);
-            setError(message);
         }
     }
 
@@ -98,6 +92,15 @@ export default function HomePage() {
 
         retrieveLanguageGroupNames();
         setError(null);
+    }
+
+    if (isLoading) {
+        return (
+            <div>
+                <h1>Home</h1>
+                <p>Loading...</p>
+            </div>
+        )
     }
 
     return (

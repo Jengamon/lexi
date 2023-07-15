@@ -1,30 +1,54 @@
-import { useEffect, useState } from "react";
-import { useProjectStore } from "~/src/stores";
+import { useCallback, useEffect, useState } from "react";
 import * as classes from "./about.module.css";
 import { invoke } from "@tauri-apps/api";
 import { String } from "runtypes";
-import { fromBranner, getErrorMessage } from "~/src/util";
+import { displayPhone, displayPhoneBranner, fromBranner, getErrorMessage } from "~/src/util";
+import { Phone } from "~/src/data";
+import useSWR from "swr";
+import { fetcher } from "../stores";
 
 export default function AboutPage() {
-    const [showDebug, setShowDebug] = useState(false);
-    const name = useProjectStore((proj) => proj.name);
-    const project = useProjectStore((proj) => proj.group);
     const [testExport, setTestExport] = useState<
         string | { error: string } | null
     >(null);
     const [brannerInput, setBrannerInput] = useState("");
     const [branner, setBranner] = useState("");
 
+    const {
+        data: dumpedLangGroup,
+        error: dumpedLangGroupError,
+    } = useSWR<string>(["dump_language_group", String, {}], fetcher);
+
+    const updateBranner = useCallback(
+        async () => await fromBranner(brannerInput),
+        [brannerInput],
+    );
+    updateBranner().then((output) => setBranner(output));
+
+    const [testDisplayPhone, setDisplayPhone] = useState({
+        ipa: "",
+        branner: "",
+    });
+
     useEffect(() => {
-        fromBranner(brannerInput).then((output) => setBranner(output));
-    }, [brannerInput]);
+        const phone: Phone = {
+            Affricative: {
+                start_place: "Dental",
+                end_place: "Alveolar",
+                voiced: true,
+                attachments: ["Preaspirated", "Creaky", "Breathy", "Ejective"],
+            },
+        };
+
+        displayPhone(phone).then(async ipa => ({
+            ipa,
+            branner: await displayPhoneBranner(phone)
+        })).then((output) => setDisplayPhone(output));
+    });
 
     async function testExportCurrentProject() {
         try {
-            const data = await invoke("test_export_language_group", {
-                name,
-                project,
-            });
+            const data = await invoke("test_export_language_group", {});
             setTestExport(String.check(data));
         } catch (e) {
             setTestExport({ error: getErrorMessage(e) });
@@ -34,21 +58,12 @@ export default function AboutPage() {
     return (
         <div>
             <h1>About</h1>
+            <p>{testDisplayPhone.ipa} {testDisplayPhone.branner}</p>
             <p>
                 Lexi is about making coming up with conlangs easier by providing
                 a programmatic way to store and explore conlangs both
                 synchronically and diachronically.
             </p>
-            <div>
-                <button onClick={() => setShowDebug(!showDebug)}>
-                    Show Debug
-                </button>
-                {showDebug && (
-                    <pre className={classes.debug}>
-                        <code>{JSON.stringify(project, null, 2)}</code>
-                    </pre>
-                )}
-            </div>
             <div>
                 <button onClick={testExportCurrentProject}>Test Export</button>
                 {testExport && (
@@ -67,9 +82,22 @@ export default function AboutPage() {
                 <input
                     autoCorrect="off"
                     value={brannerInput}
-                    onChange={(ev) => setBrannerInput(ev.target.value)}
+                    onChange={(ev) =>
+                        setBrannerInput(
+                            // the `replace` is to remove "smart quotes"
+                            // the second is to add nbsp support
+                            ev.target.value.replace(/[\u201C\u201D]/g, '"'),
+                        )
+                    }
                 />
                 <p>{branner}</p>
+            </div>
+            <div>
+                <pre className={classes.debug}>
+                    {dumpedLangGroup ?
+                        <code>{dumpedLangGroup}</code> :
+                        <code className={classes.error}>{getErrorMessage(dumpedLangGroupError)}</code>}
+                </pre>
             </div>
         </div>
     );
