@@ -1,0 +1,7 @@
+.langEditorItemNav {
+  composes: editorNav from "./editor_common.module.css";
+}
+
+.deleteLink {
+  composes: deleteLink from "./editor_common.module.css";
+}

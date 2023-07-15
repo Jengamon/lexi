@@ -4,7 +4,9 @@
     "private": true,
     "scripts": {
         "dev": "parcel",
-        "build": "parcel build"
+        "build": "parcel build",
+        "devtools": "react-devtools",
+        "fmt": "prettier --write src/"
     },
     "browserslist": [
         "defaults"
@@ -12,11 +14,15 @@
     "source": "src/index.html",
     "devDependencies": {
         "@parcel/core": "^2.9.3",
+        "@types/node": "^20.4.2",
         "@types/react": "^18.2.15",
+        "@types/react-devtools": "^3.6.0",
         "@types/react-dom": "^18.2.7",
         "parcel": "^2.9.3",
         "prettier": "^3.0.0",
         "process": "^0.11.10",
+        "react-devtools": "^4.28.0",
+        "simple-zustand-devtools": "^1.1.0",
         "typescript": "^5.1.6",
         "typescript-plugin-css-modules": "^5.0.1"
     },
@@ -35,6 +41,11 @@
     "@parcel/transformer-css": {
         "drafts": {
             "nesting": true
+        }
+    },
+    "dependenciesMeta": {
+        "react-devtools@4.28.0": {
+            "unplugged": true
         }
     }
 }

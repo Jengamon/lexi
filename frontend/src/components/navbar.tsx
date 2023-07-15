@@ -11,6 +11,14 @@ export function NavBar(props: NavbarProps) {
             href: "/",
         },
         {
+            label: "Protolanguages",
+            href: "/proto",
+        },
+        {
+            label: "Languages",
+            href: "/lang",
+        },
+        {
             label: "About",
             href: "/about",
         },

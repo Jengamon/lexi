@@ -1,9 +1,10 @@
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
-import { useProjectStore } from "~/src/stores";
+import { EMPTY_PROJECT, useProjectStore } from "~/src/stores";
 import { LanguageGroup } from "~/src/data";
 import { String, Array, ValidationError } from "runtypes";
-import {getErrorMessage} from "~/src/util";
+import { getErrorMessage } from "~/src/util";
+import * as classes from "./home.module.css";
 
 export default function HomePage() {
     const projectName = useProjectStore((proj) => proj.name);
@@ -28,6 +29,27 @@ export default function HomePage() {
                 filename: projectName,
                 langGroup: project,
             });
+            retrieveLanguageGroupNames();
+            setError(null);
+        } catch (e) {
+            setError(getErrorMessage(e));
+        }
+
+        // Output that we've succeeded saving
+    }
+
+    async function newProject() {
+        updateProject((_) => EMPTY_PROJECT);
+        setProjectName("");
+    }
+
+    async function exportProject() {
+        try {
+            await invoke("export_language_group", {
+                name: projectName,
+                project,
+            });
+            setError(null);
         } catch (e) {
             setError(getErrorMessage(e));
         }
@@ -36,17 +58,19 @@ export default function HomePage() {
     }
 
     async function loadProject(name: string) {
+        let project;
         try {
-            let project = await invoke("load_language_group", {
+            project = await invoke("load_language_group", {
                 filename: name,
             });
-        } catch(e) {
+        } catch (e) {
             setError(getErrorMessage(e));
             return;
         }
 
         try {
-            updateProject((_) => LanguageGroup.check(project));
+            const lg = LanguageGroup.check(project);
+            updateProject((_) => lg);
             setProjectName(name);
 
             // Output that we've succeeded loading
@@ -62,24 +86,58 @@ export default function HomePage() {
         }
     }
 
+    async function deleteProject(name: string) {
+        try {
+            await invoke("delete_language_group", {
+                filename: name,
+            });
+        } catch (e) {
+            setError(getErrorMessage(e));
+            return;
+        }
+
+        retrieveLanguageGroupNames();
+        setError(null);
+    }
+
     return (
         <div>
             <h1>Home</h1>
             <div>
                 <input
+                    autoCorrect="off"
                     onChange={(ev) => setProjectName(ev.target.value)}
                     value={projectName}
                 />
                 <button onClick={saveProject}>
                     Save Project (Language Group)
                 </button>
+                <button onClick={exportProject}>
+                    Export Project (Language Group)
+                </button>
+                <button onClick={newProject}>
+                    New Project (Language Group)
+                </button>
             </div>
             {error && <p style={{ color: "red" }}>{error}</p>}
             <button onClick={retrieveLanguageGroupNames}>Refresh</button>
             <ul>
                 {languageGroupNames.map((name) => (
-                    <li key={name} onClick={() => loadProject(name)}>
-                        {name}
+                    <li key={name}>
+                        <div className={classes.langNameItem}>
+                            <div
+                                className="label"
+                                onClick={() => loadProject(name)}
+                            >
+                                {name}
+                            </div>
+                            <div
+                                className={classes.remove}
+                                onClick={() => deleteProject(name)}
+                            >
+                                DELETE
+                            </div>
+                        </div>
                     </li>
                 ))}
             </ul>

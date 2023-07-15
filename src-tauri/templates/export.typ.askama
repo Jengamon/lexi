@@ -1,0 +1,15 @@
+#import "@preview/ascii-ipa:1.0.0": *
+
+= {{ name|capitalize }} Language Group
+
+{% for proto in project.protolangs -%}
+== {{ proto.raw.name|capitalize }} Proto-Language
+
+#lorem(400)
+{%- endfor %}
+
+{% for lang in project.langs -%}
+== {{ lang.raw.name|capitalize }} Language
+
+#lorem(400)
+{%- endfor %}

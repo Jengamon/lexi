@@ -1,0 +1,6 @@
+.editorNav {
+  & .deleteLink {
+    color: red;
+    cursor: pointer;
+  }
+}

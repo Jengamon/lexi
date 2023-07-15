@@ -91,3 +91,20 @@ pub fn load_language_group(filename: String) -> Result<LanguageGroup, Error> {
         Err(Error::CannotFindProjectDir)
     }
 }
+
+#[command]
+pub async fn delete_language_group(filename: String) -> Result<(), Error> {
+    let sanitized = filename.replace("../", "");
+
+    if let Some(project_dirs) = ProjectDirs::from("io.jengamon", "Muurmon", "Lexi") {
+        let loc = format!("data/lang/{sanitized}.lg.json");
+
+        let path = project_dirs.data_dir().join(loc);
+
+        std::fs::remove_file(path)?;
+
+        Ok(())
+    } else {
+        Err(Error::CannotFindProjectDir)
+    }
+}
