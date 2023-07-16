@@ -9,7 +9,7 @@ import {
     Union,
     Literal,
     Boolean,
-    Unknown
+    Unknown,
 } from "runtypes";
 
 export const Place = Union(

@@ -1,9 +1,4 @@
-import {
-    Add,
-    Create,
-    Delete,
-    Toc,
-} from "@mui/icons-material";
+import { Add, Create, Delete, Toc } from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -22,6 +17,7 @@ import {
     SpeedDial,
     SpeedDialIcon,
     SpeedDialAction,
+    capitalize,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
@@ -158,6 +154,7 @@ function LanguageEditorInner({
 
     const { showAppNotification } = useAppContext();
     const navigate = useNavigate();
+    const noun = mode === "protolang" ? "protolanguage" : "language";
 
     async function create(name: string) {
         try {
@@ -167,7 +164,6 @@ function LanguageEditorInner({
                     : "create_language";
             const get =
                 mode === "protolang" ? "get_protolanguage" : "get_language";
-            const noun = mode === "protolang" ? "protolanguage" : "language";
             const prefix = mode === "protolang" ? "/proto" : "/lang";
             const mutate = mode === "protolang" ? protolangMutate : langMutate;
             const Type = mode === "protolang" ? Protolanguage : Language;
@@ -188,9 +184,9 @@ function LanguageEditorInner({
                 action: {
                     label: "Go",
                     act() {
-                        navigate(`${prefix}/${name}/describe`)
-                    }
-                }
+                        navigate(`${prefix}/${name}/describe`);
+                    },
+                },
             });
         } catch (e) {
             setCreateError(getErrorMessage(e));
@@ -241,21 +237,24 @@ function LanguageEditorInner({
 
     const fabs = (
         <SpeedDial
-            ariaLabel={`Back to ${mode === "protolang" ? "Protolanguage List" : "Language List"
-                }`}
+            ariaLabel={`Back to ${capitalize(noun)} List`}
             sx={{ position: "absolute", bottom: 16, right: 16 }}
             icon={<SpeedDialIcon />}
         >
             <SpeedDialAction
                 key="back-to-list"
                 icon={<Toc />}
-                tooltipTitle={`${mode === "protolang" ? "Protolanguages" : "Languages"} List`}
-                onClick={() => (mode === "protolang" ? navigate("/proto") : navigate("/lang"))}
+                tooltipTitle={`${capitalize(noun)}s List`}
+                onClick={() =>
+                    mode === "protolang"
+                        ? navigate("/proto")
+                        : navigate("/lang")
+                }
             />
             <SpeedDialAction
                 key="create"
                 icon={<Create />}
-                tooltipTitle={"Create New"}
+                tooltipTitle={`Create New ${capitalize(noun)}`}
                 onClick={() => setShowCreateDialog(true)}
             />
         </SpeedDial>
@@ -267,13 +266,13 @@ function LanguageEditorInner({
                 open={showCreateDialog}
                 onClose={() => setShowCreateDialog(false)}
             >
-                <DialogTitle>
-                    New {mode === "protolang" ? "Protolanguage" : "Language"}
-                </DialogTitle>
+                <DialogTitle>New {capitalize(noun)}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ py: 2 }}>
                         <TextField
-                            sx={{ flexGrow: 1 }}
+                            autoFocus
+                            fullWidth
+                            autoCorrect="off"
                             value={newName}
                             size="small"
                             label="Name"
@@ -294,13 +293,13 @@ function LanguageEditorInner({
     );
 
     return langId !== undefined ? (
-        <Page title={mode === "protolang" ? "Protolanguages" : "Languages"}>
+        <Page title={`${capitalize(noun)}s`}>
             {dialogs}
             {fabs}
             <Outlet context={{ mode }} />
         </Page>
     ) : (
-        <Page title={mode === "protolang" ? "Protolanguages" : "Languages"}>
+        <Page title={`${capitalize(noun)}s`}>
             <Toolbar>{abs}</Toolbar>
             <List dense>
                 {names &&

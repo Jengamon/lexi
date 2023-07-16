@@ -26,6 +26,11 @@ pub fn get_project_name(project: State<Project>) -> String {
 }
 
 #[command]
+pub fn get_family_id(project: State<Project>) -> uuid::Uuid {
+    project.0.lock().unwrap().1.family_id
+}
+
+#[command]
 pub fn set_project_name(project: State<Project>, name: String) {
     project.0.lock().unwrap().0 = name;
 }

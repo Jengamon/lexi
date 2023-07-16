@@ -5,9 +5,7 @@ import HomePage from "~/src/pages/home";
 import Builder from "~/src/pages/lang/builder";
 import PhonemesEditor from "~/src/pages/lang/phonemes_editor";
 import AppView from "~/src/views/app";
-import {
-    LanguageEditor,
-} from "~/src/pages/lang_editor";
+import { LanguageEditor } from "~/src/pages/lang_editor";
 import KaboomAppView from "./views/kaboom_app";
 import Describer from "./pages/lang/describer";
 

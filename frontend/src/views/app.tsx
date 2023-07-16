@@ -51,9 +51,9 @@ type AppNotif = {
     severity: "info" | "warning" | "error";
     message: string;
     action?: {
-        label: string,
-        act: () => void,
-    }
+        label: string;
+        act: () => void;
+    };
 };
 
 export type AppContext = {
@@ -104,14 +104,20 @@ export default function AppView() {
                 <Alert
                     onClose={() => setHasNotif(false)}
                     severity={notif?.severity}
-                    action={notif?.action !== undefined ? (
-                        <Button color="inherit" size="small" onClick={() => {
-                            notif?.action?.act()
-                            setHasNotif(false)
-                        }}>
-                            {notif?.action.label}
-                        </Button>
-                    ) : undefined}
+                    action={
+                        notif?.action !== undefined ? (
+                            <Button
+                                color="inherit"
+                                size="small"
+                                onClick={() => {
+                                    notif?.action?.act();
+                                    setHasNotif(false);
+                                }}
+                            >
+                                {notif?.action.label}
+                            </Button>
+                        ) : undefined
+                    }
                 >
                     {notif?.message}
                 </Alert>

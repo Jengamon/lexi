@@ -11,9 +11,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
-import * as classNames from "classnames";
-import { Link, NavLink } from "react-router-dom";
-import * as classes from "./navbar.module.css";
+import { NavLink } from "react-router-dom";
 import { useState, MouseEvent } from "react";
 
 export interface NavbarProps {

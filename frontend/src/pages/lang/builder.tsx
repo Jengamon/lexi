@@ -12,7 +12,11 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useRef } from "react";
-import { useLanguage } from "~/src/pages/lang_editor";
+import {
+    useLanguage,
+    useLanguageEditorContext,
+    useProtolanguage,
+} from "~/src/pages/lang_editor";
 import { Typography } from "@mui/material";
 
 const theme = {};
@@ -38,9 +42,8 @@ export default function Builder() {
         onError,
     };
     const editorStateRef = useRef<EditorState>();
-    const { lang } = useLanguage();
 
-    return lang !== undefined ? (
+    return (
         <LexicalComposer initialConfig={initialConfig}>
             <PlainTextPlugin
                 contentEditable={
@@ -57,9 +60,5 @@ export default function Builder() {
             />
             <HistoryPlugin />
         </LexicalComposer>
-    ) : (
-        <Typography variant="body1">
-            Cannot edit without an active (proto-)language
-        </Typography>
     );
 }

@@ -5,13 +5,10 @@ import { getErrorMessage } from "~/src/util";
 import * as classes from "./home.module.css";
 import useSWR from "swr";
 import { fetcher } from "~/src/stores";
-import {
-    Button,
-    TextField,
-    Typography,
-} from "@mui/material";
+import { Box, Button, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { Page } from "./page";
 import { useAppContext } from "../views/app";
+import { AddBox, CallSplit, Delete, FileDownload, Save } from "@mui/icons-material";
 
 export default function HomePage() {
     const [languageGroupNames, setLanguageGroupNames] = useState<string[]>([]);
@@ -20,16 +17,21 @@ export default function HomePage() {
     function createError(error: any) {
         showAppNotification({
             severity: "error",
-            message: getErrorMessage(error)
-        })
+            message: getErrorMessage(error),
+        });
     }
 
     const {
         data: projectName,
-        error: nameError,
         mutate: nameMutate,
-        isLoading,
+        isLoading: isNameLoading,
     } = useSWR<string>(["get_project_name", String, {}], fetcher);
+
+    const {
+        data: familyId,
+        isLoading: isFamilyIdLoading,
+        mutate: familyIdMutate,
+    } = useSWR<string>(["get_family_id", String, {}], fetcher);
 
     useEffect(retrieveLanguageGroupNames, []);
 
@@ -51,6 +53,10 @@ export default function HomePage() {
         try {
             await invoke("save_language_group", {
                 filename: projectName,
+            });
+            showAppNotification({
+                severity: "info",
+                message: `Saved project ${projectName}`,
             });
             retrieveLanguageGroupNames();
         } catch (e) {
@@ -96,6 +102,7 @@ export default function HomePage() {
                 filename: name,
             });
             await nameMutate(name);
+            await familyIdMutate(async () => await invoke("get_family_id"));
         } catch (e) {
             createError(e);
         }
@@ -116,44 +123,65 @@ export default function HomePage() {
 
     return (
         <Page title="Home">
-            {isLoading ? (
+            {isNameLoading ? (
                 <></>
             ) : (
                 <>
-                    <div>
+                    <Box display="flex">
                         <TextField
+                            autoCorrect="off"
+                            sx={{ flexGrow: 1 }}
+                            size="small"
+                            label="Project Name"
                             onChange={(ev) => setProjectName(ev.target.value)}
                             value={projectName}
                         />
-                    </div>
-                    <div>
-                        <Button onClick={saveProject}>Save Project</Button>
-                        <Button onClick={exportProject}>Export Project</Button>
-                        <Button onClick={newProject}>New Project</Button>
-                        <Button onClick={epochProject}>Epoch Project</Button>
-                    </div>
+                        <Stack alignSelf="center" spacing={1} direction="row" sx={{ mx: 2 }}>
+                            <Tooltip title="Save Project">
+                                <IconButton onClick={saveProject} aria-label="save">
+                                    <Save />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Export Project">
+                                <IconButton onClick={exportProject} aria-label="export">
+                                    <FileDownload />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="New Project">
+                                <IconButton onClick={newProject} aria-label="new"><AddBox /></IconButton>
+                            </Tooltip>
+                            <Tooltip title="Epoch Project">
+                                <IconButton sx={{ transform: "scaleX(-1)" }} onClick={epochProject}>
+                                    <CallSplit /></IconButton>
+                            </Tooltip>
+                        </Stack>
+                    </Box>
+                    <Typography sx={{ pt: 2 }} align="center" variant="caption">
+                        {isFamilyIdLoading ? "Loading..." : `Family ${familyId}`}
+                    </Typography>
                 </>
-            )}
-            <ul>
+            )
+            }
+            <List dense>
                 {languageGroupNames.map((name) => (
-                    <li key={name}>
-                        <div className={classes.langNameItem}>
-                            <div
-                                className="label"
-                                onClick={() => loadProject(name)}
-                            >
-                                {name}
-                            </div>
-                            <div
-                                className={classes.remove}
-                                onClick={() => deleteProject(name)}
-                            >
-                                DELETE
-                            </div>
-                        </div>
-                    </li>
+                    <ListItem key={name} secondaryAction={
+                        <IconButton edge="end"
+                            aria-label="delete"
+                            onClick={() => deleteProject(name)}
+                        >
+                            <Delete />
+                        </IconButton>
+                    }>
+                        <ListItemButton role={undefined}
+                            onClick={() => loadProject(name)}
+                        >
+                            <ListItemText
+                                primary={name}
+                            />
+                        </ListItemButton>
+                    </ListItem>
                 ))}
-            </ul>
-        </Page>
+            </List>
+        </Page >
     );
 }

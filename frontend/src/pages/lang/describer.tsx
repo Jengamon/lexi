@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
-import { useLanguage, useLanguageEditorContext, useProtolanguage } from "../lang_editor";
+import {
+    useLanguage,
+    useLanguageEditorContext,
+    useProtolanguage,
+} from "../lang_editor";
 import { Typography } from "@mui/material";
 
 export default function Describer() {
@@ -30,13 +34,18 @@ export default function Describer() {
 
     const name = mode === "protolang" ? protolang?.name : lang?.name;
     // TODO Make this a Lexical editor state
-    const description = mode === "protolang" ? protolang?.description : lang?.description;
+    const description =
+        mode === "protolang" ? protolang?.description : lang?.description;
 
     return (
         <>
-            <Typography align="center" variant="h5">{name}</Typography>
+            <Typography align="center" variant="h5">
+                {name}
+            </Typography>
             <Typography>Description</Typography>
-            <Typography component="pre" fontFamily="monospace">{JSON.stringify(description)}</Typography>
+            <Typography component="pre" fontFamily="monospace">
+                {JSON.stringify(description)}
+            </Typography>
             {targets[mode].map((target) => (
                 // We are at ":langId/describe", so go up a level
                 <Link key={target.loc} to={`../${target.href}`}>

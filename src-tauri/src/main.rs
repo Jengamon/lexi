@@ -66,6 +66,7 @@ fn main() {
             interact::dump_language_group,
             interact::get_project_name,
             interact::set_project_name,
+            interact::get_family_id,
             interact::create_language,
             interact::delete_language,
             interact::get_language,
