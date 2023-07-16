@@ -1,13 +1,16 @@
 use std::sync::Mutex;
+use std::time::Duration;
 use std::{fs::File, sync::Arc};
 
+use chrono::{DateTime, Local};
 use directories::ProjectDirs;
 use regex::Regex;
 use semver::{Version, VersionReq};
 use serde::{Serialize, Serializer};
-use tauri::{command, State};
+use tauri::{command, State, Window};
 
 use crate::data::LanguageGroup;
+use crate::ServiceState;
 
 #[derive(Clone)]
 pub struct Project(pub(crate) Arc<Mutex<(String, LanguageGroup)>>);
@@ -46,6 +49,54 @@ impl Serialize for Error {
     }
 }
 
+#[derive(Serialize, Clone)]
+struct AutosaveEvent {
+    name: String,
+    timestamp: DateTime<Local>,
+}
+
+// Services do stuff on a thread.
+// Servers actually send stuff to the application.
+#[command]
+pub fn init_autosave_service(
+    half_minutes: u32,
+    window: Window,
+    project: State<Project>,
+    services: State<ServiceState>,
+) {
+    if !services.inner().0.read().unwrap().autosave {
+        log::info!("Starting autosave service (halfminutes: {half_minutes})...");
+        let project = project.inner().clone();
+        std::thread::spawn(move || loop {
+            std::thread::sleep(Duration::from_secs(half_minutes as u64 * 30));
+
+            let timestamp = Local::now();
+
+            let filename = {
+                let eproject = project.0.lock().unwrap();
+                if eproject.0.is_empty() {
+                    format!("autosave_{timestamp}")
+                } else {
+                    eproject.0.clone()
+                }
+            };
+
+            if let Ok(()) = _save_language_group(filename.clone(), &project) {
+                window
+                    .emit(
+                        "autosaved",
+                        AutosaveEvent {
+                            name: filename,
+                            timestamp,
+                        },
+                    )
+                    .unwrap();
+            }
+        });
+        services.0.write().unwrap().autosave = true;
+    }
+}
+
 #[command]
 pub async fn get_language_groups() -> Result<Vec<String>, Error> {
     let mut names = vec![];
@@ -72,6 +123,10 @@ pub async fn get_language_groups() -> Result<Vec<String>, Error> {
 
 #[command]
 pub fn save_language_group(filename: String, project: State<Project>) -> Result<(), Error> {
+    _save_language_group(filename, project.inner())
+}
+
+pub fn _save_language_group(filename: String, project: &Project) -> Result<(), Error> {
     use std::io::Write;
 
     let sanitized = filename.replace("../", "");

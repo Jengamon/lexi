@@ -1,9 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::{Mutex, RwLock};
+use std::thread::JoinHandle;
 
 use tauri::generate_handler;
+use tauri_plugin_log::LogTarget;
 
 use crate::data::LanguageGroup;
 use crate::file::Project;
@@ -14,10 +17,41 @@ mod file;
 mod interact;
 mod util;
 
+pub struct ServiceStateRaw {
+    autosave: bool,
+    languages: bool,
+    protolanguages: bool,
+}
+
+impl ServiceStateRaw {
+    fn new() -> Self {
+        Self {
+            autosave: false,
+            languages: false,
+            protolanguages: false,
+        }
+    }
+}
+
+pub struct ServiceState(RwLock<ServiceStateRaw>);
+
+impl ServiceState {
+    fn new() -> Self {
+        Self(RwLock::new(ServiceStateRaw::new()))
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(Project::new())
+        .manage(ServiceState::new())
+        .plugin(
+            tauri_plugin_log::Builder::default()
+                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
+                .build(),
+        )
         .invoke_handler(generate_handler![
+            file::init_autosave_service,
             file::save_language_group,
             file::load_language_group,
             file::get_language_groups,

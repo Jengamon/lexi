@@ -5,6 +5,7 @@ use tauri::{command, State, Window};
 
 use crate::data::{Language, LanguageGroup, Protolanguage};
 use crate::file::Project;
+use crate::ServiceState;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -91,17 +92,25 @@ pub fn get_language(project: State<Project>, name: String) -> Option<Language> {
 }
 
 #[command]
-pub fn init_languages_server(project: State<Project>, window: Window) {
+pub fn init_languages_server(
+    project: State<Project>,
+    window: Window,
+    services: State<ServiceState>,
+) {
     let project = project.inner().clone();
-    std::thread::spawn(move || loop {
-        let names: Vec<_> = {
-            let project = &project.0.lock().unwrap().1;
-            project.langs.iter().map(|lang| lang.name.clone()).collect()
-        };
-        window.emit("all_languages", names).unwrap();
+    if !services.inner().0.read().unwrap().languages {
+        log::info!("Starting languages server...");
+        std::thread::spawn(move || loop {
+            let names: Vec<_> = {
+                let project = &project.0.lock().unwrap().1;
+                project.langs.iter().map(|lang| lang.name.clone()).collect()
+            };
+            window.emit("all_languages", names).unwrap();
 
-        std::thread::sleep(Duration::from_millis(500));
-    });
+            std::thread::sleep(Duration::from_millis(500));
+        });
+        services.inner().0.write().unwrap().languages = true;
+    }
 }
 
 #[command]
@@ -150,19 +159,27 @@ pub fn get_protolanguage(project: State<Project>, name: String) -> Option<Protol
 }
 
 #[command]
-pub fn init_protolanguages_server(project: State<Project>, window: Window) {
+pub fn init_protolanguages_server(
+    project: State<Project>,
+    window: Window,
+    services: State<ServiceState>,
+) {
     let project = project.inner().clone();
-    std::thread::spawn(move || loop {
-        let names: Vec<_> = {
-            let project = &project.0.lock().unwrap().1;
-            project
-                .protolangs
-                .iter()
-                .map(|lang| lang.name.clone())
-                .collect()
-        };
-        window.emit("all_protolanguages", names).unwrap();
+    if !services.inner().0.read().unwrap().protolanguages {
+        log::info!("Starting protolanguages server...");
+        std::thread::spawn(move || loop {
+            let names: Vec<_> = {
+                let project = &project.0.lock().unwrap().1;
+                project
+                    .protolangs
+                    .iter()
+                    .map(|lang| lang.name.clone())
+                    .collect()
+            };
+            window.emit("all_protolanguages", names).unwrap();
 
-        std::thread::sleep(Duration::from_millis(500));
-    });
+            std::thread::sleep(Duration::from_millis(500));
+        });
+        services.inner().0.write().unwrap().protolanguages = true;
+    }
 }

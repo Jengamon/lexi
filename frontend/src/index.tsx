@@ -13,6 +13,7 @@ import { invoke } from "@tauri-apps/api";
 (async () => {
     await invoke("init_languages_server", {});
     await invoke("init_protolanguages_server", {});
+    await invoke("init_autosave_service", { halfMinutes: 1 });
 })();
 
 const node = document.getElementById("app");
