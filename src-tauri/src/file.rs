@@ -95,6 +95,7 @@ pub fn init_autosave_service(
         });
         services.0.write().unwrap().autosave = Some((half_minutes,));
     } else {
+        log::info!("Changing wait time (halfminutes: {half_minutes})...");
         services.0.write().unwrap().autosave = Some((half_minutes,));
     }
 }
