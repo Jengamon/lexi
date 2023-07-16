@@ -76,9 +76,9 @@ export default function AboutPage() {
                 synchronically and diachronically.
             </Typography>
             {
-                autosave ? <Typography variant="body1">
+                autosave ? <Typography align="center" variant="body1">
                     Last autosaved: {autosave.name} at {new Date(autosave.timestamp).toLocaleDateString()} {new Date(autosave.timestamp).toLocaleTimeString()}
-                </Typography> : <Typography variant="body1">
+                </Typography> : <Typography align="center" variant="body1">
                     Have not autosaved this session
                 </Typography>
             }

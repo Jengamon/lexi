@@ -68,7 +68,7 @@ pub fn init_autosave_service(
     if services.inner().0.read().unwrap().autosave.is_none() {
         log::info!("Starting autosave service (halfminutes: {half_minutes})...");
         let project = project.inner().clone();
-        let program_start = program_start.inner().0.clone();
+        let program_start = program_start.inner().0;
         std::thread::spawn(move || loop {
             std::thread::sleep(Duration::from_secs(half_minutes as u64 * 30));
 
@@ -182,7 +182,7 @@ pub fn load_language_group(filename: String, project: State<Project>) -> Result<
             *project.0.lock().unwrap() = (filename, lang_group);
             Ok(())
         } else {
-            return Err(Error::VersionMismatch(lang_group.version));
+            Err(Error::VersionMismatch(lang_group.version))
         }
     } else {
         Err(Error::CannotFindProjectDir)

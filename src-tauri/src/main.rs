@@ -1,14 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::atomic::AtomicBool;
-use std::sync::{Mutex, RwLock};
-use std::thread::JoinHandle;
+use std::sync::RwLock;
 
 use tauri::generate_handler;
 use tauri_plugin_log::LogTarget;
 
-use crate::data::LanguageGroup;
 use crate::file::Project;
 
 mod data;

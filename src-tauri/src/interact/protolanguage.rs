@@ -7,46 +7,39 @@ use tauri::{command, State, Window};
 
 #[command]
 pub fn create_protolanguage(project: State<Project>, name: String) -> Result<(), Error> {
-    if name.is_empty() {
-        return Err(Error::ProtolanguageEmptyName);
-    }
-
-    let project = &mut project.inner().0.lock().unwrap().1;
-
-    let existing = project.protolangs.iter().any(|lang| lang.name == name);
-    if existing {
-        return Err(Error::ProtolanguageExists(name));
-    }
-
-    project.protolangs.push(Protolanguage {
-        name,
-        ..Default::default()
-    });
+    project
+        .inner()
+        .0
+        .lock()
+        .unwrap()
+        .1
+        .create_protolanguage(name)?;
 
     Ok(())
 }
 
 #[command]
 pub fn delete_protolanguage(project: State<Project>, name: String) -> Result<(), Error> {
-    let project = &mut project.inner().0.lock().unwrap().1;
-
-    let index = project.protolangs.iter().position(|lang| lang.name == name);
-
-    if let Some(index) = index {
-        project.protolangs.remove(index);
-    }
+    project
+        .inner()
+        .0
+        .lock()
+        .unwrap()
+        .1
+        .delete_protolanguage(name);
 
     Ok(())
 }
 
 #[command]
 pub fn get_protolanguage(project: State<Project>, name: String) -> Option<Protolanguage> {
-    let project = &project.inner().0.lock().unwrap().1;
-
     project
-        .protolangs
-        .iter()
-        .find(|lang| lang.name == name)
+        .inner()
+        .0
+        .lock()
+        .unwrap()
+        .1
+        .protolanguage(name)
         .cloned()
 }
 
@@ -63,8 +56,7 @@ pub fn init_protolanguages_server(
             let names: Vec<_> = {
                 let project = &project.0.lock().unwrap().1;
                 project
-                    .protolangs
-                    .iter()
+                    .protolanguages()
                     .map(|lang| lang.name.clone())
                     .collect()
             };

@@ -12,14 +12,8 @@ pub use protolanguage::*;
 pub enum Error {
     #[error(transparent)]
     Serde(#[from] serde_json::Error),
-    #[error("cannot create a language with a blank name")]
-    LanguageEmptyName,
-    #[error("the language named {0} already exists")]
-    LanguageExists(String),
-    #[error("cannot create a proto-language with a blank name")]
-    ProtolanguageEmptyName,
-    #[error("the proto-language named {0} already exists")]
-    ProtolanguageExists(String),
+    #[error(transparent)]
+    LanguageGroup(#[from] crate::data::LanguageGroupError),
 }
 
 impl Serialize for Error {

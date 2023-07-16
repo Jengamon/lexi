@@ -1,10 +1,10 @@
 use crate::data::{Language, LanguageGroup, Protolanguage};
+use crate::file::Project;
 use askama::Template;
 use serde::{Serialize, Serializer};
 use std::fs::File;
 use tauri::api::dialog::FileDialogBuilder;
 use tauri::{command, State};
-use crate::file::Project;
 
 #[derive(Template)]
 #[template(path = "export.typ.askama", escape = "none")]
@@ -33,9 +33,7 @@ struct ProtolanguageExport<'a> {
 
 impl<'a> From<&'a Protolanguage> for ProtolanguageExport<'a> {
     fn from(value: &'a Protolanguage) -> Self {
-        ProtolanguageExport {
-            raw: value,
-        }
+        ProtolanguageExport { raw: value }
     }
 }
 
@@ -45,9 +43,7 @@ struct LanguageExport<'a> {
 
 impl<'a> From<&'a Language> for LanguageExport<'a> {
     fn from(value: &'a Language) -> Self {
-        LanguageExport {
-            raw: value,
-        }
+        LanguageExport { raw: value }
     }
 }
 
@@ -88,7 +84,7 @@ pub fn test_export_language_group(project: State<Project>) -> Result<String, Err
 }
 
 #[command]
-pub async fn export_language_group<'a>(project: State<'a, Project>) -> Result<(), Error> {
+pub async fn export_language_group(project: State<'_, Project>) -> Result<(), Error> {
     use std::io::Write;
 
     let (tx, rx) = oneshot::channel();

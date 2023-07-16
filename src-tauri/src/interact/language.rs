@@ -7,43 +7,21 @@ use tauri::{command, State, Window};
 
 #[command]
 pub fn create_language(project: State<Project>, name: String) -> Result<(), Error> {
-    if name.is_empty() {
-        return Err(Error::LanguageEmptyName);
-    }
-
-    let project = &mut project.inner().0.lock().unwrap().1;
-
-    let existing = project.langs.iter().any(|lang| lang.name == name);
-    if existing {
-        return Err(Error::LanguageExists(name));
-    }
-
-    project.langs.push(Language {
-        name,
-        ..Default::default()
-    });
+    project.inner().0.lock().unwrap().1.create_language(name)?;
 
     Ok(())
 }
 
 #[command]
 pub fn delete_language(project: State<Project>, name: String) -> Result<(), Error> {
-    let project = &mut project.inner().0.lock().unwrap().1;
-
-    let index = project.langs.iter().position(|lang| lang.name == name);
-
-    if let Some(index) = index {
-        project.langs.remove(index);
-    }
+    project.inner().0.lock().unwrap().1.delete_language(name);
 
     Ok(())
 }
 
 #[command]
 pub fn get_language(project: State<Project>, name: String) -> Option<Language> {
-    let project = &project.inner().0.lock().unwrap().1;
-
-    project.langs.iter().find(|lang| lang.name == name).cloned()
+    project.inner().0.lock().unwrap().1.language(name).cloned()
 }
 
 #[command]
@@ -58,7 +36,7 @@ pub fn init_languages_server(
         std::thread::spawn(move || loop {
             let names: Vec<_> = {
                 let project = &project.0.lock().unwrap().1;
-                project.langs.iter().map(|lang| lang.name.clone()).collect()
+                project.languages().map(|lang| lang.name.clone()).collect()
             };
             window.emit("all_languages", names).unwrap();
 

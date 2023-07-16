@@ -4,12 +4,12 @@ use tauri::command;
 
 #[command]
 pub fn from_branner(input: String) -> String {
-    branner_to_ipa(&input).replace("\u{200b}", "")
+    branner_to_ipa(&input).replace('\u{200b}', "")
 }
 
 #[command]
 pub fn display_phone(phone: Phone) -> String {
-    branner_to_ipa(&phone.to_string()).replace("\u{200b}", "")
+    branner_to_ipa(&phone.to_string()).replace('\u{200b}', "")
 }
 
 #[command]
