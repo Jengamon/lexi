@@ -2,6 +2,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 use std::{fs::File, sync::Arc};
 
+use anyhow::{anyhow, Context};
 use chrono::{DateTime, Local};
 use directories::ProjectDirs;
 use regex::Regex;
@@ -32,6 +33,8 @@ pub enum Error {
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     Glob(#[from] glob::GlobError),
+    #[error(transparent)]
+    Anyhow(#[from] anyhow::Error),
     #[error("cannot find project directory for this OS")]
     CannotFindProjectDir,
     #[error("cannot load projects from version {0}")]
@@ -83,7 +86,7 @@ pub fn init_autosave_service(
                 }
             };
 
-            if let Ok(()) = _save_language_group(filename.clone(), &project) {
+            if let Ok(()) = _save_language_group(filename.clone(), &project, false) {
                 window
                     .emit(
                         "autosaved",
@@ -128,10 +131,14 @@ pub async fn get_language_groups() -> Result<Vec<String>, Error> {
 
 #[command]
 pub fn save_language_group(filename: String, project: State<Project>) -> Result<(), Error> {
-    _save_language_group(filename, project.inner())
+    _save_language_group(filename, project.inner(), true)
 }
 
-pub fn _save_language_group(filename: String, project: &Project) -> Result<(), Error> {
+pub fn _save_language_group(
+    filename: String,
+    project: &Project,
+    backup: bool,
+) -> Result<(), Error> {
     use std::io::Write;
 
     let sanitized = filename.replace("../", "");
@@ -144,6 +151,11 @@ pub fn _save_language_group(filename: String, project: &Project) -> Result<(), E
         let loc = format!("data/lang/{sanitized}.lg.json");
 
         let path = project_dirs.data_dir().join(loc);
+
+        if path.exists() && backup {
+            std::fs::rename(path.clone(), format!("{}.bak", path.display()))
+                .with_context(|| format!("Failed to create backup: {}.bak", path.display()))?;
+        }
 
         std::fs::create_dir_all(path.parent().unwrap())?;
         let mut file = File::create(path)?;

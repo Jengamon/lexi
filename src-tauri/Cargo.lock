@@ -58,14 +58,15 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.71"
+version = "1.0.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c7d0618f0e0b7e8ff11427422b64564d5fb0be1940354bfe2e0529b18a9d9b8"
+checksum = "3b13c32d80ecc7ab747b80c3784bce54ee8a7a0cc4fbda9bf4cda2cf6fe90854"
 
 [[package]]
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "askama",
  "chrono",
  "directories",
@@ -82,6 +83,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-log",
  "thiserror",
+ "uuid",
 ]
 
 [[package]]
@@ -3301,6 +3303,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d023da39d1fde5a8a3fe1f3e01ca9632ada0a63e9797de55a879d6e2236277be"
 dependencies = [
  "getrandom 0.2.10",
+ "rand 0.8.5",
+ "serde",
 ]
 
 [[package]]

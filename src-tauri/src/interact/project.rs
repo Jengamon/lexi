@@ -9,6 +9,13 @@ pub fn new_language_group(project: State<Project>) {
 }
 
 #[command]
+pub fn epoch_language_group(project: State<Project>) {
+    let mut project = project.0.lock().unwrap();
+    project.1.epoch();
+    project.0 = format!("{}_epoch", project.0);
+}
+
+#[command]
 pub fn dump_language_group(project: State<Project>) -> Result<String, Error> {
     Ok(serde_json::to_string_pretty(&project.0.lock().unwrap().1)?)
 }

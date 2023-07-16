@@ -1,11 +1,16 @@
 use semver::Version;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use super::{Language, Protolanguage};
 
 #[derive(Serialize, Deserialize)]
 pub struct LanguageGroup {
     pub version: Version,
+    /// Identifies the same "family" of language groups
+    ///
+    /// All language groups that are related to each other have the same value
+    pub family_id: Uuid,
     pub protolangs: Vec<Protolanguage>,
     pub langs: Vec<Language>,
 }
@@ -31,9 +36,21 @@ impl Default for LanguageGroup {
     fn default() -> Self {
         Self {
             version: Version::parse(CRATE_VERSION).unwrap(),
+            family_id: Uuid::new_v4(),
             protolangs: vec![],
             langs: vec![],
         }
+    }
+}
+
+// General utility
+impl LanguageGroup {
+    /// Creates a new epoch.
+    ///
+    /// All protolanguages are lost, and languages become protolanguages.
+    pub fn epoch(&mut self) {
+        self.protolangs.clear();
+        self.protolangs = self.langs.drain(..).map(|l| l.into()).collect();
     }
 }
 

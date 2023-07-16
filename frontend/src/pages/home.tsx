@@ -6,24 +6,22 @@ import * as classes from "./home.module.css";
 import useSWR from "swr";
 import { fetcher } from "~/src/stores";
 import {
-    Alert,
     Button,
-    Container,
-    Snackbar,
     TextField,
     Typography,
 } from "@mui/material";
-import { NavBar } from "~/src/components/navbar";
 import { Page } from "./page";
+import { useAppContext } from "../views/app";
 
 export default function HomePage() {
     const [languageGroupNames, setLanguageGroupNames] = useState<string[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [showError, setShowError] = useState<boolean>(false);
+    const { showAppNotification } = useAppContext();
 
     function createError(error: any) {
-        setError(getErrorMessage(error));
-        setShowError(true);
+        showAppNotification({
+            severity: "error",
+            message: getErrorMessage(error)
+        })
     }
 
     const {
@@ -55,7 +53,6 @@ export default function HomePage() {
                 filename: projectName,
             });
             retrieveLanguageGroupNames();
-            setError(null);
         } catch (e) {
             createError(e);
         }
@@ -67,7 +64,17 @@ export default function HomePage() {
         try {
             await invoke("new_language_group", {});
             await setProjectName("");
-            setError(null);
+        } catch (e) {
+            createError(e);
+        }
+    }
+
+    async function epochProject() {
+        try {
+            await invoke("epoch_language_group", {});
+            await nameMutate(async () => {
+                return await invoke("get_project_name", {});
+            });
         } catch (e) {
             createError(e);
         }
@@ -76,7 +83,6 @@ export default function HomePage() {
     async function exportProject() {
         try {
             await invoke("export_language_group", {});
-            setError(null);
         } catch (e) {
             createError(e);
         }
@@ -90,7 +96,6 @@ export default function HomePage() {
                 filename: name,
             });
             await nameMutate(name);
-            setError(null);
         } catch (e) {
             createError(e);
         }
@@ -107,7 +112,6 @@ export default function HomePage() {
         }
 
         retrieveLanguageGroupNames();
-        setError(null);
     }
 
     return (
@@ -126,18 +130,10 @@ export default function HomePage() {
                         <Button onClick={saveProject}>Save Project</Button>
                         <Button onClick={exportProject}>Export Project</Button>
                         <Button onClick={newProject}>New Project</Button>
+                        <Button onClick={epochProject}>Epoch Project</Button>
                     </div>
                 </>
             )}
-            <Snackbar
-                open={showError}
-                autoHideDuration={6000}
-                onClose={() => setShowError(false)}
-            >
-                <Alert onClose={() => setShowError(false)} severity="error">
-                    Error: {error}
-                </Alert>
-            </Snackbar>
             <ul>
                 {languageGroupNames.map((name) => (
                     <li key={name}>

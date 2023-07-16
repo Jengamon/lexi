@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::Phoneme;
+use super::{Language, Phoneme};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Protolanguage {
@@ -23,8 +23,16 @@ impl Protolanguage {
     pub fn description(&self) -> Option<&serde_json::Value> {
         self.description.as_ref()
     }
+}
 
-    pub fn description_mut(&mut self) -> Option<&mut serde_json::Value> {
-        self.description.as_mut()
+/// Important for "epochs", as languages can only have an "ancestry"
+/// of protolanguages (for now, or maybe ever)
+impl From<Language> for Protolanguage {
+    fn from(value: Language) -> Self {
+        Self {
+            name: value.name,
+            phonemes: value.phonemes,
+            description: value.description,
+        }
     }
 }

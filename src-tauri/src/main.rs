@@ -62,6 +62,7 @@ fn main() {
             util::display_phone,
             util::display_phone_branner,
             interact::new_language_group,
+            interact::epoch_language_group,
             interact::dump_language_group,
             interact::get_project_name,
             interact::set_project_name,
