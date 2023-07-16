@@ -75,7 +75,7 @@ pub fn init_autosave_service(
             let filename = {
                 let eproject = project.0.lock().unwrap();
                 if eproject.0.is_empty() {
-                    format!("autosave_{timestamp}")
+                    "autosave".to_string()
                 } else {
                     eproject.0.clone()
                 }
