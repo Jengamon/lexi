@@ -1,5 +1,5 @@
-import { useProtolanguage } from "~/src/views/langproto_editor";
-import { useLanguage } from "~/src/views/lang_editor";
+import { BackToProtolanguageBanner, useProtolanguage } from "~/src/views/langproto_editor";
+import { BackToLanguageBanner, useLanguage } from "~/src/views/lang_editor";
 import { Protolanguage, Language } from "~/src/data";
 import { NavBar } from "~/src/components/navbar";
 import { capitalize } from "lodash-es";
@@ -28,10 +28,10 @@ export default function PhonemesEditor() {
     ) : (
         <>
             <NavBar
-                title={`${capitalize(merged.name)}'s Phonemes ${
-                    mode == "protolang" ? "[Proto]" : ""
-                }`}
+                title={`${capitalize(merged.name)}'s Phonemes ${mode == "protolang" ? "[Proto]" : ""
+                    }`}
             />
+            {mode == "protolang" ? <BackToProtolanguageBanner /> : <BackToLanguageBanner />}
             <Typography variant="body1">
                 {JSON.stringify(merged, null, 2)}
             </Typography>

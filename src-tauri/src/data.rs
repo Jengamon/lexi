@@ -1,8 +1,8 @@
+use semver::Version;
 use std::borrow::Cow;
 use std::collections::HashSet;
 use std::fmt;
 use std::fmt::Formatter;
-use semver::Version;
 
 use serde::{Deserialize, Serialize};
 
@@ -83,7 +83,8 @@ pub enum ObstruentAttachment {
 
 enum PhoneType {
     Plosive,
-    Fricative, Vowel,
+    Fricative,
+    Vowel,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -108,7 +109,12 @@ pub enum Phone {
 }
 
 impl Phone {
-    fn get_base(pt: PhoneType, place: &Place, voiced: bool, attachments: &HashSet<ObstruentAttachment>) -> String {
+    fn get_base(
+        pt: PhoneType,
+        place: &Place,
+        voiced: bool,
+        attachments: &HashSet<ObstruentAttachment>,
+    ) -> String {
         match pt {
             PhoneType::Plosive => match place {
                 Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => {
@@ -191,8 +197,10 @@ impl fmt::Display for Phone {
                 voiced,
                 attachments,
             } => {
-                let mut start_phone = Self::get_base(PhoneType::Plosive, start_place, *voiced, attachments);
-                let mut end_phone = Self::get_base(PhoneType::Fricative, end_place, *voiced, attachments);
+                let mut start_phone =
+                    Self::get_base(PhoneType::Plosive, start_place, *voiced, attachments);
+                let mut end_phone =
+                    Self::get_base(PhoneType::Fricative, end_place, *voiced, attachments);
 
                 if attachments.contains(&ObstruentAttachment::Breathy) {
                     start_phone += r#"h")"#;
@@ -222,6 +230,6 @@ impl fmt::Display for Phone {
             Phone::Vowel {} => todo!(),
         };
 
-        write!(f, "{phone}")
+        write!(f, "{}", phone)
     }
 }

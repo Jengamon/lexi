@@ -35,7 +35,7 @@ export default function AppView() {
 
                 setNotif({
                     severity: "info",
-                    message: `Saved ${validated.name} at ${validated.timestamp}`,
+                    message: `Autosaved ${validated.name} at ${validated.timestamp}`,
                 });
                 setHasNotif(true);
             });

@@ -1,15 +1,16 @@
-import { Link, Outlet, useOutletContext, useParams } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 import { useState } from "react";
 import { Language } from "~/src/data";
 import { Array, String } from "runtypes";
 import * as classes from "./lang_editor.module.css";
-import useSWR, { KeyedMutator } from "swr";
+import useSWR from "swr";
 import { fetcher, subscribeGenerator } from "~/src/stores";
 import { getErrorMessage } from "../util";
 import { invoke } from "@tauri-apps/api";
 import useSWRSubscription from "swr/subscription";
 import { NavBar } from "../components/navbar";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { ArrowUpward } from "@mui/icons-material";
 
 export function useLanguage() {
     const { langId } = useParams();
@@ -29,6 +30,24 @@ export function useLanguage() {
         error,
         mutate,
     };
+}
+
+export function BackToLanguageBanner() {
+    return (<Box justifyContent="center" alignItems="center"
+        flexDirection="row"
+        sx={{
+            display: "flex",
+            color: "inherit",
+            textDecoration: "none",
+            backgroundColor: "lightGrey",
+            "&:hover": { backgroundColor: "darkgrey" }
+        }}
+        component={Link}
+        to={"/lang"}
+    >
+        <ArrowUpward />
+        <Typography> Back to Language List</Typography>
+    </Box>);
 }
 
 export default function LangEditor() {
@@ -78,7 +97,9 @@ export default function LangEditor() {
     }
 
     return langId !== undefined ? (
-        <Outlet />
+        <>
+            <Outlet />
+        </>
     ) : (
         <>
             <NavBar title="Languages" />

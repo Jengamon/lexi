@@ -9,7 +9,8 @@ import { getErrorMessage } from "../util";
 import * as classes from "./langproto_editor.module.css";
 import { invoke } from "@tauri-apps/api";
 import { NavBar } from "../components/navbar";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { ArrowUpward } from "@mui/icons-material";
 
 export function useProtolanguage() {
     const { plangId } = useParams();
@@ -29,6 +30,24 @@ export function useProtolanguage() {
         error,
         mutate,
     };
+}
+
+export function BackToProtolanguageBanner() {
+    return (<Box justifyContent="center" alignItems="center"
+        flexDirection="row"
+        sx={{
+            display: "flex",
+            color: "inherit",
+            textDecoration: "none",
+            backgroundColor: "lightGrey",
+            "&:hover": { backgroundColor: "darkgrey" }
+        }}
+        component={Link}
+        to={"/proto"}
+    >
+        <ArrowUpward />
+        <Typography> Back to Protolanguage List</Typography>
+    </Box>);
 }
 
 export default function ProtolangEditor() {

@@ -13,7 +13,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect, useRef } from "react";
 import { NavBar } from "~/src/components/navbar";
-import { useLanguage } from "~/src/views/lang_editor";
+import { BackToLanguageBanner, useLanguage } from "~/src/views/lang_editor";
 import { capitalize } from "lodash-es";
 import { Typography } from "@mui/material";
 
@@ -45,6 +45,7 @@ export default function Builder() {
     return lang !== undefined ? (
         <>
             <NavBar title={`${capitalize(lang.name)}'s Builder`} />
+            <BackToLanguageBanner />
             <LexicalComposer initialConfig={initialConfig}>
                 <PlainTextPlugin
                     contentEditable={
@@ -65,6 +66,7 @@ export default function Builder() {
     ) : (
         <>
             <NavBar title="Builder" />
+            <BackToLanguageBanner />
             <Typography variant="body1">
                 Cannot edit without an active (proto-)language
             </Typography>

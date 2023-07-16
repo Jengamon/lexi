@@ -6,8 +6,8 @@ import Builder from "~/src/pages/lang/builder";
 import PhonemesEditor from "~/src/pages/lang/phonemes_editor";
 import NotFound from "~/src/pages/not_found";
 import AppView from "~/src/views/app";
-import LangEditor from "~/src/views/lang_editor";
-import ProtolangEditor from "~/src/views/langproto_editor";
+import LangEditor, { BackToLanguageBanner } from "~/src/views/lang_editor";
+import ProtolangEditor, { BackToProtolanguageBanner } from "~/src/views/langproto_editor";
 import KaboomAppView from "./views/kaboom_app";
 
 export const ROUTES: readonly RouteObject[] = [
@@ -33,9 +33,11 @@ export const ROUTES: readonly RouteObject[] = [
                     },
                     {
                         path: "phonotactics",
+                        element: <BackToProtolanguageBanner />,
                     },
                     {
                         path: "lexicon",
+                        element: <BackToProtolanguageBanner />,
                     },
                     {
                         path: "builder",
@@ -49,9 +51,11 @@ export const ROUTES: readonly RouteObject[] = [
                 children: [
                     {
                         path: "ancestry",
+                        element: <BackToLanguageBanner />,
                     },
                     {
                         path: "dialects",
+                        element: <BackToLanguageBanner />,
                     },
                     {
                         path: "phonemes",
@@ -59,9 +63,11 @@ export const ROUTES: readonly RouteObject[] = [
                     },
                     {
                         path: "phonotactics",
+                        element: <BackToLanguageBanner />,
                     },
                     {
                         path: "lexicon",
+                        element: <BackToLanguageBanner />,
                     },
                     {
                         path: "builder",
