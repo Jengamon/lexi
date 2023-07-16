@@ -140,8 +140,8 @@ export function NavBar({ title }: NavbarProps) {
                     <Typography
                         variant="h4"
                         noWrap
-                        component="a"
-                        href=""
+                        component={NavLink}
+                        to=""
                         sx={{
                             mr: 2,
                             display: { xs: "flex", md: "none" },
