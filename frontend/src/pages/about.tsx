@@ -67,7 +67,7 @@ export default function AboutPage() {
 
     return (
         <Page title="About">
-            <Typography variant="body1">
+            <Typography variant="ipa">
                 {testDisplayPhone.ipa} {testDisplayPhone.branner}
             </Typography>
             <Typography variant="body1" component="em">
@@ -113,7 +113,7 @@ export default function AboutPage() {
                         )
                     }
                 />
-                <Typography variant="body1">{branner}</Typography>
+                <Typography variant="ipa">{branner}</Typography>
             </div>
             <div>
                 <pre className={classes.debug}>

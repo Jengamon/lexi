@@ -1,9 +1,44 @@
-import { Alert, Container, Snackbar } from "@mui/material";
+import { Alert, Container, Snackbar, ThemeProvider, createTheme } from "@mui/material";
 import { useState } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
 import { Record, Static, String } from "runtypes";
 import useSWRSubscription from "swr/subscription";
 import { subscribeGenerator } from "../stores";
+
+declare module '@mui/material/styles' {
+    interface TypographyVariants {
+        ipa: React.CSSProperties;
+    }
+
+    // allow configuration using `createTheme`
+    interface TypographyVariantsOptions {
+        ipa?: React.CSSProperties;
+    }
+}
+
+declare module '@mui/material/Typography' {
+    interface TypographyPropsVariantOverrides {
+        ipa: true;
+    }
+}
+
+export const theme = createTheme({
+    typography: {
+        /// Use for any text meant to contain IPA
+        ipa: {
+            fontFamily: "sans-serif"
+        }
+    },
+    components: {
+        MuiTypography: {
+            defaultProps: {
+                variantMapping: {
+                    ipa: 'p'
+                }
+            }
+        }
+    }
+})
 
 type AppNotif = {
     severity: "info" | "warning" | "error",
@@ -37,7 +72,7 @@ export default function AppView() {
     const [hasNotif, setHasNotif] = useState<boolean>(false);
 
     return (
-        <div>
+        <ThemeProvider theme={theme}>
             <Outlet context={{
                 showAppNotification: (notif: AppNotif) => {
                     setNotif(notif);
@@ -53,6 +88,6 @@ export default function AppView() {
                     {notif?.message}
                 </Alert>
             </Snackbar>
-        </div>
+        </ThemeProvider>
     );
 }
