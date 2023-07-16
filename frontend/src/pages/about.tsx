@@ -75,18 +75,22 @@ export default function AboutPage() {
                 a programmatic way to store and explore conlangs both
                 synchronically and diachronically.
             </Typography>
-            {
-                autosave ? <Typography align="center" variant="body1">
-                    Last autosaved: {autosave.name} at {new Date(autosave.timestamp).toLocaleDateString()} {new Date(autosave.timestamp).toLocaleTimeString()}
-                </Typography> : <Typography align="center" variant="body1">
+            {autosave ? (
+                <Typography align="center" variant="body1">
+                    Last autosaved: {autosave.name} at{" "}
+                    {new Date(autosave.timestamp).toLocaleDateString()}{" "}
+                    {new Date(autosave.timestamp).toLocaleTimeString()}
+                </Typography>
+            ) : (
+                <Typography align="center" variant="body1">
                     Have not autosaved this session
                 </Typography>
-            }
-            {
-                autosaveError && <Typography variant="body1">
+            )}
+            {autosaveError && (
+                <Typography variant="body1">
                     Encountered autosave error: {getErrorMessage(autosaveError)}
                 </Typography>
-            }
+            )}
             <div>
                 <button onClick={testExportCurrentProject}>Test Export</button>
                 {testExport && (

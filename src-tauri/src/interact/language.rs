@@ -25,6 +25,33 @@ pub fn get_language(project: State<Project>, name: String) -> Option<Language> {
 }
 
 #[command]
+pub fn get_language_description(
+    project: State<Project>,
+    name: String,
+) -> Option<serde_json::Value> {
+    project
+        .inner()
+        .0
+        .lock()
+        .unwrap()
+        .1
+        .language(name)
+        .and_then(Language::description)
+        .cloned()
+}
+
+#[command]
+pub fn set_language_description(
+    project: State<Project>,
+    name: String,
+    description: serde_json::Value,
+) {
+    if let Some(lang) = project.inner().0.lock().unwrap().1.language_mut(name) {
+        lang.description = Some(description);
+    }
+}
+
+#[command]
 pub fn init_languages_server(
     project: State<Project>,
     window: Window,

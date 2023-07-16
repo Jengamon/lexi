@@ -5,6 +5,7 @@ import {
     createBrowserRouter,
     RouteObject,
     RouterProvider,
+    ScrollRestoration,
 } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { invoke } from "@tauri-apps/api";

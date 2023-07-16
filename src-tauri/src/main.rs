@@ -68,10 +68,14 @@ fn main() {
             interact::create_language,
             interact::delete_language,
             interact::get_language,
+            interact::get_language_description,
+            interact::set_language_description,
             interact::init_languages_server,
             interact::create_protolanguage,
             interact::delete_protolanguage,
             interact::get_protolanguage,
+            interact::get_protolanguage_description,
+            interact::set_protolanguage_description,
             interact::init_protolanguages_server,
         ])
         .run(tauri::generate_context!())

@@ -44,6 +44,33 @@ pub fn get_protolanguage(project: State<Project>, name: String) -> Option<Protol
 }
 
 #[command]
+pub fn get_protolanguage_description(
+    project: State<Project>,
+    name: String,
+) -> Option<serde_json::Value> {
+    project
+        .inner()
+        .0
+        .lock()
+        .unwrap()
+        .1
+        .protolanguage(name)
+        .and_then(Protolanguage::description)
+        .cloned()
+}
+
+#[command]
+pub fn set_protolanguage_description(
+    project: State<Project>,
+    name: String,
+    description: serde_json::Value,
+) {
+    if let Some(lang) = project.inner().0.lock().unwrap().1.protolanguage_mut(name) {
+        lang.description = Some(description);
+    }
+}
+
+#[command]
 pub fn init_protolanguages_server(
     project: State<Project>,
     window: Window,

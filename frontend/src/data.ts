@@ -9,6 +9,7 @@ import {
     Union,
     Literal,
     Boolean,
+    Unknown
 } from "runtypes";
 
 export const Place = Union(
@@ -49,10 +50,12 @@ export const Phoneme = Record({
 });
 export const Language = Record({
     name: String,
+    description: Unknown.optional(),
     phonemes: Array(Phoneme),
 });
 export const Protolanguage = Record({
     name: String,
+    description: Unknown.optional(),
     phonemes: Array(Phoneme),
 });
 export const LanguageGroup = Record({

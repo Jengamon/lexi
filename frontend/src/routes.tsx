@@ -1,14 +1,15 @@
-import { RouteObject, useRouteError } from "react-router-dom";
+import { RouteObject } from "react-router-dom";
 
 import AboutPage from "~/src/pages/about";
 import HomePage from "~/src/pages/home";
 import Builder from "~/src/pages/lang/builder";
 import PhonemesEditor from "~/src/pages/lang/phonemes_editor";
-import NotFound from "~/src/pages/not_found";
 import AppView from "~/src/views/app";
-import LangEditor, { BackToLanguageBanner } from "~/src/pages/lang_editor";
-import ProtolangEditor, { BackToProtolanguageBanner } from "~/src/pages/langproto_editor";
+import {
+    LanguageEditor,
+} from "~/src/pages/lang_editor";
 import KaboomAppView from "./views/kaboom_app";
+import Describer from "./pages/lang/describer";
 
 // "Views" are top-level routes with *no* path.
 // "Pages" make up the children of a view.
@@ -28,7 +29,7 @@ export const ROUTES: readonly RouteObject[] = [
             },
             {
                 path: "/proto/:plangId?",
-                element: <ProtolangEditor />,
+                element: <LanguageEditor mode="protolang" />,
                 children: [
                     {
                         path: "phonemes",
@@ -36,29 +37,33 @@ export const ROUTES: readonly RouteObject[] = [
                     },
                     {
                         path: "phonotactics",
-                        element: <BackToProtolanguageBanner />,
+                        // element: <BackToProtolanguageBanner />,
                     },
                     {
                         path: "lexicon",
-                        element: <BackToProtolanguageBanner />,
+                        // element: <BackToProtolanguageBanner />,
                     },
                     {
                         path: "builder",
                         element: <Builder />,
+                    },
+                    {
+                        path: "describe",
+                        element: <Describer />,
                     },
                 ],
             },
             {
                 path: "/lang/:langId?",
-                element: <LangEditor />,
+                element: <LanguageEditor mode="lang" />,
                 children: [
                     {
                         path: "ancestry",
-                        element: <BackToLanguageBanner />,
+                        // element: <BackToLanguageBanner />,
                     },
                     {
                         path: "dialects",
-                        element: <BackToLanguageBanner />,
+                        // element: <BackToLanguageBanner />,
                     },
                     {
                         path: "phonemes",
@@ -66,21 +71,21 @@ export const ROUTES: readonly RouteObject[] = [
                     },
                     {
                         path: "phonotactics",
-                        element: <BackToLanguageBanner />,
+                        // element: <BackToLanguageBanner />,
                     },
                     {
                         path: "lexicon",
-                        element: <BackToLanguageBanner />,
+                        // element: <BackToLanguageBanner />,
                     },
                     {
                         path: "builder",
                         element: <Builder />,
                     },
+                    {
+                        path: "describe",
+                        element: <Describer />,
+                    },
                 ],
-            },
-            {
-                path: "*",
-                element: <NotFound />,
             },
         ],
     },

@@ -118,17 +118,13 @@ export default function HomePage() {
                 <>
                     <div>
                         <TextField
-                            onChange={(ev) =>
-                                setProjectName(ev.target.value)
-                            }
+                            onChange={(ev) => setProjectName(ev.target.value)}
                             value={projectName}
                         />
                     </div>
                     <div>
                         <Button onClick={saveProject}>Save Project</Button>
-                        <Button onClick={exportProject}>
-                            Export Project
-                        </Button>
+                        <Button onClick={exportProject}>Export Project</Button>
                         <Button onClick={newProject}>New Project</Button>
                     </div>
                 </>

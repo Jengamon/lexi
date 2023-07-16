@@ -11,15 +11,19 @@ export default function KaboomAppView() {
     return (
         <ThemeProvider theme={theme}>
             <Page title="KABOOM!">
-                <Box sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flexGrow: 1,
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        flexGrow: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
                     <Typography variant="h1">KABOOM!</Typography>
-                    <Typography variant="body1">{getErrorMessage(error)}</Typography>
+                    <Typography variant="body1">
+                        {getErrorMessage(error)}
+                    </Typography>
                 </Box>
             </Page>
         </ThemeProvider>
