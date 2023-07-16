@@ -12,6 +12,9 @@ import { Phone } from "~/src/data";
 import useSWR from "swr";
 import { fetcher } from "../stores";
 import { NavBar } from "../components/navbar";
+import { useAutosave } from "../views/app";
+import { Container, Typography } from "@mui/material";
+import { Page } from "./page";
 
 export default function AboutPage() {
     const [testExport, setTestExport] = useState<
@@ -19,6 +22,7 @@ export default function AboutPage() {
     >(null);
     const [brannerInput, setBrannerInput] = useState("");
     const [branner, setBranner] = useState("");
+    const { autosave, error: autosaveError } = useAutosave();
 
     const { data: dumpedLangGroup, error: dumpedLangGroupError } =
         useSWR<string>(["dump_language_group", String, {}], fetcher);
@@ -37,10 +41,10 @@ export default function AboutPage() {
     useEffect(() => {
         const phone: Phone = {
             Affricative: {
-                start_place: "Dental",
-                end_place: "Alveolar",
-                voiced: true,
-                attachments: ["Preaspirated", "Creaky", "Breathy", "Ejective"],
+                start_place: "Bilabial",
+                end_place: "Labiodental",
+                voiced: false,
+                attachments: ["Preaspirated"],
             },
         };
 
@@ -62,16 +66,27 @@ export default function AboutPage() {
     }
 
     return (
-        <div>
-            <NavBar title="About" />
-            <p>
+        <Page title="About">
+            <Typography variant="body1">
                 {testDisplayPhone.ipa} {testDisplayPhone.branner}
-            </p>
-            <p>
+            </Typography>
+            <Typography variant="body1" component="em">
                 Lexi is about making coming up with conlangs easier by providing
                 a programmatic way to store and explore conlangs both
                 synchronically and diachronically.
-            </p>
+            </Typography>
+            {
+                autosave ? <Typography variant="body1">
+                    Last autosaved: {autosave.name} at {new Date(autosave.timestamp).toLocaleDateString()} {new Date(autosave.timestamp).toLocaleTimeString()}
+                </Typography> : <Typography variant="body1">
+                    Have not autosaved this session
+                </Typography>
+            }
+            {
+                autosaveError && <Typography variant="body1">
+                    Encountered autosave error: {getErrorMessage(autosaveError)}
+                </Typography>
+            }
             <div>
                 <button onClick={testExportCurrentProject}>Test Export</button>
                 {testExport && (
@@ -98,7 +113,7 @@ export default function AboutPage() {
                         )
                     }
                 />
-                <p>{branner}</p>
+                <Typography variant="body1">{branner}</Typography>
             </div>
             <div>
                 <pre className={classes.debug}>
@@ -111,6 +126,6 @@ export default function AboutPage() {
                     )}
                 </pre>
             </div>
-        </div>
+        </Page>
     );
 }

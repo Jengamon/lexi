@@ -10,7 +10,7 @@ use serde::{Serialize, Serializer};
 use tauri::{command, State, Window};
 
 use crate::data::LanguageGroup;
-use crate::ServiceState;
+use crate::{ProgramStart, ServiceState};
 
 #[derive(Clone)]
 pub struct Project(pub(crate) Arc<Mutex<(String, LanguageGroup)>>);
@@ -63,10 +63,12 @@ pub fn init_autosave_service(
     window: Window,
     project: State<Project>,
     services: State<ServiceState>,
+    program_start: State<ProgramStart>,
 ) {
     if services.inner().0.read().unwrap().autosave.is_none() {
         log::info!("Starting autosave service (halfminutes: {half_minutes})...");
         let project = project.inner().clone();
+        let program_start = program_start.inner().0.clone();
         std::thread::spawn(move || loop {
             std::thread::sleep(Duration::from_secs(half_minutes as u64 * 30));
 
@@ -75,7 +77,7 @@ pub fn init_autosave_service(
             let filename = {
                 let eproject = project.0.lock().unwrap();
                 if eproject.0.is_empty() {
-                    "autosave".to_string()
+                    format!("autosave_{}", program_start.format("%G%m%d_%H%M%S"))
                 } else {
                     eproject.0.clone()
                 }

@@ -68,8 +68,10 @@ pub struct Phoneme {
 #[derive(Serialize, Deserialize, Copy, Clone)]
 pub enum Place {
     Bilabial,
+    Labiodental,
     Dental,
     Alveolar,
+    Postalveolar,
 }
 
 #[derive(Serialize, Deserialize, Hash, PartialEq, Eq, Copy, Clone)]
@@ -122,6 +124,11 @@ impl Phone {
                 }
                 Place::Bilabial if voiced => "b".to_string(),
                 Place::Bilabial => "p".to_string(),
+                Place::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => {
+                    "p[".to_string()
+                }
+                Place::Labiodental if voiced => "b[".to_string(),
+                Place::Labiodental => "p[".to_string(),
                 Place::Dental if attachments.contains(&ObstruentAttachment::Ejective) => {
                     "t[".to_string()
                 }
@@ -132,6 +139,11 @@ impl Phone {
                 }
                 Place::Alveolar if voiced => "d".to_string(),
                 Place::Alveolar => "t".to_string(),
+                Place::Postalveolar if attachments.contains(&ObstruentAttachment::Ejective) => {
+                    "t".to_string()
+                }
+                Place::Postalveolar if voiced => "d".to_string(),
+                Place::Postalveolar => "t".to_string(),
             },
             PhoneType::Fricative => match place {
                 Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => {
@@ -139,6 +151,11 @@ impl Phone {
                 }
                 Place::Bilabial if voiced => "B\"".to_string(),
                 Place::Bilabial => "P\"".to_string(),
+                Place::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => {
+                    "f".to_string()
+                }
+                Place::Labiodental if voiced => "v".to_string(),
+                Place::Labiodental => "f".to_string(),
                 Place::Dental if attachments.contains(&ObstruentAttachment::Ejective) => {
                     "O-".to_string()
                 }
@@ -149,6 +166,11 @@ impl Phone {
                 }
                 Place::Alveolar if voiced => "z".to_string(),
                 Place::Alveolar => "s".to_string(),
+                Place::Postalveolar if attachments.contains(&ObstruentAttachment::Ejective) => {
+                    "S".to_string()
+                }
+                Place::Postalveolar if voiced => "3\"".to_string(),
+                Place::Postalveolar => "S".to_string(),
             },
             PhoneType::Vowel => todo!(),
         }

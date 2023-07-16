@@ -13,8 +13,10 @@ import {
 
 export const Place = Union(
     Literal("Bilabial"),
+    Literal("Labiodental"),
     Literal("Dental"),
     Literal("Alveolar"),
+    Literal("Postalveolar"),
 );
 export const ObstruentAttachment = Union(
     Literal("Ejective"),

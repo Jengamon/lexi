@@ -1,0 +1,19 @@
+import { ReactNode } from "react";
+import { NavBar } from "../components/navbar";
+import { Container } from "@mui/material";
+
+export type PageProps = {
+    title: string;
+    children: ReactNode
+};
+
+export function Page({ title, children }: PageProps) {
+    return (
+        <>
+            <NavBar title={title} />
+            <Container maxWidth="lg" sx={{ mt: 3 }}>
+                {children}
+            </Container>
+        </>
+    )
+}

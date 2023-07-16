@@ -13,7 +13,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect, useRef } from "react";
 import { NavBar } from "~/src/components/navbar";
-import { BackToLanguageBanner, useLanguage } from "~/src/views/lang_editor";
+import { BackToLanguageBanner, useLanguage } from "~/src/pages/lang_editor";
 import { capitalize } from "lodash-es";
 import { Typography } from "@mui/material";
 

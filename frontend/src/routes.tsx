@@ -6,9 +6,12 @@ import Builder from "~/src/pages/lang/builder";
 import PhonemesEditor from "~/src/pages/lang/phonemes_editor";
 import NotFound from "~/src/pages/not_found";
 import AppView from "~/src/views/app";
-import LangEditor, { BackToLanguageBanner } from "~/src/views/lang_editor";
-import ProtolangEditor, { BackToProtolanguageBanner } from "~/src/views/langproto_editor";
+import LangEditor, { BackToLanguageBanner } from "~/src/pages/lang_editor";
+import ProtolangEditor, { BackToProtolanguageBanner } from "~/src/pages/langproto_editor";
 import KaboomAppView from "./views/kaboom_app";
+
+// "Views" are top-level routes with *no* path.
+// "Pages" make up the children of a view.
 
 export const ROUTES: readonly RouteObject[] = [
     {

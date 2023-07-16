@@ -1,38 +1,40 @@
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useOutletContext, useParams } from "react-router-dom";
 import { useState } from "react";
-import { Language } from "~/src/data";
 import { Array, String } from "runtypes";
-import * as classes from "./lang_editor.module.css";
-import useSWR from "swr";
+import useSWR, { KeyedMutator } from "swr";
+import useSWRSubscription from "swr/subscription";
+import { Protolanguage } from "~/src/data";
 import { fetcher, subscribeGenerator } from "~/src/stores";
 import { getErrorMessage } from "../util";
+import * as classes from "./langproto_editor.module.css";
 import { invoke } from "@tauri-apps/api";
-import useSWRSubscription from "swr/subscription";
 import { NavBar } from "../components/navbar";
-import { Box, Typography } from "@mui/material";
+import { Alert, Box, Container, Snackbar, Typography } from "@mui/material";
 import { ArrowUpward } from "@mui/icons-material";
+import { useAppContext } from "../views/app";
+import { Page } from "./page";
 
-export function useLanguage() {
-    const { langId } = useParams();
-    const { data, error, mutate } = useSWR<Language>(
+export function useProtolanguage() {
+    const { plangId } = useParams();
+    const { data, error, mutate } = useSWR<Protolanguage>(
         [
-            "get_language",
-            Language,
+            "get_protolanguage",
+            Protolanguage,
             {
-                name: langId,
+                name: plangId,
             },
         ],
         fetcher,
     );
 
     return {
-        lang: data,
+        protolang: data,
         error,
         mutate,
     };
 }
 
-export function BackToLanguageBanner() {
+export function BackToProtolanguageBanner() {
     return (<Box justifyContent="center" alignItems="center"
         flexDirection="row"
         sx={{
@@ -43,35 +45,46 @@ export function BackToLanguageBanner() {
             "&:hover": { backgroundColor: "darkgrey" }
         }}
         component={Link}
-        to={"/lang"}
+        to={"/proto"}
     >
         <ArrowUpward />
-        <Typography> Back to Language List</Typography>
+        <Typography> Back to Protolanguage List</Typography>
     </Box>);
 }
 
-export default function LangEditor() {
-    const { langId } = useParams();
-    const { data: langNames, error } = useSWRSubscription<string[]>(
-        "all_languages",
+export default function ProtolangEditor() {
+    const { plangId } = useParams();
+    const { data: protoNames, error } = useSWRSubscription<string[]>(
+        "all_protolanguages",
         subscribeGenerator(Array(String)),
     );
-    const { error: langError, mutate: langMutate } = useLanguage();
     const [newName, setNewName] = useState("");
 
-    async function createLanguage(name: string) {
-        await invoke("create_language", { name });
+    const { error: protolangError, mutate: protolangMutate } =
+        useProtolanguage();
 
-        await langMutate(async () => {
-            const langData = await invoke("get_language", { name });
-            return Language.check(langData);
-        });
+    const { showAppNotification } = useAppContext();
+
+    async function createProtolanguage(name: string) {
+        try {
+            await invoke("create_protolanguage", { name });
+
+            await protolangMutate(async () => {
+                const protolangData = await invoke("get_protolanguage", { name });
+                return Protolanguage.check(protolangData);
+            });
+        } catch (e) {
+            showAppNotification({
+                severity: "error",
+                message: getErrorMessage(e),
+            });
+        }
 
         setNewName("");
     }
 
-    async function deleteLanguage(name: string) {
-        await invoke("delete_language", { name });
+    async function deleteProtolanguage(name: string) {
+        await invoke("delete_protolanguage", { name });
     }
 
     if (error != undefined) {
@@ -85,53 +98,45 @@ export default function LangEditor() {
         );
     }
 
-    if (langError != undefined && langId != undefined) {
+    if (protolangError != undefined && plangId != undefined) {
         return (
             <>
                 <NavBar title="Protolanguages" />
                 <Typography variant="body1">
-                    {getErrorMessage(langError)}
+                    {getErrorMessage(protolangError)}
                 </Typography>
             </>
         );
     }
 
-    return langId !== undefined ? (
-        <>
-            <Outlet />
-        </>
+    return plangId !== undefined ? (
+        <Outlet />
     ) : (
-        <>
-            <NavBar title="Languages" />
+        <Page title="Protolanguages">
             <ul>
-                {langNames &&
-                    langNames.map((lang) => (
-                        <li key={lang}>
-                            {lang}
-                            <ul className={classes.langEditorItemNav}>
+                {protoNames &&
+                    protoNames.map((proto) => (
+                        <li key={proto}>
+                            {proto}
+                            <ul className={classes.protolangEditorItemNav}>
                                 <li>
-                                    <Link to={`${lang}/ancestry`}>
-                                        Ancestry
-                                    </Link>
-                                </li>
-                                <li>Dialects</li>
-                                <li>
-                                    <Link to={`${lang}/phonemes`}>
+                                    <Link to={`${proto}/phonemes`}>
                                         Phonemes
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to={`${lang}/phonotactics`}>
+                                    <Link to={`${proto}/phonotactics`}>
                                         Phonotactics
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to={`${lang}/lexicon`}>Lexicon</Link>
+                                    <Link to={`${proto}/lexicon`}>Lexicon</Link>
                                 </li>
-                                <li>
-                                    <Link to={`${lang}/builder`}>Builder</Link>
-                                </li>
-                                <li onClick={() => deleteLanguage(lang)}>
+                                <li
+                                    onClick={async () =>
+                                        await deleteProtolanguage(proto)
+                                    }
+                                >
                                     <span className={classes.deleteLink}>
                                         DELETE
                                     </span>
@@ -153,12 +158,12 @@ export default function LangEditor() {
                                 </p>
                             )}
                         </div>
-                        <button onClick={() => createLanguage(newName)}>
-                            Create Language
+                        <button onClick={() => createProtolanguage(newName)}>
+                            Create Protolanguage
                         </button>
                     </div>
                 </li>
             </ul>
-        </>
+        </Page>
     );
 }

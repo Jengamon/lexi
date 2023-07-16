@@ -14,6 +14,7 @@ import {
     Typography,
 } from "@mui/material";
 import { NavBar } from "~/src/components/navbar";
+import { Page } from "./page";
 
 export default function HomePage() {
     const [languageGroupNames, setLanguageGroupNames] = useState<string[]>([]);
@@ -110,60 +111,57 @@ export default function HomePage() {
     }
 
     return (
-        <>
-            <NavBar title="Home" />
-            <Container maxWidth="lg" sx={{ pt: 2 }}>
-                {isLoading ? (
-                    <></>
-                ) : (
-                    <>
-                        <div>
-                            <TextField
-                                onChange={(ev) =>
-                                    setProjectName(ev.target.value)
-                                }
-                                value={projectName}
-                            />
-                        </div>
-                        <div>
-                            <Button onClick={saveProject}>Save Project</Button>
-                            <Button onClick={exportProject}>
-                                Export Project
-                            </Button>
-                            <Button onClick={newProject}>New Project</Button>
-                        </div>
-                    </>
-                )}
-                <Snackbar
-                    open={showError}
-                    autoHideDuration={6000}
-                    onClose={() => setShowError(false)}
-                >
-                    <Alert onClose={() => setShowError(false)} severity="error">
-                        Error: {error}
-                    </Alert>
-                </Snackbar>
-                <ul>
-                    {languageGroupNames.map((name) => (
-                        <li key={name}>
-                            <div className={classes.langNameItem}>
-                                <div
-                                    className="label"
-                                    onClick={() => loadProject(name)}
-                                >
-                                    {name}
-                                </div>
-                                <div
-                                    className={classes.remove}
-                                    onClick={() => deleteProject(name)}
-                                >
-                                    DELETE
-                                </div>
+        <Page title="Home">
+            {isLoading ? (
+                <></>
+            ) : (
+                <>
+                    <div>
+                        <TextField
+                            onChange={(ev) =>
+                                setProjectName(ev.target.value)
+                            }
+                            value={projectName}
+                        />
+                    </div>
+                    <div>
+                        <Button onClick={saveProject}>Save Project</Button>
+                        <Button onClick={exportProject}>
+                            Export Project
+                        </Button>
+                        <Button onClick={newProject}>New Project</Button>
+                    </div>
+                </>
+            )}
+            <Snackbar
+                open={showError}
+                autoHideDuration={6000}
+                onClose={() => setShowError(false)}
+            >
+                <Alert onClose={() => setShowError(false)} severity="error">
+                    Error: {error}
+                </Alert>
+            </Snackbar>
+            <ul>
+                {languageGroupNames.map((name) => (
+                    <li key={name}>
+                        <div className={classes.langNameItem}>
+                            <div
+                                className="label"
+                                onClick={() => loadProject(name)}
+                            >
+                                {name}
                             </div>
-                        </li>
-                    ))}
-                </ul>
-            </Container>
-        </>
+                            <div
+                                className={classes.remove}
+                                onClick={() => deleteProject(name)}
+                            >
+                                DELETE
+                            </div>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </Page>
     );
 }

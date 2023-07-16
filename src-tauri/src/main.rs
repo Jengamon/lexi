@@ -41,10 +41,13 @@ impl ServiceState {
     }
 }
 
+pub struct ProgramStart(chrono::DateTime<chrono::Local>);
+
 fn main() {
     tauri::Builder::default()
         .manage(Project::new())
         .manage(ServiceState::new())
+        .manage(ProgramStart(chrono::Local::now())) // Program start timestamp
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])

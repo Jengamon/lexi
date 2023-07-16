@@ -1,62 +1,51 @@
-import { Alert, Snackbar } from "@mui/material";
-import { listen } from "@tauri-apps/api/event";
-import { useEffect, useState } from "react";
+import { Alert, Container, Snackbar } from "@mui/material";
+import { useState } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
-import { Record, String } from "runtypes";
+import { Record, Static, String } from "runtypes";
+import useSWRSubscription from "swr/subscription";
+import { subscribeGenerator } from "../stores";
 
 type AppNotif = {
-    severity: "info" | "error",
+    severity: "info" | "warning" | "error",
     message: string,
 };
 
 export type AppContext = {
-    setAppNotification: (notif: AppNotif) => void,
+    showAppNotification: (notif: AppNotif) => void,
 }
 
 export function useAppContext() {
     return useOutletContext<AppContext>();
 }
 
+export function useAutosave() {
+    const Autosave = Record({
+        name: String,
+        timestamp: String,
+    });
+
+    const { data, error } = useSWRSubscription<Static<typeof Autosave>>("autosaved", subscribeGenerator(Autosave));
+
+    return {
+        autosave: data,
+        error
+    };
+}
+
 export default function AppView() {
     const [notif, setNotif] = useState<AppNotif | null>(null);
     const [hasNotif, setHasNotif] = useState<boolean>(false);
 
-    useEffect(() => {
-        async function fetch() {
-            return await listen("autosaved", ev => {
-                console.log(ev);
-
-                const payload = ev.payload;
-                const Autosave = Record({
-                    name: String,
-                    timestamp: String,
-                });
-                const validated = Autosave.check(payload);
-
-                setNotif({
-                    severity: "info",
-                    message: `Autosaved ${validated.name} at ${validated.timestamp}`,
-                });
-                setHasNotif(true);
-            });
-        }
-
-        const unlisten = fetch();
-
-        return () => {
-            unlisten.then(unsub => unsub())
-        };
-    }, [])
-
     return (
         <div>
             <Outlet context={{
-                setAppNotification: (notif: AppNotif) => {
+                showAppNotification: (notif: AppNotif) => {
                     setNotif(notif);
                     setHasNotif(true);
                 }
             }} />
             <Snackbar
+                key={notif?.message}
                 open={hasNotif}
                 autoHideDuration={6000}
                 onClose={() => setHasNotif(false)}>
