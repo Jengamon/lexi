@@ -18,7 +18,7 @@ mod interact;
 mod util;
 
 pub struct ServiceStateRaw {
-    autosave: bool,
+    autosave: Option<(u32,)>,
     languages: bool,
     protolanguages: bool,
 }
@@ -26,7 +26,7 @@ pub struct ServiceStateRaw {
 impl ServiceStateRaw {
     fn new() -> Self {
         Self {
-            autosave: false,
+            autosave: None,
             languages: false,
             protolanguages: false,
         }

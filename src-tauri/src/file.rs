@@ -64,7 +64,7 @@ pub fn init_autosave_service(
     project: State<Project>,
     services: State<ServiceState>,
 ) {
-    if !services.inner().0.read().unwrap().autosave {
+    if !services.inner().0.read().unwrap().autosave.is_none() {
         log::info!("Starting autosave service (halfminutes: {half_minutes})...");
         let project = project.inner().clone();
         std::thread::spawn(move || loop {
@@ -93,7 +93,9 @@ pub fn init_autosave_service(
                     .unwrap();
             }
         });
-        services.0.write().unwrap().autosave = true;
+        services.0.write().unwrap().autosave = Some((half_minutes,));
+    } else {
+        services.0.write().unwrap().autosave = Some((half_minutes,));
     }
 }
 
