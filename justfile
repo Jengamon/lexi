@@ -3,6 +3,7 @@ fresh:
     cargo install tauri-cli --locked
 
 test:
+    cd src-tauri && cargo deny check
     -cd src-tauri && cargo insta test
     cd src-tauri && cargo insta review
 
