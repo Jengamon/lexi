@@ -1,26 +1,32 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use super::Phoneme;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Language {
     /// Uniquely identifies this language
     ///
     /// Immutable once a language has been created.
     pub name: String,
-    pub phonemes: Vec<Phoneme>,
+    pub phonemes: HashMap<Uuid, Phoneme>,
     /// General information about the language
     ///
     /// Technically can be any JSON-able object
     pub description: Option<serde_json::Value>,
+    /// Protolanguage names that this language is descended from
+    pub ancestors: Vec<String>,
 }
 
 impl Default for Language {
     fn default() -> Self {
         Self {
             name: "unnamed".to_string(),
-            phonemes: vec![],
+            phonemes: HashMap::new(),
             description: None,
+            ancestors: vec![],
         }
     }
 }

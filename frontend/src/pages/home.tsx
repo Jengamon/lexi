@@ -1,18 +1,48 @@
+import {
+    AddBox,
+    CallSplit,
+    Delete,
+    FileDownload,
+    Merge,
+    Save,
+} from "@mui/icons-material";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    IconButton,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    Stack,
+    TextField,
+    Tooltip,
+    Typography,
+    FormControl,
+    Select,
+    InputLabel,
+    MenuItem,
+    FormHelperText,
+} from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import { Array, String } from "runtypes";
+import { useCheckedInvokeSWR } from "~/src/stores";
 import { getErrorMessage } from "~/src/util";
-import * as classes from "./home.module.css";
-import useSWR from "swr";
-import { fetcher } from "~/src/stores";
-import { Box, Button, IconButton, List, ListItem, ListItemButton, ListItemText, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { Page } from "./page";
 import { useAppContext } from "../views/app";
-import { AddBox, CallSplit, Delete, FileDownload, Save } from "@mui/icons-material";
+import { Page } from "./page";
 
 export default function HomePage() {
     const [languageGroupNames, setLanguageGroupNames] = useState<string[]>([]);
     const { showAppNotification } = useAppContext();
+
+    const [showMergeDialog, setShowMergeDialog] = useState(false);
+    const [mergeError, setMergeError] = useState<string | null>(null);
+    const [mergeSource, setMergeSource] = useState("");
 
     function createError(error: any) {
         showAppNotification({
@@ -25,13 +55,13 @@ export default function HomePage() {
         data: projectName,
         mutate: nameMutate,
         isLoading: isNameLoading,
-    } = useSWR<string>(["get_project_name", String, {}], fetcher);
+    } = useCheckedInvokeSWR(String, "get_project_name", {});
 
     const {
         data: familyId,
         isLoading: isFamilyIdLoading,
         mutate: familyIdMutate,
-    } = useSWR<string>(["get_family_id", String, {}], fetcher);
+    } = useCheckedInvokeSWR(String, "get_family_id", {});
 
     useEffect(retrieveLanguageGroupNames, []);
 
@@ -81,6 +111,14 @@ export default function HomePage() {
             await nameMutate(async () => {
                 return await invoke("get_project_name", {});
             });
+            showAppNotification({
+                severity: "info",
+                message: "Epoch created",
+                action: {
+                    label: "Merge",
+                    act: () => setShowMergeDialog(true)
+                }
+            })
         } catch (e) {
             createError(e);
         }
@@ -89,11 +127,13 @@ export default function HomePage() {
     async function exportProject() {
         try {
             await invoke("export_language_group", {});
+            showAppNotification({
+                severity: "info",
+                message: "Project exported",
+            });
         } catch (e) {
             createError(e);
         }
-
-        // Output that we've succeeded saving
     }
 
     async function loadProject(name: string) {
@@ -105,6 +145,19 @@ export default function HomePage() {
             await familyIdMutate(async () => await invoke("get_family_id"));
         } catch (e) {
             createError(e);
+        }
+    }
+
+    async function mergeProject(name: string) {
+        try {
+            await invoke("merge_language_group", {
+                filename: name,
+            });
+            setMergeError(null);
+            setMergeSource("");
+            setShowMergeDialog(false);
+        } catch (e) {
+            setMergeError(getErrorMessage(e));
         }
     }
 
@@ -121,6 +174,48 @@ export default function HomePage() {
         retrieveLanguageGroupNames();
     }
 
+    const mergeDialog = (
+        <Dialog open={showMergeDialog} onClose={() => {
+            setShowMergeDialog(false);
+            // Don't immediately clear state, it looks ugly
+            setTimeout(() => {
+                setMergeSource("");
+                setMergeError(null);
+            }, 100);
+        }}>
+            <DialogTitle>Merge Language</DialogTitle>
+            <DialogContent>
+                <Box sx={{ my: 2, minWidth: 300 }}>
+                    <FormControl fullWidth error={Boolean(mergeError)}>
+                        <InputLabel id="merge-source-label">Merge Source</InputLabel>
+                        <Select
+                            labelId="merge-source-label"
+                            id="merge-source"
+                            value={mergeSource}
+                            label="Merge Source"
+                            required={true}
+                            onChange={(ev) => setMergeSource(ev.target.value)}>
+                            {languageGroupNames.map((name) => (
+                                <MenuItem
+                                    key={name}
+                                    value={name}
+                                >
+                                    {name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        <FormHelperText>{mergeError}</FormHelperText>
+                    </FormControl>
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={async () =>
+                        await mergeProject(mergeSource)}>Merge</Button>
+            </DialogActions>
+        </Dialog >
+    );
+
     return (
         <Page title="Home">
             {isNameLoading ? (
@@ -136,52 +231,86 @@ export default function HomePage() {
                             onChange={(ev) => setProjectName(ev.target.value)}
                             value={projectName}
                         />
-                        <Stack alignSelf="center" spacing={1} direction="row" sx={{ mx: 2 }}>
+                        <Stack
+                            alignSelf="center"
+                            spacing={1}
+                            direction="row"
+                            sx={{ mx: 2 }}
+                        >
                             <Tooltip title="Save Project">
-                                <IconButton onClick={saveProject} aria-label="save">
+                                <IconButton
+                                    onClick={saveProject}
+                                    aria-label="save"
+                                >
                                     <Save />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Export Project">
-                                <IconButton onClick={exportProject} aria-label="export">
+                                <IconButton
+                                    onClick={exportProject}
+                                    aria-label="export"
+                                >
                                     <FileDownload />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="New Project">
-                                <IconButton onClick={newProject} aria-label="new"><AddBox /></IconButton>
+                                <IconButton
+                                    onClick={newProject}
+                                    aria-label="new"
+                                >
+                                    <AddBox />
+                                </IconButton>
                             </Tooltip>
                             <Tooltip title="Epoch Project">
-                                <IconButton sx={{ transform: "scaleX(-1)" }} onClick={epochProject}>
-                                    <CallSplit /></IconButton>
+                                <IconButton
+                                    sx={{ transform: "scaleX(-1)" }}
+                                    onClick={epochProject}
+                                >
+                                    <CallSplit />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Merge Project">
+                                <IconButton
+                                    onClick={() => setShowMergeDialog(true)}
+                                >
+                                    <Merge />
+                                </IconButton>
                             </Tooltip>
                         </Stack>
                     </Box>
                     <Typography sx={{ pt: 2 }} align="center" variant="caption">
-                        {isFamilyIdLoading ? "Loading..." : `Family ${familyId}`}
+                        {isFamilyIdLoading
+                            ? "Loading..."
+                            : `Family ${familyId}`}
                     </Typography>
                 </>
-            )
-            }
+            )}
             <List dense>
                 {languageGroupNames.map((name) => (
-                    <ListItem key={name} secondaryAction={
-                        <IconButton edge="end"
-                            aria-label="delete"
-                            onClick={() => deleteProject(name)}
-                        >
-                            <Delete />
-                        </IconButton>
-                    }>
-                        <ListItemButton role={undefined}
+                    <ListItem
+                        key={name}
+                        secondaryAction={
+                            <Tooltip title="Delete Project">
+                                <IconButton
+                                    edge="end"
+                                    aria-label="delete"
+                                    onClick={() => deleteProject(name)}
+                                >
+                                    <Delete />
+                                </IconButton>
+                            </Tooltip>
+                        }
+                    >
+                        <ListItemButton
+                            role={undefined}
                             onClick={() => loadProject(name)}
                         >
-                            <ListItemText
-                                primary={name}
-                            />
+                            <ListItemText primary={name} />
                         </ListItemButton>
                     </ListItem>
                 ))}
             </List>
-        </Page >
+            {mergeDialog}
+        </Page>
     );
 }

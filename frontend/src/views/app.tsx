@@ -1,16 +1,19 @@
 import {
     Alert,
+    Box,
     Button,
-    Container,
+    CssBaseline,
     Snackbar,
+    ThemeOptions,
     ThemeProvider,
     createTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, ScrollRestoration, useOutletContext } from "react-router-dom";
 import { Record, Static, String } from "runtypes";
 import useSWRSubscription from "swr/subscription";
 import { subscribeGenerator } from "../stores";
+import { useImmer } from "use-immer";
 
 declare module "@mui/material/styles" {
     interface TypographyVariants {
@@ -29,7 +32,16 @@ declare module "@mui/material/Typography" {
     }
 }
 
-export const theme = createTheme({
+export const theme = {
+    palette: {
+        mode: "light" as "light" | "dark",
+        primary: {
+            main: "#aeafbd",
+        },
+        secondary: {
+            main: '#f50057',
+        },
+    },
     typography: {
         /// Use for any text meant to contain IPA
         ipa: {
@@ -45,7 +57,7 @@ export const theme = createTheme({
             },
         },
     },
-});
+} as const;
 
 type AppNotif = {
     severity: "info" | "warning" | "error";
@@ -58,6 +70,8 @@ type AppNotif = {
 
 export type AppContext = {
     showAppNotification: (notif: AppNotif) => void;
+    darkMode: boolean;
+    setDarkMode: (darkMode: boolean) => void;
 };
 
 export function useAppContext() {
@@ -84,15 +98,40 @@ export function useAutosave() {
 export default function AppView() {
     const [notif, setNotif] = useState<AppNotif | null>(null);
     const [hasNotif, setHasNotif] = useState<boolean>(false);
+    const [darkMode, setDarkMode_] = useState(false);
+    const [modTheme, updateTheme] = useImmer(theme);
+
+    const setDarkMode = (darkMode: boolean) => {
+        setDarkMode_(darkMode);
+        localStorage.setItem("darkMode", darkMode ? "dark" : "light");
+        updateTheme(theme => {
+            theme.palette.mode = darkMode ? "dark" : "light";
+        });
+    };
+
+    useEffect(() => {
+        const existingPreference = localStorage.getItem("darkMode");
+        if (existingPreference) {
+            (existingPreference === "light")
+                ? setDarkMode(false)
+                : setDarkMode(true);
+        } else {
+            setDarkMode(false);
+            localStorage.setItem("darkMode", "light");
+        }
+    }, []);
 
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={createTheme(modTheme)}>
+            <CssBaseline enableColorScheme />
             <Outlet
                 context={{
                     showAppNotification: (notif: AppNotif) => {
                         setNotif(notif);
                         setHasNotif(true);
                     },
+                    darkMode,
+                    setDarkMode,
                 }}
             />
             <Snackbar

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavBar } from "../components/navbar";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Paper, Toolbar } from "@mui/material";
 
 export type PageProps = {
     title: string;
@@ -9,13 +9,7 @@ export type PageProps = {
 
 export function Page({ title, children }: PageProps) {
     return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100vh",
-            }}
-        >
+        <>
             <NavBar title={title} />
             <Container
                 maxWidth="lg"
@@ -28,6 +22,6 @@ export function Page({ title, children }: PageProps) {
             >
                 {children}
             </Container>
-        </Box>
+        </>
     );
 }

@@ -1,8 +1,0 @@
-.langNameItem {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  & > .remove {
-    color: red;
-  }
-}

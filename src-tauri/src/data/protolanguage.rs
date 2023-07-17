@@ -1,11 +1,14 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use super::{Language, Phoneme};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Protolanguage {
     pub name: String,
-    pub phonemes: Vec<Phoneme>,
+    pub phonemes: HashMap<Uuid, Phoneme>,
     pub description: Option<serde_json::Value>,
 }
 
@@ -13,7 +16,7 @@ impl Default for Protolanguage {
     fn default() -> Self {
         Self {
             name: "unnamed".to_string(),
-            phonemes: vec![],
+            phonemes: HashMap::new(),
             description: None,
         }
     }

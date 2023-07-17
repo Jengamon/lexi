@@ -4,16 +4,14 @@ import { invoke } from "@tauri-apps/api";
 import { String } from "runtypes";
 import {
     displayPhone,
-    displayPhoneBranner,
+    fromSil,
     fromBranner,
     getErrorMessage,
 } from "~/src/util";
 import { Phone } from "~/src/data";
-import useSWR from "swr";
-import { fetcher } from "../stores";
-import { NavBar } from "../components/navbar";
+import { useCheckedInvokeSWR } from "../stores";
 import { useAutosave } from "../views/app";
-import { Container, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
 import { Page } from "./page";
 
 export default function AboutPage() {
@@ -22,21 +20,14 @@ export default function AboutPage() {
     >(null);
     const [brannerInput, setBrannerInput] = useState("");
     const [branner, setBranner] = useState("");
+    const [silInput, setSilInput] = useState("");
+    const [sil, setSil] = useState("");
     const { autosave, error: autosaveError } = useAutosave();
 
     const { data: dumpedLangGroup, error: dumpedLangGroupError } =
-        useSWR<string>(["dump_language_group", String, {}], fetcher);
+        useCheckedInvokeSWR(String, "dump_language_group", {});
 
-    const updateBranner = useCallback(
-        async () => await fromBranner(brannerInput),
-        [brannerInput],
-    );
-    updateBranner().then((output) => setBranner(output));
-
-    const [testDisplayPhone, setDisplayPhone] = useState({
-        ipa: "",
-        branner: "",
-    });
+    const [testDisplayPhone, setDisplayPhone] = useState("");
 
     useEffect(() => {
         const phone: Phone = {
@@ -49,10 +40,6 @@ export default function AboutPage() {
         };
 
         displayPhone(phone)
-            .then(async (ipa) => ({
-                ipa,
-                branner: await displayPhoneBranner(phone),
-            }))
             .then((output) => setDisplayPhone(output));
     });
 
@@ -68,7 +55,7 @@ export default function AboutPage() {
     return (
         <Page title="About">
             <Typography variant="ipa">
-                {testDisplayPhone.ipa} {testDisplayPhone.branner}
+                {testDisplayPhone}
             </Typography>
             <Typography variant="body1" component="em">
                 Lexi is about making coming up with conlangs easier by providing
@@ -91,45 +78,67 @@ export default function AboutPage() {
                     Encountered autosave error: {getErrorMessage(autosaveError)}
                 </Typography>
             )}
-            <div>
-                <button onClick={testExportCurrentProject}>Test Export</button>
+            <Box>
+                <Button onClick={testExportCurrentProject}>Test Export</Button>
                 {testExport && (
-                    <pre className={classes.debug}>
+                    <Paper component="pre">
                         {String.guard(testExport) ? (
-                            <code>{testExport}</code>
+                            <Typography fontFamily="monospace">{testExport}</Typography>
                         ) : (
-                            <code className={classes.error}>
+                            <Typography fontFamily="monospace" color="error">
                                 {testExport.error}
-                            </code>
+                            </Typography>
                         )}
-                    </pre>
+                    </Paper>
                 )}
-            </div>
-            <div>
-                <input
-                    autoCorrect="off"
-                    value={brannerInput}
-                    onChange={(ev) =>
-                        setBrannerInput(
-                            // the `replace` is to remove "smart quotes"
-                            // the second is to add nbsp support
-                            ev.target.value.replace(/[\u201C\u201D]/g, '"'),
-                        )
-                    }
-                />
-                <Typography variant="ipa">{branner}</Typography>
-            </div>
-            <div>
-                <pre className={classes.debug}>
+            </Box>
+            <Stack spacing={2}>
+                <Box>
+                    <TextField
+                        label="Branner"
+                        inputProps={{
+                            autoCorrect: "off"
+                        }}
+                        autoComplete="off"
+                        value={brannerInput}
+                        onChange={async (ev) => {
+                            const input = ev.target.value.replace(/[\u201C\u201D]/g, '"');
+                            setBrannerInput(input);
+                            const newBranner = await fromBranner(input);
+                            setBranner(newBranner);
+                        }}
+                    />
+                    <Typography variant="ipa">{branner}</Typography>
+                </Box>
+                <Box>
+                    <TextField
+                        label="SIL"
+                        inputProps={{
+                            autoCorrect: "off"
+                        }}
+                        autoComplete="off"
+                        value={silInput}
+                        onChange={async (ev) => {
+                            const input = ev.target.value.replace(/[\u201C\u201D]/g, '"');
+                            setSilInput(input);
+                            const newSil = await fromSil(input);
+                            setSil(newSil);
+                        }}
+                    />
+                    <Typography variant="ipa">{sil}</Typography>
+                </Box>
+            </Stack>
+            <Box>
+                <Paper component="pre">
                     {dumpedLangGroup ? (
-                        <code>{dumpedLangGroup}</code>
+                        <Typography fontFamily="monospace">{dumpedLangGroup}</Typography>
                     ) : (
-                        <code className={classes.error}>
+                        <Typography fontFamily="monospace" color="error">
                             {getErrorMessage(dumpedLangGroupError)}
-                        </code>
+                        </Typography>
                     )}
-                </pre>
-            </div>
-        </Page>
+                </Paper>
+            </Box>
+        </Page >
     );
 }

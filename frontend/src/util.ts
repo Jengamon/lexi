@@ -38,10 +38,10 @@ export async function fromBranner(input: string) {
     return RString.check(await invoke("from_branner", { input }));
 }
 
-export async function displayPhone(phone: Phone) {
-    return RString.check(await invoke("display_phone", { phone }));
+export async function fromSil(input: string) {
+    return RString.check(await invoke("from_sil", { input }));
 }
 
-export async function displayPhoneBranner(phone: Phone) {
-    return RString.check(await invoke("display_phone_branner", { phone }));
+export async function displayPhone(phone: Phone) {
+    return RString.check(await invoke("display_phone", { phone }));
 }

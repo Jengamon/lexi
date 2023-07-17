@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+
 use semver::Version;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::{Language, Protolanguage};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct LanguageGroup {
     pub version: Version,
     /// Identifies the same "family" of language groups
@@ -48,9 +50,190 @@ impl LanguageGroup {
     /// Creates a new epoch.
     ///
     /// All protolanguages are lost, and languages become protolanguages.
+    /// All protolanguage base info (phonemes and morphemes) are merged into the necessary languages
+    /// before it becomes a protolanguage
     pub fn epoch(&mut self) {
+        // Create language phoneme lists
+        let phonemes: Vec<HashMap<_, _>> = self
+            .langs
+            .iter()
+            .map(|l| {
+                l.ancestors
+                    .iter()
+                    .flat_map(|anc| {
+                        self.protolanguage(anc)
+                            .unwrap()
+                            .phonemes
+                            .iter()
+                            .map(|(k, v)| (*k, v.clone()))
+                    })
+                    .collect()
+            })
+            .collect();
         self.protolangs.clear();
-        self.protolangs = self.langs.drain(..).map(|l| l.into()).collect();
+        self.protolangs = self
+            .langs
+            .drain(..)
+            .zip(phonemes)
+            .map(|(l, phons)| {
+                let mut basic: Protolanguage = l.into();
+                basic.phonemes.extend(phons.into_iter());
+                basic
+            })
+            .collect();
+    }
+
+    /// Merges in languages of a language group.
+    ///
+    /// Loads only languages from an input language group, removing data that references
+    /// something that isn't provided by the protolanguages in existence.
+    ///
+    /// ### Warning
+    /// This should only be called if the input language group shares
+    /// the family id with this language group. Also, is lossy in that
+    /// a merge will *replace* the languages that exist.
+    pub fn merge(&mut self, langs_from: &LanguageGroup) {
+        let modded_langs = langs_from
+            .langs
+            .iter()
+            .map(|lang| {
+                let present_ancestors = lang
+                    .ancestors
+                    .iter()
+                    .filter(|anc| self.protolanguage(anc).is_some())
+                    .cloned()
+                    .collect();
+                Language {
+                    ancestors: present_ancestors,
+                    ..lang.clone()
+                }
+            })
+            .collect();
+
+        self.langs = modded_langs;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::LanguageGroup;
+    use crate::data::{Language, Phone, Phoneme, Protolanguage};
+    use insta::{assert_yaml_snapshot, with_settings};
+    use std::collections::{HashMap, HashSet};
+    use uuid::uuid;
+
+    #[test]
+    fn lg_epoch_preserves_protophonemes_in_language() {
+        let mut pre = LanguageGroup {
+            family_id: uuid!("00000000-0000-0000-0000-000000000000"),
+            protolangs: vec![Protolanguage {
+                name: "1".to_string(),
+                description: None,
+                phonemes: {
+                    let mut map = HashMap::new();
+                    map.insert(
+                        uuid!("00000000-0000-0000-0000-000000000000"),
+                        Phoneme {
+                            ortho: "1".to_string(),
+                            primary: Phone::Plosive {
+                                place: crate::data::Place::Bilabial,
+                                voiced: false,
+                                attachments: HashSet::new(),
+                            },
+                            allo: vec![],
+                        },
+                    );
+                    map
+                },
+            }],
+            langs: vec![Language {
+                name: "1'".to_string(),
+                ancestors: vec!["1".to_string()],
+                description: None,
+                phonemes: {
+                    let mut map = HashMap::new();
+                    map.insert(
+                        uuid!("00000000-0000-0000-0000-000000000001"),
+                        Phoneme {
+                            ortho: "2".to_string(),
+                            primary: Phone::Plosive {
+                                place: crate::data::Place::Bilabial,
+                                voiced: true,
+                                attachments: HashSet::new(),
+                            },
+                            allo: vec![],
+                        },
+                    );
+                    map
+                },
+            }],
+            ..Default::default()
+        };
+
+        pre.epoch();
+
+        with_settings!({sort_maps => true}, {
+            assert_yaml_snapshot!(pre);
+        })
+    }
+
+    #[test]
+    fn merge_removes_nonexistant_ancestors_and_referents() {
+        // TODO once we start referring to protolanguages,
+        // items that reference invalid protolanguages should be wiped!
+        let pre = LanguageGroup {
+            family_id: uuid!("00000000-0000-0000-0000-000000000000"),
+            protolangs: vec![Protolanguage {
+                name: "1".to_string(),
+                description: None,
+                phonemes: HashMap::new(),
+            }],
+            langs: vec![Language {
+                name: "A".to_string(),
+                description: None,
+                phonemes: HashMap::new(),
+                ancestors: vec!["1".to_string()],
+            }],
+            ..Default::default()
+        };
+
+        let post_a = LanguageGroup {
+            family_id: uuid!("00000000-0000-0000-0000-000000000000"),
+            protolangs: vec![],
+            langs: vec![Language {
+                name: "2".to_string(),
+                description: None,
+                phonemes: HashMap::new(),
+                ancestors: vec!["H".to_string()],
+            }],
+            ..Default::default()
+        };
+
+        let post_b = LanguageGroup {
+            family_id: uuid!("00000000-0000-0000-0000-000000000000"),
+            protolangs: vec![],
+            langs: vec![Language {
+                name: "2".to_string(),
+                description: None,
+                phonemes: HashMap::new(),
+                ancestors: vec!["1".to_string()],
+            }],
+            ..Default::default()
+        };
+
+        with_settings!({sort_maps => true}, {
+            assert_yaml_snapshot!({
+                let mut pre = pre.clone();
+                pre.merge(&post_a);
+                pre
+            });
+
+            assert_yaml_snapshot!({
+                let mut pre = pre.clone();
+                pre.merge(&post_b);
+                pre
+            });
+        });
     }
 }
 

@@ -11,7 +11,7 @@ of a (proto-)language.
 
 ## Phonotactics
 
-Determines how phonemes are realized. (NOTE: 
+Determines how phonemes are realized. (NOTE:
 This process **can add phones** to a set of phonemes).
 
 Contains phoneme sets (consonant, vowel, nasal, etc.)
@@ -59,7 +59,7 @@ a regex, and the output is a string with the captures named with `$N` or `$name`
 
 # Morphology
 
-A word part can either be a morpheme marked as "free", 
+A word part can either be a morpheme marked as "free",
 a "compound" made of morpheme,
 or a "bound" morpheme. A denotation and a connotation
 is associated with the word part from the set that the member morphemes
@@ -67,14 +67,14 @@ provide, or they can be explicitly set.
 
 Contains the minimum syllable count setting, and the way to resolve that.
 
-"Bound" morphemes add their properties to the word they are used in, and 
+"Bound" morphemes add their properties to the word they are used in, and
 can be a member of a syntax set.
 
 Morph sets are how morphemes are combined with other morphemes into words.
 
 Morph sets are formed for:
 - Part of Speech: Noun, Verb, Adjective, etc.
-- Gender: 6th class, Inanimate, etc. 
+- Gender: 6th class, Inanimate, etc.
 
 All morphemes must be part of the available morph sets (if that set is enabled).
 Part of Speech cannot be disabled.
@@ -87,7 +87,7 @@ How are words put together into sentences?
 
 Maps graphemes in certain environments to phonemes or morphemes.
 
-Contains the word boundary character (stored as a unicode codepoint), 
+Contains the word boundary character (stored as a unicode codepoint),
 and the sentence boundary  character(s).
 
 Word boundary character defaults to `0x200b` (Zero-Width Space).
@@ -98,6 +98,25 @@ If the loaded codepoint is invalid, this is what will be used.
 V1 end-goal: use graphemes to translate from text written in the language
 (with custom fonts allowed) to a phonemic and phonetic description
 of that text, and possible meanings of that text.
+
+# Ancestry
+
+A language has 0+ protolang ancestors. To inherit from another language, you
+must epoch the project to move the data accordingly.
+
+For this reason, languages *do not* duplicate data from protolanguages, but instead, refering to data (such as a phoneme) that could belong to a protolanguage or language, the referent is made clear by the referee.
+
+So looking for a certain phoneme from a language should look like
+
+```js
+{
+    Language: // or Protolanguage would go here.
+    {
+        name: "<some language name>",
+        id: "<some UUID here>",
+    }
+}
+```
 
 # TODO
 

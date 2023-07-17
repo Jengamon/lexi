@@ -5,16 +5,27 @@ import {
     createBrowserRouter,
     RouteObject,
     RouterProvider,
-    ScrollRestoration,
 } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { invoke } from "@tauri-apps/api";
+import { CssBaseline } from "@mui/material";
 
 // Start services
 (async () => {
     await invoke("init_languages_server", {});
     await invoke("init_protolanguages_server", {});
-    await invoke("init_autosave_service", { halfMinutes: 1 });
+    // Just interact with localstorage to change
+    // When changed, remember to reinvoke the service with
+    // the new value
+    let autosaveInterval = localStorage.getItem("autosave");
+    if (autosaveInterval && parseInt(autosaveInterval) > 0) {
+        await invoke("init_autosave_service", { halfMinutes: parseInt(autosaveInterval) });
+    } else {
+        const defaultHM = 4;
+        localStorage.setItem("autosave", defaultHM.toFixed(0));
+        await invoke("init_autosave_service", { halfMinutes: defaultHM });
+    }
+
 })();
 
 const node = document.getElementById("app");

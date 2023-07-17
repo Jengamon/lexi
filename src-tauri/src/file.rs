@@ -9,9 +9,12 @@ use regex::Regex;
 use semver::{Version, VersionReq};
 use serde::{Serialize, Serializer};
 use tauri::{command, State, Window};
+use uuid::Uuid;
 
 use crate::data::LanguageGroup;
 use crate::{ProgramStart, ServiceState};
+
+const VERSION_REQ: &'static str = "^0";
 
 #[derive(Clone)]
 pub struct Project(pub(crate) Arc<Mutex<(String, LanguageGroup)>>);
@@ -41,6 +44,10 @@ pub enum Error {
     VersionMismatch(Version),
     #[error("cannot save to empty name")]
     EmptyName,
+    #[error("cannot merge language group family {merge} -> {current}")]
+    FamilyMismatch { current: Uuid, merge: Uuid },
+    #[error("cannot merge nothing")]
+    MergeEmpty,
 }
 
 impl Serialize for Error {
@@ -188,11 +195,52 @@ pub fn load_language_group(filename: String, project: State<Project>) -> Result<
         // Check for validity
 
         let version_req =
-            VersionReq::parse("^0").expect("INTERNAL failed to compile version req string");
+            VersionReq::parse(VERSION_REQ).expect("INTERNAL failed to compile version req string");
 
         if version_req.matches(&lang_group.version) {
             *project.0.lock().unwrap() = (filename, lang_group);
             Ok(())
+        } else {
+            Err(Error::VersionMismatch(lang_group.version))
+        }
+    } else {
+        Err(Error::CannotFindProjectDir)
+    }
+}
+
+#[command]
+pub fn merge_language_group(filename: String, project: State<Project>) -> Result<(), Error> {
+    let sanitized = filename.replace("../", "");
+
+    if filename.is_empty() {
+        return Err(Error::MergeEmpty);
+    }
+
+    if let Some(project_dirs) = ProjectDirs::from("io.jengamon", "Muurmon", "Lexi") {
+        let loc = format!("data/lang/{sanitized}.lg.json");
+
+        let path = project_dirs.data_dir().join(loc);
+
+        let file = File::open(path)?;
+
+        let lang_group: LanguageGroup = serde_json::from_reader(file)?;
+
+        // Check for validity
+
+        let version_req =
+            VersionReq::parse(VERSION_REQ).expect("INTERNAL failed to compile version req string");
+
+        if version_req.matches(&lang_group.version) {
+            let target_lg = &mut project.0.lock().unwrap().1;
+            if target_lg.family_id == lang_group.family_id {
+                target_lg.merge(&lang_group);
+                Ok(())
+            } else {
+                Err(Error::FamilyMismatch {
+                    current: target_lg.family_id,
+                    merge: lang_group.family_id,
+                })
+            }
         } else {
             Err(Error::VersionMismatch(lang_group.version))
         }

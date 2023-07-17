@@ -1,16 +1,17 @@
 use core::fmt;
 use std::{borrow::Cow, collections::HashSet, fmt::Formatter};
 
+use ipa_translate::branner_to_ipa;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Phoneme {
-    ortho: String,
-    primary: Phone,
-    allo: Vec<Phone>,
+    pub ortho: String,
+    pub primary: Phone,
+    pub allo: Vec<Phone>,
 }
 
-#[derive(Serialize, Deserialize, Copy, Clone)]
+#[derive(Serialize, Deserialize, Copy, Clone, Debug)]
 pub enum Place {
     Bilabial,
     Labiodental,
@@ -19,7 +20,7 @@ pub enum Place {
     Postalveolar,
 }
 
-#[derive(Serialize, Deserialize, Hash, PartialEq, Eq, Copy, Clone)]
+#[derive(Serialize, Deserialize, Hash, PartialEq, Eq, Copy, Clone, Debug)]
 pub enum ObstruentAttachment {
     Ejective,
     Preaspirated,
@@ -34,7 +35,7 @@ enum PhoneType {
     Vowel,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Phone {
     Plosive {
         place: Place,
@@ -62,70 +63,50 @@ impl Phone {
         voiced: bool,
         attachments: &HashSet<ObstruentAttachment>,
     ) -> String {
-        match pt {
+        branner_to_ipa(match pt {
             PhoneType::Plosive => match place {
-                Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "p".to_string()
-                }
-                Place::Bilabial if voiced => "b".to_string(),
-                Place::Bilabial => "p".to_string(),
-                Place::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "p[".to_string()
-                }
-                Place::Labiodental if voiced => "b[".to_string(),
-                Place::Labiodental => "p[".to_string(),
-                Place::Dental if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "t[".to_string()
-                }
-                Place::Dental if voiced => "d[".to_string(),
-                Place::Dental => "t[".to_string(),
-                Place::Alveolar if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "t".to_string()
-                }
-                Place::Alveolar if voiced => "d".to_string(),
-                Place::Alveolar => "t".to_string(),
-                Place::Postalveolar if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "t".to_string()
-                }
-                Place::Postalveolar if voiced => "d".to_string(),
-                Place::Postalveolar => "t".to_string(),
+                Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => "p",
+                Place::Bilabial if voiced => "b",
+                Place::Bilabial => "p",
+                Place::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => "p[",
+                Place::Labiodental if voiced => "b[",
+                Place::Labiodental => "p[",
+                Place::Dental if attachments.contains(&ObstruentAttachment::Ejective) => "t[",
+                Place::Dental if voiced => "d[",
+                Place::Dental => "t[",
+                Place::Alveolar if attachments.contains(&ObstruentAttachment::Ejective) => "t",
+                Place::Alveolar if voiced => "d",
+                Place::Alveolar => "t",
+                Place::Postalveolar if attachments.contains(&ObstruentAttachment::Ejective) => "t",
+                Place::Postalveolar if voiced => "d",
+                Place::Postalveolar => "t",
             },
             PhoneType::Fricative => match place {
-                Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "P\"".to_string()
-                }
-                Place::Bilabial if voiced => "B\"".to_string(),
-                Place::Bilabial => "P\"".to_string(),
-                Place::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "f".to_string()
-                }
-                Place::Labiodental if voiced => "v".to_string(),
-                Place::Labiodental => "f".to_string(),
-                Place::Dental if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "O-".to_string()
-                }
-                Place::Dental if voiced => "d-".to_string(),
-                Place::Dental => "O-".to_string(),
-                Place::Alveolar if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "s".to_string()
-                }
-                Place::Alveolar if voiced => "z".to_string(),
-                Place::Alveolar => "s".to_string(),
-                Place::Postalveolar if attachments.contains(&ObstruentAttachment::Ejective) => {
-                    "S".to_string()
-                }
-                Place::Postalveolar if voiced => "3\"".to_string(),
-                Place::Postalveolar => "S".to_string(),
+                Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => "P\"",
+                Place::Bilabial if voiced => "B\"",
+                Place::Bilabial => "P\"",
+                Place::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => "f",
+                Place::Labiodental if voiced => "v",
+                Place::Labiodental => "f",
+                Place::Dental if attachments.contains(&ObstruentAttachment::Ejective) => "O-",
+                Place::Dental if voiced => "d-",
+                Place::Dental => "O-",
+                Place::Alveolar if attachments.contains(&ObstruentAttachment::Ejective) => "s",
+                Place::Alveolar if voiced => "z",
+                Place::Alveolar => "s",
+                Place::Postalveolar if attachments.contains(&ObstruentAttachment::Ejective) => "S",
+                Place::Postalveolar if voiced => "3\"",
+                Place::Postalveolar => "S",
             },
             PhoneType::Vowel => todo!(),
-        }
+        })
     }
 
     fn aspiration<'a>(phone: &'a str, attachments: &HashSet<ObstruentAttachment>) -> Cow<'a, str> {
         if attachments.contains(&ObstruentAttachment::Preaspirated) {
-            Cow::Owned("h^".to_string() + phone)
+            Cow::Owned(branner_to_ipa("h^") + phone)
         } else if attachments.contains(&ObstruentAttachment::Aspirated) {
-            Cow::Owned(phone.to_string() + "h^")
+            Cow::Owned(phone.to_string() + &branner_to_ipa("h^"))
         } else {
             Cow::Borrowed(phone)
         }
@@ -143,15 +124,15 @@ impl fmt::Display for Phone {
                 let mut phone = Self::get_base(PhoneType::Plosive, place, *voiced, attachments);
 
                 if attachments.contains(&ObstruentAttachment::Breathy) {
-                    phone += r#"h")"#;
+                    phone += &branner_to_ipa(r#"h")"#);
                 }
 
                 if attachments.contains(&ObstruentAttachment::Creaky) {
-                    phone += "~";
+                    phone += &branner_to_ipa("~");
                 }
 
                 if attachments.contains(&ObstruentAttachment::Ejective) {
-                    phone += "`";
+                    phone += &branner_to_ipa("`");
                 }
 
                 phone = Self::aspiration(&phone, attachments).to_string();
@@ -170,19 +151,19 @@ impl fmt::Display for Phone {
                     Self::get_base(PhoneType::Fricative, end_place, *voiced, attachments);
 
                 if attachments.contains(&ObstruentAttachment::Breathy) {
-                    start_phone += r#"h")"#;
-                    end_phone += r#"h")"#;
+                    start_phone += &branner_to_ipa(r#"h")"#);
+                    end_phone += &branner_to_ipa(r#"h")"#);
                 }
 
                 if attachments.contains(&ObstruentAttachment::Creaky) {
-                    start_phone += "~\u{200b}";
-                    end_phone += "~\u{200b}";
+                    start_phone += &branner_to_ipa("~");
+                    end_phone += &branner_to_ipa("~");
                 }
 
-                let mut phone = format!("{start_phone})){end_phone}");
+                let mut phone = branner_to_ipa(&format!("{start_phone})){end_phone}"));
 
                 if attachments.contains(&ObstruentAttachment::Ejective) {
-                    phone += "`";
+                    phone += &branner_to_ipa("`");
                 }
 
                 phone = Self::aspiration(&phone, attachments).to_string();

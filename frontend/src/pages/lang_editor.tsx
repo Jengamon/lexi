@@ -25,15 +25,14 @@ import {
     Link,
     Outlet,
     useNavigate,
-    useOutlet,
     useOutletContext,
     useParams,
 } from "react-router-dom";
 import { Array, String } from "runtypes";
-import useSWR, { KeyedMutator } from "swr";
+import { KeyedMutator } from "swr";
 import useSWRSubscription from "swr/subscription";
 import { Language, Protolanguage } from "~/src/data";
-import { fetcher, subscribeGenerator } from "~/src/stores";
+import { useCheckedInvokeSWR, subscribeGenerator } from "~/src/stores";
 import { NavBar } from "../components/navbar";
 import { getErrorMessage } from "../util";
 import { useAppContext } from "../views/app";
@@ -41,16 +40,7 @@ import { Page } from "./page";
 
 export function useProtolanguage() {
     const { plangId } = useParams();
-    const { data, error, mutate } = useSWR<Protolanguage>(
-        [
-            "get_protolanguage",
-            Protolanguage,
-            {
-                name: plangId,
-            },
-        ],
-        fetcher,
-    );
+    const { data, error, mutate } = useCheckedInvokeSWR(Protolanguage, "get_protolanguage", { name: plangId });
 
     return {
         protolang: data,
@@ -61,16 +51,7 @@ export function useProtolanguage() {
 
 export function useLanguage() {
     const { langId } = useParams();
-    const { data, error, mutate } = useSWR<Language>(
-        [
-            "get_language",
-            Language,
-            {
-                name: langId,
-            },
-        ],
-        fetcher,
-    );
+    const { data, error, mutate } = useCheckedInvokeSWR(Language, "get_language", { name: langId });
 
     return {
         lang: data,
@@ -165,15 +146,20 @@ function LanguageEditorInner({
             const get =
                 mode === "protolang" ? "get_protolanguage" : "get_language";
             const prefix = mode === "protolang" ? "/proto" : "/lang";
-            const mutate = mode === "protolang" ? protolangMutate : langMutate;
-            const Type = mode === "protolang" ? Protolanguage : Language;
 
             await invoke(create, { name });
 
-            await mutate(async () => {
-                const data = await invoke(get, { name });
-                return Type.check(data);
-            });
+            if (mode === "protolang") {
+                await protolangMutate(async () => {
+                    const data = await invoke(get, { name });
+                    return Protolanguage.check(data);
+                });
+            } else {
+                await langMutate(async () => {
+                    const data = await invoke(get, { name });
+                    return Language.check(data);
+                });
+            }
 
             setNewName("");
             setShowCreateDialog(false);
