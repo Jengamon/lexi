@@ -6,6 +6,9 @@ test:
     -cd src-tauri && cargo insta test
     cd src-tauri && cargo insta review
 
+test-ci:
+    cd src-tauri && cargo test
+
 dev:
     cargo tauri dev
 
