@@ -104,19 +104,10 @@ of that text, and possible meanings of that text.
 A language has 0+ protolang ancestors. To inherit from another language, you
 must epoch the project to move the data accordingly.
 
-For this reason, languages *do not* duplicate data from protolanguages, but instead, refering to data (such as a phoneme) that could belong to a protolanguage or language, the referent is made clear by the referee.
+For this reason, languages *do not* duplicate data from protolanguages.
+If something exists in both, the one in the language is considered an "override" of the one in the protolanguage specific to the language in question.
 
-So looking for a certain phoneme from a language should look like
-
-```js
-{
-    Language: // or Protolanguage would go here.
-    {
-        name: "<some language name>",
-        id: "<some UUID here>",
-    }
-}
-```
+To look up something in a language, we first check the language to see if it contains the UUID, then we check all ancestors in specified order.
 
 # TODO
 

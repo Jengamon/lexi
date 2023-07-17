@@ -77,7 +77,14 @@ impl LanguageGroup {
             .zip(phonemes)
             .map(|(l, phons)| {
                 let mut basic: Protolanguage = l.into();
-                basic.phonemes.extend(phons.into_iter());
+                // Order matters: if both protolanguage and language specify
+                // an id for a phoneme, we want to use the one in the language
+                // (a language can "override" a protolanguage's phonemes)
+                // This is how we implement sound change.
+                basic.phonemes = phons
+                    .into_iter()
+                    .chain(basic.phonemes.into_iter())
+                    .collect();
                 basic
             })
             .collect();
@@ -154,6 +161,61 @@ mod tests {
                     let mut map = HashMap::new();
                     map.insert(
                         uuid!("00000000-0000-0000-0000-000000000001"),
+                        Phoneme {
+                            ortho: "2".to_string(),
+                            primary: Phone::Plosive {
+                                place: crate::data::Place::Bilabial,
+                                voiced: true,
+                                attachments: HashSet::new(),
+                            },
+                            allo: vec![],
+                        },
+                    );
+                    map
+                },
+            }],
+            ..Default::default()
+        };
+
+        pre.epoch();
+
+        with_settings!({sort_maps => true}, {
+            assert_yaml_snapshot!(pre);
+        })
+    }
+
+    #[test]
+    fn epoch_when_phoneme_and_protophoneme_exist_keeps_phoneme() {
+        let mut pre = LanguageGroup {
+            family_id: uuid!("00000000-0000-0000-0000-000000000000"),
+            protolangs: vec![Protolanguage {
+                name: "1".to_string(),
+                description: None,
+                phonemes: {
+                    let mut map = HashMap::new();
+                    map.insert(
+                        uuid!("00000000-0000-0000-0000-000000000000"),
+                        Phoneme {
+                            ortho: "1".to_string(),
+                            primary: Phone::Plosive {
+                                place: crate::data::Place::Bilabial,
+                                voiced: false,
+                                attachments: HashSet::new(),
+                            },
+                            allo: vec![],
+                        },
+                    );
+                    map
+                },
+            }],
+            langs: vec![Language {
+                name: "1'".to_string(),
+                ancestors: vec!["1".to_string()],
+                description: None,
+                phonemes: {
+                    let mut map = HashMap::new();
+                    map.insert(
+                        uuid!("00000000-0000-0000-0000-000000000000"),
                         Phoneme {
                             ortho: "2".to_string(),
                             primary: Phone::Plosive {
