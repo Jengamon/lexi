@@ -3,11 +3,12 @@ name = "app"
 version = "0.1.0"
 description = "A Tauri App"
 authors = ["you"]
-license = ""
-repository = ""
+license = "MIT"
+repository = "https://github.com/Jengamon/lexi"
 default-run = "app"
 edition = "2021"
 rust-version = "1.60"
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -27,7 +28,7 @@ oneshot = "0.1.5"
 ipa-translate = { version  = "0.1.6", git = "https://github.com/Jengamon/ipa-translate.git" }
 serde_regex = "1.1.0"
 semver = { version = "1.0.17", features = ["serde"] }
-chrono = { version = "0.4.26", features = ["serde"] }
+chrono = { version = "0.4.26", default-features = false, features = ["serde", "clock"] }
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 log = "0.4.19"
 uuid = { version = "1.4.0", features = ["serde", "v4", "fast-rng"] }
