@@ -2,6 +2,26 @@ name: 'test-on-pr'
 on: [pull_request]
 
 jobs:
+  cargo-deny:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./src-tauri
+    strategy:
+      matrix:
+        checks:
+          - advisories
+          - bans licenses sources
+    # Prevent sudden announcement of a new advisory from failing ci:
+    continue-on-error: ${{ matrix.checks == 'advisories' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: install cargo-deny
+        run: cargo install cargo-deny
+      - name: Run Deny checks
+        run: cargo deny check ${{ matrix.checks }}
   test-tauri:
     strategy:
       fail-fast: false
