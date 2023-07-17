@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-import * as classes from "./about.module.css";
+import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { String } from "runtypes";
 import {

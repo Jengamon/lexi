@@ -2,7 +2,6 @@ import { useRouteError } from "react-router-dom";
 import { getErrorMessage } from "../util";
 import { theme } from "./app";
 import { ThemeProvider } from "@emotion/react";
-import { Page } from "../pages/page";
 import { Box, CssBaseline, Typography, createTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";

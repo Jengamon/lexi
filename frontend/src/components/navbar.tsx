@@ -172,7 +172,7 @@ export function NavBar({ title }: NavbarProps) {
                                     to={tab.href}
                                     sx={{
                                         my: 2,
-                                        color: "white",
+                                        color: "inherit",
                                         display: "block",
                                         "&.active": {
                                             backgroundColor: "white",

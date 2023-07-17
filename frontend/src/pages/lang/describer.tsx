@@ -22,8 +22,32 @@ export default function Describer() {
                 loc: "Phonotactics",
                 href: "phonotactics",
             },
+            {
+                loc: "Lexicon",
+                href: "lexicon",
+            },
         ],
         lang: [
+            {
+                loc: "Ancestry",
+                href: "ancestry",
+            },
+            {
+                loc: "Dialects",
+                href: "dialects",
+            },
+            {
+                loc: "Phonemes",
+                href: "phonemes",
+            },
+            {
+                loc: "Phonotactics",
+                href: "phonotactics",
+            },
+            {
+                loc: "Lexicon",
+                href: "lexicon",
+            },
             // ...
             {
                 loc: "Builder",

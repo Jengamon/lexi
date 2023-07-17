@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavBar } from "../components/navbar";
-import { Box, Container, Paper, Toolbar } from "@mui/material";
+import { Container } from "@mui/material";
 
 export type PageProps = {
     title: string;

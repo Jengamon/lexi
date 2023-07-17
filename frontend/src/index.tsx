@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { invoke } from "@tauri-apps/api";
-import { CssBaseline } from "@mui/material";
 
 // Start services
 (async () => {

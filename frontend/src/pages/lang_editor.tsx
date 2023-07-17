@@ -1,4 +1,4 @@
-import { Add, Create, Delete, Toc } from "@mui/icons-material";
+import { Add, Create, Delete, Toc, Language as LanguageIcon } from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -11,12 +11,12 @@ import {
     ListItem,
     ListItemButton,
     ListItemText,
+    SpeedDial,
+    SpeedDialAction,
+    SpeedDialIcon,
     TextField,
     Toolbar,
     Typography,
-    SpeedDial,
-    SpeedDialIcon,
-    SpeedDialAction,
     capitalize,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
@@ -32,7 +32,7 @@ import { Array, String } from "runtypes";
 import { KeyedMutator } from "swr";
 import useSWRSubscription from "swr/subscription";
 import { Language, Protolanguage } from "~/src/data";
-import { useCheckedInvokeSWR, subscribeGenerator } from "~/src/stores";
+import { subscribeGenerator, useCheckedInvokeSWR } from "~/src/stores";
 import { NavBar } from "../components/navbar";
 import { getErrorMessage } from "../util";
 import { useAppContext } from "../views/app";
@@ -237,6 +237,18 @@ function LanguageEditorInner({
                         : navigate("/lang")
                 }
             />
+            {
+                langId !== undefined && <SpeedDialAction
+                    key="back-to-language-root"
+                    icon={<LanguageIcon />}
+                    tooltipTitle={`${capitalize(noun)} Root`}
+                    onClick={() =>
+                        mode === "protolang"
+                            ? navigate(`/proto/${langId}/describe`)
+                            : navigate(`/lang/${langId}/describe`)
+                    }
+                />
+            }
             <SpeedDialAction
                 key="create"
                 icon={<Create />}
