@@ -2,6 +2,21 @@ name: 'test-on-pr'
 on: [pull_request]
 
 jobs:
+  cargo-deny:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        checks:
+          - advisories
+          - bans licenses sources
+    # Prevent sudden announcement of a new advisory from failing ci:
+    continue-on-error: ${{ matrix.checks == 'advisories' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check ${{ matrix.checks }}
+        working-directory: ./src-tauri
   test-tauri:
     strategy:
       fail-fast: false
@@ -12,7 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: extractions/setup-just@v1
-      - uses: EmbarkStudios/cargo-deny-action@v1
       - name: setup node
         uses: actions/setup-node@v3
         with:
