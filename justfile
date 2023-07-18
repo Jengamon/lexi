@@ -2,6 +2,9 @@ fresh:
     cd frontend && yarn install
     cargo install tauri-cli --locked
 
+fresh-ci:
+    cd frontend && yarn install
+
 test:
     cd src-tauri && cargo deny check
     -cd src-tauri && cargo insta test
