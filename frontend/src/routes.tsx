@@ -4,8 +4,8 @@ import AboutPage from "~/src/pages/about";
 import HomePage from "~/src/pages/home";
 import Builder from "~/src/pages/lang/builder";
 import PhonemesEditor from "~/src/pages/lang/phonemes_editor";
-import AppView from "~/src/views/app";
-import { LanguageEditor } from "~/src/pages/lang_editor";
+import AppView, { AppViewCrumb } from "~/src/views/app";
+import { LanguageEditor, LanguageEditorCrumb, LanguageEditorLoader, LanguageEditorLoaderData } from "~/src/pages/lang_editor";
 import KaboomAppView from "./views/kaboom_app";
 import Describer from "./pages/lang/describer";
 
@@ -16,6 +16,11 @@ export const ROUTES: readonly RouteObject[] = [
     {
         element: <AppView />,
         errorElement: <KaboomAppView />,
+        handle: {
+            crumb(key: number) {
+                return <AppViewCrumb key={key} />;
+            }
+        },
         children: [
             {
                 path: "/",
@@ -27,7 +32,13 @@ export const ROUTES: readonly RouteObject[] = [
             },
             {
                 path: "/proto/:plangId?",
+                loader: LanguageEditorLoader,
                 element: <LanguageEditor mode="protolang" />,
+                handle: {
+                    crumb(key: number, data: LanguageEditorLoaderData) {
+                        return <LanguageEditorCrumb key={key} data={data} mode="protolang" />
+                    }
+                },
                 children: [
                     {
                         path: "phonemes",
@@ -53,7 +64,13 @@ export const ROUTES: readonly RouteObject[] = [
             },
             {
                 path: "/lang/:langId?",
+                loader: LanguageEditorLoader,
                 element: <LanguageEditor mode="lang" />,
+                handle: {
+                    crumb(key: number, data: LanguageEditorLoaderData) {
+                        return <LanguageEditorCrumb key={key} data={data} mode="lang" />
+                    }
+                },
                 children: [
                     {
                         path: "ancestry",

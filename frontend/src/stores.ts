@@ -7,12 +7,20 @@ import useSWR, { SWRResponse } from "swr";
 export function useCheckedInvokeSWR<R extends Runtype<T>, T>(
     expected: R,
     id: string,
-    args: any
+    args: any,
 ): SWRResponse<Static<R>> {
     return useSWR<T>([id, args], async ([id, args]: [string, any]) => {
-        let data = await invoke(id, args);
-        return expected.check(data);
+        return await useCheckedInvoke(expected, id, args);
     });
+}
+
+export async function useCheckedInvoke<R extends Runtype<T>, T>(
+    expected: R,
+    id: string,
+    args: any,
+): Promise<Static<R>> {
+    let data = await invoke(id, args);
+    return expected.check(data);
 }
 
 export function subscribeGenerator<R extends Runtype<T>, T>(

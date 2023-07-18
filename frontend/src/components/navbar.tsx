@@ -20,10 +20,9 @@ import { useState, MouseEvent } from "react";
 import { useAppContext } from "../views/app";
 
 export interface NavbarProps {
-    title: string;
 }
 
-export function NavBar({ title }: NavbarProps) {
+export function NavBar({ }: NavbarProps) {
     const tabs = [
         {
             label: "Protolanguages",
@@ -87,8 +86,10 @@ export function NavBar({ title }: NavbarProps) {
                                 color: "inherit",
                                 textDecoration: "none",
                             }}
+
                         >
                             LEXI
+
                         </Typography>
                         <Box
                             sx={{
@@ -186,11 +187,17 @@ export function NavBar({ title }: NavbarProps) {
                         </Box>
                         <Box sx={{ flexGrow: 0 }}>
                             <FormGroup>
-                                <FormControlLabel control={
-                                    <Switch checked={darkMode}
-                                        onChange={() => setDarkMode(!darkMode)} />} label={
-                                            darkMode ? "Dark" : "Light"
-                                        } />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={darkMode}
+                                            onChange={() =>
+                                                setDarkMode(!darkMode)
+                                            }
+                                        />
+                                    }
+                                    label={darkMode ? "Dark" : "Light"}
+                                />
                             </FormGroup>
                         </Box>
                     </Toolbar>

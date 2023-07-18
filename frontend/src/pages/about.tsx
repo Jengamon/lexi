@@ -10,7 +10,14 @@ import {
 import { Phone } from "~/src/data";
 import { useCheckedInvokeSWR } from "../stores";
 import { useAutosave } from "../views/app";
-import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import {
+    Box,
+    Button,
+    Paper,
+    Stack,
+    TextField,
+    Typography,
+} from "@mui/material";
 import { Page } from "./page";
 
 export default function AboutPage() {
@@ -38,8 +45,7 @@ export default function AboutPage() {
             },
         };
 
-        displayPhone(phone)
-            .then((output) => setDisplayPhone(output));
+        displayPhone(phone).then((output) => setDisplayPhone(output));
     });
 
     async function testExportCurrentProject() {
@@ -52,10 +58,8 @@ export default function AboutPage() {
     }
 
     return (
-        <Page title="About">
-            <Typography variant="ipa">
-                {testDisplayPhone}
-            </Typography>
+        <Page>
+            <Typography variant="ipa">{testDisplayPhone}</Typography>
             <Typography variant="body1" component="em">
                 Lexi is about making coming up with conlangs easier by providing
                 a programmatic way to store and explore conlangs both
@@ -82,7 +86,9 @@ export default function AboutPage() {
                 {testExport && (
                     <Paper component="pre">
                         {String.guard(testExport) ? (
-                            <Typography fontFamily="monospace">{testExport}</Typography>
+                            <Typography fontFamily="monospace">
+                                {testExport}
+                            </Typography>
                         ) : (
                             <Typography fontFamily="monospace" color="error">
                                 {testExport.error}
@@ -96,12 +102,15 @@ export default function AboutPage() {
                     <TextField
                         label="Branner"
                         inputProps={{
-                            autoCorrect: "off"
+                            autoCorrect: "off",
                         }}
                         autoComplete="off"
                         value={brannerInput}
                         onChange={async (ev) => {
-                            const input = ev.target.value.replace(/[\u201C\u201D]/g, '"');
+                            const input = ev.target.value.replace(
+                                /[\u201C\u201D]/g,
+                                '"',
+                            );
                             setBrannerInput(input);
                             const newBranner = await fromBranner(input);
                             setBranner(newBranner);
@@ -113,12 +122,15 @@ export default function AboutPage() {
                     <TextField
                         label="SIL"
                         inputProps={{
-                            autoCorrect: "off"
+                            autoCorrect: "off",
                         }}
                         autoComplete="off"
                         value={silInput}
                         onChange={async (ev) => {
-                            const input = ev.target.value.replace(/[\u201C\u201D]/g, '"');
+                            const input = ev.target.value.replace(
+                                /[\u201C\u201D]/g,
+                                '"',
+                            );
                             setSilInput(input);
                             const newSil = await fromSil(input);
                             setSil(newSil);
@@ -130,7 +142,9 @@ export default function AboutPage() {
             <Box>
                 <Paper component="pre">
                     {dumpedLangGroup ? (
-                        <Typography fontFamily="monospace">{dumpedLangGroup}</Typography>
+                        <Typography fontFamily="monospace">
+                            {dumpedLangGroup}
+                        </Typography>
                     ) : (
                         <Typography fontFamily="monospace" color="error">
                             {getErrorMessage(dumpedLangGroupError)}
@@ -138,6 +152,6 @@ export default function AboutPage() {
                     )}
                 </Paper>
             </Box>
-        </Page >
+        </Page>
     );
 }

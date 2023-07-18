@@ -116,9 +116,9 @@ export default function HomePage() {
                 message: "Epoch created",
                 action: {
                     label: "Merge",
-                    act: () => setShowMergeDialog(true)
-                }
-            })
+                    act: () => setShowMergeDialog(true),
+                },
+            });
         } catch (e) {
             createError(e);
         }
@@ -175,31 +175,34 @@ export default function HomePage() {
     }
 
     const mergeDialog = (
-        <Dialog open={showMergeDialog} onClose={() => {
-            setShowMergeDialog(false);
-            // Don't immediately clear state, it looks ugly
-            setTimeout(() => {
-                setMergeSource("");
-                setMergeError(null);
-            }, 100);
-        }}>
+        <Dialog
+            open={showMergeDialog}
+            onClose={() => {
+                setShowMergeDialog(false);
+                // Don't immediately clear state, it looks ugly
+                setTimeout(() => {
+                    setMergeSource("");
+                    setMergeError(null);
+                }, 100);
+            }}
+        >
             <DialogTitle>Merge Language</DialogTitle>
             <DialogContent>
                 <Box sx={{ my: 2, minWidth: 300 }}>
                     <FormControl fullWidth error={Boolean(mergeError)}>
-                        <InputLabel id="merge-source-label">Merge Source</InputLabel>
+                        <InputLabel id="merge-source-label">
+                            Merge Source
+                        </InputLabel>
                         <Select
                             labelId="merge-source-label"
                             id="merge-source"
                             value={mergeSource}
                             label="Merge Source"
                             required={true}
-                            onChange={(ev) => setMergeSource(ev.target.value)}>
+                            onChange={(ev) => setMergeSource(ev.target.value)}
+                        >
                             {languageGroupNames.map((name) => (
-                                <MenuItem
-                                    key={name}
-                                    value={name}
-                                >
+                                <MenuItem key={name} value={name}>
                                     {name}
                                 </MenuItem>
                             ))}
@@ -209,15 +212,15 @@ export default function HomePage() {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button
-                    onClick={async () =>
-                        await mergeProject(mergeSource)}>Merge</Button>
+                <Button onClick={async () => await mergeProject(mergeSource)}>
+                    Merge
+                </Button>
             </DialogActions>
-        </Dialog >
+        </Dialog>
     );
 
     return (
-        <Page title="Home">
+        <Page>
             {isNameLoading ? (
                 <></>
             ) : (

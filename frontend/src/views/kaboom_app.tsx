@@ -13,7 +13,7 @@ export default function KaboomAppView() {
 
     const setDarkMode = (darkMode: boolean) => {
         setDarkMode_(darkMode);
-        updateTheme(theme => {
+        updateTheme((theme) => {
             theme.palette.mode = darkMode ? "dark" : "light";
         });
     };
@@ -21,7 +21,7 @@ export default function KaboomAppView() {
     useEffect(() => {
         const existingPreference = localStorage.getItem("darkMode");
         if (existingPreference) {
-            (existingPreference === "light")
+            existingPreference === "light"
                 ? setDarkMode(false)
                 : setDarkMode(true);
         } else {

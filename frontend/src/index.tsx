@@ -18,13 +18,14 @@ import { invoke } from "@tauri-apps/api";
     // the new value
     let autosaveInterval = localStorage.getItem("autosave");
     if (autosaveInterval && parseInt(autosaveInterval) > 0) {
-        await invoke("init_autosave_service", { halfMinutes: parseInt(autosaveInterval) });
+        await invoke("init_autosave_service", {
+            halfMinutes: parseInt(autosaveInterval),
+        });
     } else {
         const defaultHM = 4;
         localStorage.setItem("autosave", defaultHM.toFixed(0));
         await invoke("init_autosave_service", { halfMinutes: defaultHM });
     }
-
 })();
 
 const node = document.getElementById("app");
