@@ -1,6 +1,7 @@
 use super::Error;
 use crate::data::LanguageGroup;
 use crate::file::Project;
+use regex::Regex;
 use tauri::{command, State};
 
 #[command]
@@ -10,9 +11,18 @@ pub fn new_language_group(project: State<Project>) {
 
 #[command]
 pub fn epoch_language_group(project: State<Project>) {
+    let epoch_detect = Regex::new("(.*)_epoch([0-9]+)$").unwrap();
     let mut project = project.0.lock().unwrap();
     project.1.epoch();
-    project.0 = format!("{}_epoch", project.0);
+    project.0 = if let Some(matches) = epoch_detect.captures(&project.0) {
+        format!(
+            "{}_epoch{}",
+            matches.get(1).unwrap().as_str(),
+            matches.get(2).unwrap().as_str().parse::<u32>().unwrap() + 1
+        )
+    } else {
+        format!("{}_epoched", project.0)
+    };
 }
 
 #[command]
