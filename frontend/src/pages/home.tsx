@@ -99,6 +99,7 @@ export default function HomePage() {
     async function newProject() {
         try {
             await invoke("new_language_group", {});
+            await familyIdMutate(async () => await invoke("get_family_id"));
             await setProjectName("");
         } catch (e) {
             createError(e);
@@ -153,9 +154,12 @@ export default function HomePage() {
             await invoke("merge_language_group", {
                 filename: name,
             });
-            setMergeError(null);
-            setMergeSource("");
             setShowMergeDialog(false);
+            // again, don't immediately reset state, it ugly
+            setTimeout(() => {
+                setMergeError(null);
+                setMergeSource("");
+            }, 100);
         } catch (e) {
             setMergeError(getErrorMessage(e));
         }
@@ -186,7 +190,7 @@ export default function HomePage() {
                 }, 100);
             }}
         >
-            <DialogTitle>Merge Language</DialogTitle>
+            <DialogTitle>Merge Project</DialogTitle>
             <DialogContent>
                 <Box sx={{ my: 2, minWidth: 300 }}>
                     <FormControl fullWidth error={Boolean(mergeError)}>
