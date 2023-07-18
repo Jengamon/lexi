@@ -10,7 +10,12 @@ import {
     createTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Link, Outlet, ScrollRestoration, useOutletContext } from "react-router-dom";
+import {
+    Link,
+    Outlet,
+    ScrollRestoration,
+    useOutletContext,
+} from "react-router-dom";
 import { Record, Static, String } from "runtypes";
 import useSWRSubscription from "swr/subscription";
 import { subscribeGenerator, useCheckedInvokeSWR } from "../stores";
@@ -43,13 +48,11 @@ export const theme = {
             main: "#f50057",
         },
     },
-    typography: {
-    },
+    typography: {},
     components: {
         MuiTypography: {
             defaultProps: {
-                variantMapping: {
-                },
+                variantMapping: {},
             },
         },
     },
@@ -98,7 +101,11 @@ export function AppViewCrumb() {
         {},
     );
 
-    return <MUILink underline="hover" color="inherit" component={Link} to="/">{projectName}</MUILink>;
+    return (
+        <MUILink underline="hover" color="inherit" component={Link} to="/">
+            {projectName}
+        </MUILink>
+    );
 }
 
 export default function AppView() {

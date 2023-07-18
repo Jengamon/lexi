@@ -19,10 +19,9 @@ import { NavLink } from "react-router-dom";
 import { useState, MouseEvent } from "react";
 import { useAppContext } from "../views/app";
 
-export interface NavbarProps {
-}
+export interface NavbarProps {}
 
-export function NavBar({ }: NavbarProps) {
+export function NavBar({}: NavbarProps) {
     const tabs = [
         {
             label: "Protolanguages",
@@ -86,10 +85,8 @@ export function NavBar({ }: NavbarProps) {
                                 color: "inherit",
                                 textDecoration: "none",
                             }}
-
                         >
                             LEXI
-
                         </Typography>
                         <Box
                             sx={{

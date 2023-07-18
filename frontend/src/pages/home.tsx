@@ -191,6 +191,7 @@ export default function HomePage() {
             }}
             title="Merge Project"
         >
+            <DialogTitle>Merge Project</DialogTitle>
             <DialogContent>
                 <Box sx={{ my: 2, minWidth: 300 }}>
                     <FormControl fullWidth error={Boolean(mergeError)}>
@@ -204,6 +205,8 @@ export default function HomePage() {
                             label="Merge Source"
                             required={true}
                             onChange={(ev) => setMergeSource(ev.target.value)}
+                            autoFocus
+                            tabIndex={1}
                         >
                             {languageGroupNames.map((name) => (
                                 <MenuItem key={name} value={name}>
@@ -216,11 +219,60 @@ export default function HomePage() {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={async () => await mergeProject(mergeSource)}>
+                <Button
+                    onClick={() => {
+                        setShowMergeDialog(false);
+                        // Don't immediately clear state, it looks ugly
+                        setTimeout(() => {
+                            setMergeSource("");
+                            setMergeError(null);
+                        }, 100);
+                    }}
+                    tabIndex={3}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    onClick={async () => await mergeProject(mergeSource)}
+                    tabIndex={2}
+                >
                     Merge
                 </Button>
             </DialogActions>
         </Dialog>
+    );
+
+    const toolbar = (
+        <Stack alignSelf="center" spacing={1} direction="row" sx={{ mx: 2 }}>
+            <Tooltip title="Save Project">
+                <IconButton onClick={saveProject} aria-label="save">
+                    <Save />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Export Project">
+                <IconButton onClick={exportProject} aria-label="export">
+                    <FileDownload />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="New Project">
+                <IconButton onClick={newProject} aria-label="new">
+                    <AddBox />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Epoch Project">
+                <IconButton
+                    sx={{ transform: "scaleX(-1)" }}
+                    onClick={epochProject}
+                >
+                    <CallSplit />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Merge Project">
+                <IconButton onClick={() => setShowMergeDialog(true)}>
+                    <Merge />
+                </IconButton>
+            </Tooltip>
+        </Stack>
     );
 
     return (
@@ -238,54 +290,12 @@ export default function HomePage() {
                             onChange={(ev) => setProjectName(ev.target.value)}
                             value={projectName}
                         />
-                        <Stack
-                            alignSelf="center"
-                            spacing={1}
-                            direction="row"
-                            sx={{ mx: 2 }}
-                        >
-                            <Tooltip title="Save Project">
-                                <IconButton
-                                    onClick={saveProject}
-                                    aria-label="save"
-                                >
-                                    <Save />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Export Project">
-                                <IconButton
-                                    onClick={exportProject}
-                                    aria-label="export"
-                                >
-                                    <FileDownload />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="New Project">
-                                <IconButton
-                                    onClick={newProject}
-                                    aria-label="new"
-                                >
-                                    <AddBox />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Epoch Project">
-                                <IconButton
-                                    sx={{ transform: "scaleX(-1)" }}
-                                    onClick={epochProject}
-                                >
-                                    <CallSplit />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Merge Project">
-                                <IconButton
-                                    onClick={() => setShowMergeDialog(true)}
-                                >
-                                    <Merge />
-                                </IconButton>
-                            </Tooltip>
-                        </Stack>
+                        {toolbar}
                     </Box>
-                    <Box display={{ xs: "flex", sm: "none" }} flexDirection="column">
+                    <Box
+                        display={{ xs: "flex", sm: "none" }}
+                        flexDirection="column"
+                    >
                         <TextField
                             autoCorrect="off"
                             sx={{ flexGrow: 1 }}
@@ -294,52 +304,7 @@ export default function HomePage() {
                             onChange={(ev) => setProjectName(ev.target.value)}
                             value={projectName}
                         />
-                        <Stack
-                            alignSelf="center"
-                            spacing={1}
-                            direction="row"
-                            sx={{ mx: 2 }}
-                        >
-                            <Tooltip title="Save Project">
-                                <IconButton
-                                    onClick={saveProject}
-                                    aria-label="save"
-                                >
-                                    <Save />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Export Project">
-                                <IconButton
-                                    onClick={exportProject}
-                                    aria-label="export"
-                                >
-                                    <FileDownload />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="New Project">
-                                <IconButton
-                                    onClick={newProject}
-                                    aria-label="new"
-                                >
-                                    <AddBox />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Epoch Project">
-                                <IconButton
-                                    sx={{ transform: "scaleX(-1)" }}
-                                    onClick={epochProject}
-                                >
-                                    <CallSplit />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Merge Project">
-                                <IconButton
-                                    onClick={() => setShowMergeDialog(true)}
-                                >
-                                    <Merge />
-                                </IconButton>
-                            </Tooltip>
-                        </Stack>
+                        {toolbar}
                     </Box>
                     <Typography sx={{ pt: 2 }} align="center" variant="caption">
                         {isFamilyIdLoading

@@ -7,7 +7,7 @@ const Breadcrumbable = Record({
     handle: Record({
         crumb: Function,
     }),
-    data: Unknown
+    data: Unknown,
 });
 
 // TODO Use App loader functions...
@@ -24,8 +24,10 @@ export function Breadcrumbs() {
 
     return (
         <Box display="flex" justifyContent="center" sx={{ mt: 2 }}>
-            <MUIBreadcrumbs aria-label="breadcrumbs"
-                separator={<NavigateNext fontSize="small" />}>
+            <MUIBreadcrumbs
+                aria-label="breadcrumbs"
+                separator={<NavigateNext fontSize="small" />}
+            >
                 {crumbs}
             </MUIBreadcrumbs>
         </Box>

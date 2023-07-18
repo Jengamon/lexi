@@ -59,7 +59,9 @@ export default function AboutPage() {
 
     return (
         <Page>
-            <Typography variant="body1" fontFamily="sans-serif">{testDisplayPhone}</Typography>
+            <Typography variant="body1" fontFamily="sans-serif">
+                {testDisplayPhone}
+            </Typography>
             <Typography variant="body1" component="em">
                 Lexi is about making coming up with conlangs easier by providing
                 a programmatic way to store and explore conlangs both
@@ -116,7 +118,9 @@ export default function AboutPage() {
                             setBranner(newBranner);
                         }}
                     />
-                    <Typography variant="body1" fontFamily="serif">{branner}</Typography>
+                    <Typography variant="body1" fontFamily="serif">
+                        {branner}
+                    </Typography>
                 </Box>
                 <Box>
                     <TextField
@@ -136,7 +140,9 @@ export default function AboutPage() {
                             setSil(newSil);
                         }}
                     />
-                    <Typography variant="body1" fontFamily="sans-serif">{sil}</Typography>
+                    <Typography variant="body1" fontFamily="sans-serif">
+                        {sil}
+                    </Typography>
                 </Box>
             </Stack>
             <Box>

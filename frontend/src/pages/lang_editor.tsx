@@ -41,7 +41,11 @@ import { Array, String } from "runtypes";
 import { KeyedMutator } from "swr";
 import useSWRSubscription from "swr/subscription";
 import { Language, Protolanguage } from "~/src/data";
-import { subscribeGenerator, useCheckedInvokeSWR, useCheckedInvoke } from "~/src/stores";
+import {
+    subscribeGenerator,
+    useCheckedInvokeSWR,
+    useCheckedInvoke,
+} from "~/src/stores";
 import { NavBar } from "../components/navbar";
 import { getErrorMessage } from "../util";
 import { useAppContext } from "../views/app";
@@ -89,21 +93,41 @@ export type LanguageEditorProps = {
     mode: "lang" | "protolang";
 };
 
-export function LanguageEditorCrumb({ data, mode }: { data: LanguageEditorLoaderData } & LanguageEditorProps) {
-    const langData = data.currentProto !== undefined ? data.currentProto : data.currentLang;
-    return <MUILink underline="hover" color="inherit" component={Link}
-        to={`/${mode === "protolang" ? "proto" : "lang"}/${langData !== undefined ? langData.name : ""}/describe`}>
-        {langData !== undefined ? langData.name : "*UNKNOWN*"}
-    </MUILink >;
+export function LanguageEditorCrumb({
+    data,
+    mode,
+}: { data: LanguageEditorLoaderData } & LanguageEditorProps) {
+    const langData =
+        data.currentProto !== undefined ? data.currentProto : data.currentLang;
+    return (
+        <MUILink
+            underline="hover"
+            color="inherit"
+            component={Link}
+            to={`/${mode === "protolang" ? "proto" : "lang"}/${
+                langData !== undefined ? langData.name : ""
+            }/describe`}
+        >
+            {langData !== undefined ? langData.name : "*UNKNOWN*"}
+        </MUILink>
+    );
 }
 
-export async function LanguageEditorLoader({ params }: LoaderFunctionArgs): Promise<LanguageEditorLoaderData> {
-    const currentLang = params.langId !== undefined ? await useCheckedInvoke(Language, "get_language", {
-        name: params.langId
-    }) : undefined;
-    const currentProto = params.plangId !== undefined ? await useCheckedInvoke(Protolanguage, "get_protolanguage", {
-        name: params.plangId
-    }) : undefined;
+export async function LanguageEditorLoader({
+    params,
+}: LoaderFunctionArgs): Promise<LanguageEditorLoaderData> {
+    const currentLang =
+        params.langId !== undefined
+            ? await useCheckedInvoke(Language, "get_language", {
+                  name: params.langId,
+              })
+            : undefined;
+    const currentProto =
+        params.plangId !== undefined
+            ? await useCheckedInvoke(Protolanguage, "get_protolanguage", {
+                  name: params.plangId,
+              })
+            : undefined;
 
     return {
         currentLang,
@@ -112,8 +136,8 @@ export async function LanguageEditorLoader({ params }: LoaderFunctionArgs): Prom
 }
 
 export type LanguageEditorLoaderData = {
-    currentLang?: Language,
-    currentProto?: Protolanguage,
+    currentLang?: Language;
+    currentProto?: Protolanguage;
     langId?: string;
 };
 
