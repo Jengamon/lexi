@@ -8,6 +8,7 @@ import AppView, { AppViewCrumb } from "~/src/views/app";
 import { LanguageEditor, LanguageEditorCrumb, LanguageEditorLoader, LanguageEditorLoaderData } from "~/src/pages/lang_editor";
 import KaboomAppView from "./views/kaboom_app";
 import Describer from "./pages/lang/describer";
+import { PlainBreadcrumb } from "./components/plain_breadcrumb";
 
 // "Views" are top-level routes with *no* path.
 // "Pages" make up the children of a view.
@@ -43,18 +44,38 @@ export const ROUTES: readonly RouteObject[] = [
                     {
                         path: "phonemes",
                         element: <PhonemesEditor />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Phonemes" />;
+                            }
+                        }
                     },
                     {
                         path: "phonotactics",
                         // element: <BackToProtolanguageBanner />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Phonotactics" />;
+                            }
+                        }
                     },
                     {
                         path: "lexicon",
                         // element: <BackToProtolanguageBanner />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Lexicon" />;
+                            }
+                        }
                     },
                     {
                         path: "builder",
                         element: <Builder />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Builder" />;
+                            }
+                        }
                     },
                     {
                         path: "describe",
@@ -75,26 +96,56 @@ export const ROUTES: readonly RouteObject[] = [
                     {
                         path: "ancestry",
                         // element: <BackToLanguageBanner />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Ancestry" />;
+                            }
+                        }
                     },
                     {
                         path: "dialects",
                         // element: <BackToLanguageBanner />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Dialects" />;
+                            }
+                        }
                     },
                     {
                         path: "phonemes",
                         element: <PhonemesEditor />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Phonemes" />;
+                            }
+                        }
                     },
                     {
                         path: "phonotactics",
-                        // element: <BackToLanguageBanner />,
+                        // element: <BackToProtolanguageBanner />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Phonotactics" />;
+                            }
+                        }
                     },
                     {
                         path: "lexicon",
-                        // element: <BackToLanguageBanner />,
+                        // element: <BackToProtolanguageBanner />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Lexicon" />;
+                            }
+                        }
                     },
                     {
                         path: "builder",
                         element: <Builder />,
+                        handle: {
+                            crumb(key: number) {
+                                return <PlainBreadcrumb key={key} text="Builder" />;
+                            }
+                        }
                     },
                     {
                         path: "describe",
