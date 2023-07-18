@@ -44,20 +44,12 @@ impl BaseLanguage for Language {
         self.description.as_ref()
     }
 
-    fn provided_phonemes(&self) -> std::collections::HashSet<Uuid> {
-        self.phonemes.keys().copied().collect()
+    fn phonemes(&self) -> &HashMap<Uuid, Phoneme> {
+        &self.phonemes
     }
 
-    fn phoneme_entry(&mut self, id: Uuid) -> std::collections::hash_map::Entry<Uuid, Phoneme> {
-        self.phonemes.entry(id)
-    }
-
-    fn phoneme(&self, id: Uuid) -> Option<&Phoneme> {
-        todo!()
-    }
-
-    fn phoneme_mut(&mut self, id: Uuid) -> Option<&mut Phoneme> {
-        todo!()
+    fn phonemes_mut(&mut self) -> &mut HashMap<Uuid, Phoneme> {
+        &mut self.phonemes
     }
 }
 

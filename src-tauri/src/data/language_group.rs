@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use semver::Version;
 use serde::{Deserialize, Serialize};
@@ -59,15 +59,15 @@ impl LanguageGroup {
         id: Uuid,
         phon: Phoneme,
     ) -> bool {
-        if let Some(phon_slot) = lang.phoneme_mut(id) {
+        if let Some(phon_slot) = lang.phonemes_mut().get_mut(&id) {
             *phon_slot = phon;
             true
         } else {
             for anc in lang.ancestors() {
                 if let Some(proto) = protolangs.iter().find(|lang| lang.name() == anc) {
-                    let provided_phonemes = proto.provided_phonemes();
+                    let provided_phonemes: HashSet<_> = proto.phonemes().keys().collect();
                     if provided_phonemes.contains(&id) {
-                        *lang.phoneme_entry(id).or_default() = phon;
+                        *lang.phonemes_mut().entry(id).or_default() = phon;
                         return true;
                     }
                 } else {
@@ -82,12 +82,23 @@ impl LanguageGroup {
     ///
     /// The given id must either match an id in the language itself,
     /// or be present in one of the languages's protolanguages.
-    pub(crate) fn get_phoneme(
-        &mut self,
-        lang: &mut dyn BaseLanguage,
+    pub(crate) fn get_phoneme<'a>(
+        protolangs: &'a Vec<Protolanguage>,
+        lang: &'a dyn BaseLanguage,
         id: Uuid,
-    ) -> Option<&Phoneme> {
-        todo!()
+    ) -> Option<&'a Phoneme> {
+        if let Some(phon) = lang.phonemes().get(&id) {
+            Some(phon)
+        } else {
+            lang.ancestors()
+                .iter()
+                .filter_map(|anc| {
+                    protolangs
+                        .iter()
+                        .find(|lang| lang.name() == anc && lang.phonemes().keys().any(|k| k == &id))
+                })
+                .find_map(|proto| proto.phonemes.get(&id))
+        }
     }
 }
 

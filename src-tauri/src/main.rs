@@ -3,7 +3,7 @@
 
 use std::sync::RwLock;
 
-use tauri::{generate_handler, SystemTray};
+use tauri::generate_handler;
 use tauri_plugin_log::LogTarget;
 
 use crate::file::Project;
@@ -76,13 +76,17 @@ fn main() {
             interact::get_language_description,
             interact::set_language_description,
             interact::init_languages_server,
+            interact::create_language_phoneme,
             interact::create_protolanguage,
             interact::delete_protolanguage,
             interact::get_protolanguage,
             interact::get_protolanguage_description,
             interact::set_protolanguage_description,
             interact::init_protolanguages_server,
+            interact::create_protolanguage_phoneme,
             interact::set_phoneme,
+            interact::get_phoneme,
+            interact::delete_phoneme,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

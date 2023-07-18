@@ -39,10 +39,9 @@ pub enum ObstruentAttachment {
     Creaky,
 }
 
-enum PhoneType {
+enum ConsPhoneBase {
     Plosive,
     Fricative,
-    Vowel,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -69,14 +68,14 @@ pub enum Phone {
 }
 
 impl Phone {
-    fn get_base(
-        pt: PhoneType,
+    fn get_cons_base(
+        pt: ConsPhoneBase,
         place: &Place,
         voiced: bool,
         attachments: &HashSet<ObstruentAttachment>,
     ) -> String {
         branner_to_ipa(match pt {
-            PhoneType::Plosive => match place {
+            ConsPhoneBase::Plosive => match place {
                 Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => "p",
                 Place::Bilabial if voiced => "b",
                 Place::Bilabial => "p",
@@ -93,7 +92,7 @@ impl Phone {
                 Place::Postalveolar if voiced => "d",
                 Place::Postalveolar => "t",
             },
-            PhoneType::Fricative => match place {
+            ConsPhoneBase::Fricative => match place {
                 Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => "P\"",
                 Place::Bilabial if voiced => "B\"",
                 Place::Bilabial => "P\"",
@@ -110,7 +109,6 @@ impl Phone {
                 Place::Postalveolar if voiced => "3\"",
                 Place::Postalveolar => "S",
             },
-            PhoneType::Vowel => todo!(),
         })
     }
 
@@ -134,7 +132,8 @@ impl fmt::Display for Phone {
                 voiced,
                 attachments,
             } => {
-                let mut phone = Self::get_base(PhoneType::Plosive, place, *voiced, attachments);
+                let mut phone =
+                    Self::get_cons_base(ConsPhoneBase::Plosive, place, *voiced, attachments);
 
                 if attachments.contains(&ObstruentAttachment::Breathy) {
                     phone += &branner_to_ipa(r#"h")"#);
@@ -159,9 +158,9 @@ impl fmt::Display for Phone {
                 attachments,
             } => {
                 let mut start_phone =
-                    Self::get_base(PhoneType::Plosive, start_place, *voiced, attachments);
+                    Self::get_cons_base(ConsPhoneBase::Plosive, start_place, *voiced, attachments);
                 let mut end_phone =
-                    Self::get_base(PhoneType::Fricative, end_place, *voiced, attachments);
+                    Self::get_cons_base(ConsPhoneBase::Fricative, end_place, *voiced, attachments);
 
                 if attachments.contains(&ObstruentAttachment::Breathy) {
                     start_phone += &branner_to_ipa(r#"h")"#);

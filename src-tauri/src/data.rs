@@ -3,7 +3,7 @@ mod language_group;
 mod phoneme;
 mod protolanguage;
 
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 pub use language::*;
 pub use language_group::*;
@@ -24,8 +24,6 @@ pub(crate) trait BaseLanguage {
     fn description(&self) -> Option<&serde_json::Value>;
 
     /// What phonemes does this language actually provide
-    fn provided_phonemes(&self) -> HashSet<Uuid>;
-    fn phoneme_entry(&mut self, id: Uuid) -> std::collections::hash_map::Entry<Uuid, Phoneme>;
-    fn phoneme(&self, id: Uuid) -> Option<&Phoneme>;
-    fn phoneme_mut(&mut self, id: Uuid) -> Option<&mut Phoneme>;
+    fn phonemes(&self) -> &HashMap<Uuid, Phoneme>;
+    fn phonemes_mut(&mut self) -> &mut HashMap<Uuid, Phoneme>;
 }

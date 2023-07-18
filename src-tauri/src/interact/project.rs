@@ -12,17 +12,17 @@ pub fn new_language_group(project: State<Project>) {
 
 #[command]
 pub fn epoch_language_group(project: State<Project>) {
-    let epoch_detect = Regex::new("(.*)_epoch([0-9]+)$").unwrap();
+    let epoch_detect = Regex::new("(.*)([0-9]+)$").unwrap();
     let mut project = project.0.lock().unwrap();
     project.1.epoch();
     project.0 = if let Some(matches) = epoch_detect.captures(&project.0) {
         format!(
-            "{}_epoch{}",
+            "{}{}",
             matches.get(1).unwrap().as_str(),
             matches.get(2).unwrap().as_str().parse::<u32>().unwrap() + 1
         )
     } else {
-        format!("{}_epoched", project.0)
+        format!("{}_epoch", project.0)
     };
 }
 
@@ -69,5 +69,50 @@ pub fn set_phoneme(
         LanguageGroup::set_phoneme(&protolangs, lang, id, phoneme)
     } else {
         false
+    }
+}
+
+#[command]
+pub fn get_phoneme(
+    project: State<Project>,
+    name: String,
+    name_type: LanguageType,
+    id: Uuid,
+) -> Option<Phoneme> {
+    let ref mut project = project.inner().0.lock().unwrap().1;
+    let protolangs = project.protolangs.clone();
+    let lang: Option<_> = match name_type {
+        LanguageType::Protolanguage => project.protolanguage(name).map(|l| l as &dyn BaseLanguage),
+        LanguageType::Language => project.language(name).map(|l| l as &dyn BaseLanguage),
+    };
+
+    if let Some(lang) = lang {
+        LanguageGroup::get_phoneme(&protolangs, lang, id).cloned()
+    } else {
+        None
+    }
+}
+
+#[command]
+pub fn delete_phoneme(
+    project: State<Project>,
+    name: String,
+    name_type: LanguageType,
+    id: Uuid,
+) -> Option<Phoneme> {
+    let ref mut project = project.inner().0.lock().unwrap().1;
+    let lang: Option<_> = match name_type {
+        LanguageType::Protolanguage => project
+            .protolanguage_mut(name)
+            .map(|l| l as &mut dyn BaseLanguage),
+        LanguageType::Language => project
+            .language_mut(name)
+            .map(|l| l as &mut dyn BaseLanguage),
+    };
+
+    if let Some(lang) = lang {
+        lang.phonemes_mut().remove(&id)
+    } else {
+        None
     }
 }

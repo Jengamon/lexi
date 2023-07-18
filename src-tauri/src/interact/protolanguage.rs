@@ -1,9 +1,10 @@
 use super::Error;
-use crate::data::{BaseLanguage, Protolanguage};
+use crate::data::{BaseLanguage, Phoneme, Protolanguage};
 use crate::file::Project;
 use crate::ServiceState;
 use std::time::Duration;
 use tauri::{command, State, Window};
+use uuid::Uuid;
 
 #[command]
 pub fn create_protolanguage(project: State<Project>, name: String) -> Result<(), Error> {
@@ -92,5 +93,22 @@ pub fn init_protolanguages_server(
             std::thread::sleep(Duration::from_millis(500));
         });
         services.inner().0.write().unwrap().protolanguages = true;
+    }
+}
+
+#[command]
+pub fn create_protolanguage_phoneme(
+    project: State<Project>,
+    name: String,
+    phoneme: Phoneme,
+) -> Option<Uuid> {
+    let new_id = Uuid::new_v4();
+    let ref mut project = project.inner().0.lock().unwrap().1;
+    let lang = project.protolanguage_mut(name);
+    if let Some(proto) = lang {
+        proto.phonemes.insert(new_id, phoneme);
+        Some(new_id)
+    } else {
+        None
     }
 }
