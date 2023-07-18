@@ -94,6 +94,7 @@ pub fn init_autosave_service(
             };
 
             if let Ok(()) = _save_language_group(filename.clone(), &project, false) {
+                log::info!("Autosaved project to {filename}");
                 window
                     .emit(
                         "autosaved",
