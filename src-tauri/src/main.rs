@@ -3,7 +3,7 @@
 
 use std::sync::RwLock;
 
-use tauri::generate_handler;
+use tauri::{generate_handler, SystemTray};
 use tauri_plugin_log::LogTarget;
 
 use crate::file::Project;
@@ -41,6 +41,8 @@ impl ServiceState {
 pub struct ProgramStart(chrono::DateTime<chrono::Local>);
 
 fn main() {
+    // We don't need a system tray (for now)
+    // let tray = SystemTray::new();
     tauri::Builder::default()
         .manage(Project::new())
         .manage(ServiceState::new())

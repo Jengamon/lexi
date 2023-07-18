@@ -41,7 +41,8 @@
         "exceptionDomain": "",
         "frameworks": [],
         "providerShortName": null,
-        "signingIdentity": null
+        "signingIdentity": null,
+        "license": "../LICENSE"
       },
       "resources": [],
       "shortDescription": "",
@@ -71,6 +72,10 @@
         "title": "Lexi",
         "width": 800
       }
-    ]
+    ],
+    "systemTray": {
+      "iconPath": "../icons/template-icon.png",
+      "iconAsTemplate": true
+    }
   }
 }
