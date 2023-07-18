@@ -18,18 +18,18 @@ import { useImmer } from "use-immer";
 
 declare module "@mui/material/styles" {
     interface TypographyVariants {
-        ipa: React.CSSProperties;
+        // ipa: React.CSSProperties;
     }
 
     // allow configuration using `createTheme`
     interface TypographyVariantsOptions {
-        ipa?: React.CSSProperties;
+        // ipa?: React.CSSProperties;
     }
 }
 
 declare module "@mui/material/Typography" {
     interface TypographyPropsVariantOverrides {
-        ipa: true;
+        // ipa: true;
     }
 }
 
@@ -44,16 +44,11 @@ export const theme = {
         },
     },
     typography: {
-        /// Use for any text meant to contain IPA
-        ipa: {
-            fontFamily: "sans-serif",
-        },
     },
     components: {
         MuiTypography: {
             defaultProps: {
                 variantMapping: {
-                    ipa: "p",
                 },
             },
         },

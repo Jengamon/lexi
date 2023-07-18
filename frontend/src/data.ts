@@ -11,6 +11,7 @@ import {
     Boolean,
     Unknown,
     Dictionary,
+    Null,
 } from "runtypes";
 
 export const Place = Union(
@@ -42,6 +43,9 @@ export const Phone = Union(
             voiced: Boolean,
             attachments: Array(ObstruentAttachment),
         }),
+    }),
+    Record({
+        Null: Null,
     }),
 );
 export const Phoneme = Record({

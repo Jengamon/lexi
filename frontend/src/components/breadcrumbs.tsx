@@ -1,6 +1,7 @@
 import { useMatches } from "react-router-dom";
 import { Function, Record, Unknown } from "runtypes";
 import { Box, Breadcrumbs as MUIBreadcrumbs } from "@mui/material";
+import { NavigateNext } from "@mui/icons-material";
 
 const Breadcrumbable = Record({
     handle: Record({
@@ -23,7 +24,8 @@ export function Breadcrumbs() {
 
     return (
         <Box display="flex" justifyContent="center" sx={{ mt: 2 }}>
-            <MUIBreadcrumbs aria-label="breadcrumbs">
+            <MUIBreadcrumbs aria-label="breadcrumbs"
+                separator={<NavigateNext fontSize="small" />}>
                 {crumbs}
             </MUIBreadcrumbs>
         </Box>

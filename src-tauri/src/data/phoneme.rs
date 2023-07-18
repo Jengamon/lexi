@@ -11,6 +11,16 @@ pub struct Phoneme {
     pub allo: Vec<Phone>,
 }
 
+impl Default for Phoneme {
+    fn default() -> Self {
+        Self {
+            ortho: "".to_string(),
+            primary: Phone::Null,
+            allo: vec![],
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Copy, Clone, Debug)]
 pub enum Place {
     Bilabial,
@@ -54,6 +64,8 @@ pub enum Phone {
         attachments: HashSet<ObstruentAttachment>,
     },
     Vowel {},
+    /// Null production
+    Null,
 }
 
 impl Phone {
@@ -116,6 +128,7 @@ impl Phone {
 impl fmt::Display for Phone {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let phone = match self {
+            Phone::Null => "∅".to_string(),
             Phone::Plosive {
                 place,
                 voiced,

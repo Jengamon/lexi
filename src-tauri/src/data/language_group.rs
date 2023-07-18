@@ -4,7 +4,7 @@ use semver::Version;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::{Language, Protolanguage};
+use super::{BaseLanguage, Language, Phoneme, Protolanguage};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct LanguageGroup {
@@ -45,7 +45,53 @@ impl Default for LanguageGroup {
     }
 }
 
-// General utility
+// Adding and removing phonemes from a (proto-)language
+impl LanguageGroup {
+    /// Setting a phoneme
+    ///
+    /// The given id must either match an id in the language itself,
+    /// or the id must be present in one of the languages's protolanguages.
+    ///
+    /// Returns success
+    pub(crate) fn set_phoneme(
+        protolangs: &Vec<Protolanguage>,
+        lang: &mut dyn BaseLanguage,
+        id: Uuid,
+        phon: Phoneme,
+    ) -> bool {
+        if let Some(phon_slot) = lang.phoneme_mut(id) {
+            *phon_slot = phon;
+            true
+        } else {
+            for anc in lang.ancestors() {
+                if let Some(proto) = protolangs.iter().find(|lang| lang.name() == anc) {
+                    let provided_phonemes = proto.provided_phonemes();
+                    if provided_phonemes.contains(&id) {
+                        *lang.phoneme_entry(id).or_default() = phon;
+                        return true;
+                    }
+                } else {
+                    log::error!("Invalid ancestor in {}: {}", lang.name(), anc);
+                }
+            }
+            false
+        }
+    }
+
+    /// Getting a phoneme
+    ///
+    /// The given id must either match an id in the language itself,
+    /// or be present in one of the languages's protolanguages.
+    pub(crate) fn get_phoneme(
+        &mut self,
+        lang: &mut dyn BaseLanguage,
+        id: Uuid,
+    ) -> Option<&Phoneme> {
+        todo!()
+    }
+}
+
+// General changes (epoching & merging)
 impl LanguageGroup {
     /// Creates a new epoch.
     ///

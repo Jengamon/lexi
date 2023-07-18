@@ -189,8 +189,8 @@ export default function HomePage() {
                     setMergeError(null);
                 }, 100);
             }}
+            title="Merge Project"
         >
-            <DialogTitle>Merge Project</DialogTitle>
             <DialogContent>
                 <Box sx={{ my: 2, minWidth: 300 }}>
                     <FormControl fullWidth error={Boolean(mergeError)}>
@@ -229,7 +229,63 @@ export default function HomePage() {
                 <></>
             ) : (
                 <>
-                    <Box display="flex">
+                    <Box display={{ xs: "none", sm: "flex" }}>
+                        <TextField
+                            autoCorrect="off"
+                            sx={{ flexGrow: 1 }}
+                            size="small"
+                            label="Project Name"
+                            onChange={(ev) => setProjectName(ev.target.value)}
+                            value={projectName}
+                        />
+                        <Stack
+                            alignSelf="center"
+                            spacing={1}
+                            direction="row"
+                            sx={{ mx: 2 }}
+                        >
+                            <Tooltip title="Save Project">
+                                <IconButton
+                                    onClick={saveProject}
+                                    aria-label="save"
+                                >
+                                    <Save />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Export Project">
+                                <IconButton
+                                    onClick={exportProject}
+                                    aria-label="export"
+                                >
+                                    <FileDownload />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="New Project">
+                                <IconButton
+                                    onClick={newProject}
+                                    aria-label="new"
+                                >
+                                    <AddBox />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Epoch Project">
+                                <IconButton
+                                    sx={{ transform: "scaleX(-1)" }}
+                                    onClick={epochProject}
+                                >
+                                    <CallSplit />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Merge Project">
+                                <IconButton
+                                    onClick={() => setShowMergeDialog(true)}
+                                >
+                                    <Merge />
+                                </IconButton>
+                            </Tooltip>
+                        </Stack>
+                    </Box>
+                    <Box display={{ xs: "flex", sm: "none" }} flexDirection="column">
                         <TextField
                             autoCorrect="off"
                             sx={{ flexGrow: 1 }}

@@ -22,7 +22,7 @@
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
-      "copyright": "",
+      "copyright": "Copyright 2023 @Jengamon & contributors",
       "deb": {
         "depends": []
       },

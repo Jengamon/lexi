@@ -1,5 +1,5 @@
 use super::Error;
-use crate::data::Language;
+use crate::data::{BaseLanguage, Language};
 use crate::file::Project;
 use crate::ServiceState;
 use std::time::Duration;
@@ -36,7 +36,7 @@ pub fn get_language_description(
         .unwrap()
         .1
         .language(name)
-        .and_then(Language::description)
+        .and_then(BaseLanguage::description)
         .cloned()
 }
 

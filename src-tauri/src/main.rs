@@ -80,6 +80,7 @@ fn main() {
             interact::get_protolanguage_description,
             interact::set_protolanguage_description,
             interact::init_protolanguages_server,
+            interact::set_phoneme,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

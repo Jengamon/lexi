@@ -1,5 +1,5 @@
 use super::Error;
-use crate::data::Protolanguage;
+use crate::data::{BaseLanguage, Protolanguage};
 use crate::file::Project;
 use crate::ServiceState;
 use std::time::Duration;
@@ -55,7 +55,7 @@ pub fn get_protolanguage_description(
         .unwrap()
         .1
         .protolanguage(name)
-        .and_then(Protolanguage::description)
+        .and_then(BaseLanguage::description)
         .cloned()
 }
 

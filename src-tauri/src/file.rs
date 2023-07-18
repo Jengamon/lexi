@@ -2,7 +2,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 use std::{fs::File, sync::Arc};
 
-use anyhow::{anyhow, Context};
+use anyhow::Context;
 use chrono::{DateTime, Local};
 use directories::ProjectDirs;
 use regex::Regex;
