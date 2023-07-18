@@ -33,7 +33,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@parcel/core", "npm:2.9.3"],\
             ["prettier", "npm:3.0.0"],\
+            ["process", "npm:0.11.10"],\
             ["typescript", "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"]\
           ],\
           "linkType": "SOFT"\
@@ -4101,7 +4103,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["lexi", "workspace:."],\
+            ["@parcel/core", "npm:2.9.3"],\
             ["prettier", "npm:3.0.0"],\
+            ["process", "npm:0.11.10"],\
             ["typescript", "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"]\
           ],\
           "linkType": "SOFT"\
