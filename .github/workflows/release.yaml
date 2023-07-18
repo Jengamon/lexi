@@ -12,7 +12,6 @@ jobs:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
-
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
@@ -36,6 +35,8 @@ jobs:
         run: just fresh-ci
       - uses: tauri-apps/tauri-action@v0
         env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: lexi-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
