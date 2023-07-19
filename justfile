@@ -18,3 +18,7 @@ dev:
 
 build:
     yarn workspace frontend build
+
+fmt:
+    yarn workspace frontend fmt
+    cargo fmt
