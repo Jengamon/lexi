@@ -64,7 +64,7 @@ fn lg_epoch_preserves_protophonemes_in_language() {
                     Phoneme {
                         ortho: "1".to_string(),
                         primary: Phone::Plosive {
-                            place: crate::data::Place::Bilabial,
+                            place: crate::data::PlosivePlace::Bilabial,
                             voiced: false,
                             attachments: HashSet::new(),
                         },
@@ -85,7 +85,7 @@ fn lg_epoch_preserves_protophonemes_in_language() {
                     Phoneme {
                         ortho: "2".to_string(),
                         primary: Phone::Plosive {
-                            place: crate::data::Place::Bilabial,
+                            place: crate::data::PlosivePlace::Bilabial,
                             voiced: true,
                             attachments: HashSet::new(),
                         },
@@ -119,7 +119,7 @@ fn epoch_when_phoneme_and_protophoneme_exist_keeps_phoneme() {
                     Phoneme {
                         ortho: "1".to_string(),
                         primary: Phone::Plosive {
-                            place: crate::data::Place::Bilabial,
+                            place: crate::data::PlosivePlace::Bilabial,
                             voiced: false,
                             attachments: HashSet::new(),
                         },
@@ -140,7 +140,7 @@ fn epoch_when_phoneme_and_protophoneme_exist_keeps_phoneme() {
                     Phoneme {
                         ortho: "2".to_string(),
                         primary: Phone::Plosive {
-                            place: crate::data::Place::Bilabial,
+                            place: crate::data::PlosivePlace::Bilabial,
                             voiced: true,
                             attachments: HashSet::new(),
                         },

@@ -87,6 +87,7 @@ fn main() {
             interact::set_phoneme,
             interact::get_phoneme,
             interact::delete_phoneme,
+            interact::get_phonemes,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

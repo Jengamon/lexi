@@ -115,3 +115,4 @@ To look up something in a language, we first check the language to see if it con
 - Syntax
 - Dialects
   - Phonotactic rules for allophone variation and morphemes can be marked as part of a dialect
+- Tree files (automate the epoch-merge process)

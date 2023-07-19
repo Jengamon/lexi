@@ -27,11 +27,11 @@ the internal system of storage and processing used to provide our features.
 
 ```sh
 just
-just dev
+cargo tauri dev
 ```
 
 to build:
 
 ```sh
-just build
+cargo tauri build
 ```

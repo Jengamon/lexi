@@ -84,7 +84,7 @@ pub fn create_language_phoneme(
     let ref mut project = project.inner().0.lock().unwrap().1;
     let lang = project.language_mut(name);
     if let Some(proto) = lang {
-        proto.phonemes.insert(new_id, phoneme);
+        proto.phonemes.insert(new_id, phoneme.validated());
         Some(new_id)
     } else {
         None

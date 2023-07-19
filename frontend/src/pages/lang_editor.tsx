@@ -48,7 +48,7 @@ import {
 } from "~/src/stores";
 import { NavBar } from "../components/navbar";
 import { getErrorMessage } from "../util";
-import { useAppContext } from "../views/app";
+import { AppContext, useAppContext } from "../views/app";
 import { Page } from "./page";
 
 export function useProtolanguage() {
@@ -83,7 +83,7 @@ export function useLanguage() {
 
 export type LanguageEditorContext = {
     mode: "protolang" | "lang";
-};
+} & AppContext;
 
 export function useLanguageEditorContext() {
     return useOutletContext<LanguageEditorContext>();
@@ -203,7 +203,7 @@ function LanguageEditorInner({
     const [createError, setCreateError] = useState<string | null>(null);
     const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-    const { showAppNotification } = useAppContext();
+    const appContext = useAppContext();
     const navigate = useNavigate();
     const noun = mode === "protolang" ? "protolanguage" : "language";
 
@@ -234,7 +234,7 @@ function LanguageEditorInner({
             setNewName("");
             setShowCreateDialog(false);
             setCreateError(null);
-            showAppNotification({
+            appContext.showAppNotification({
                 severity: "info",
                 message: `Created ${noun} ${name}`,
                 action: {
@@ -292,7 +292,7 @@ function LanguageEditorInner({
     const fabs = (
         <SpeedDial
             ariaLabel={`Back to ${capitalize(noun)} List`}
-            sx={{ position: "absolute", bottom: 16, right: 16 }}
+            sx={{ position: "fixed", bottom: 16, right: 16 }}
             icon={<SpeedDialIcon />}
         >
             <SpeedDialAction
@@ -362,7 +362,7 @@ function LanguageEditorInner({
         <Page showBreadcrumbs>
             {dialogs}
             {fabs}
-            <Outlet context={{ mode }} />
+            <Outlet context={{ mode, ...appContext }} />
         </Page>
     ) : (
         <Page>

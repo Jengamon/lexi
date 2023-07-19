@@ -66,7 +66,7 @@ pub fn set_phoneme(
     };
 
     if let Some(lang) = lang {
-        LanguageGroup::set_phoneme(&protolangs, lang, id, phoneme)
+        LanguageGroup::set_phoneme(&protolangs, lang, id, phoneme.validated())
     } else {
         false
     }
@@ -114,5 +114,33 @@ pub fn delete_phoneme(
         lang.phonemes_mut().remove(&id)
     } else {
         None
+    }
+}
+
+#[command]
+pub fn get_phonemes(
+    project: State<Project>,
+    name: String,
+    name_type: LanguageType,
+) -> Vec<(Uuid, Phoneme)> {
+    let ref mut project = project.inner().0.lock().unwrap().1;
+    let lang: Option<_> = match name_type {
+        LanguageType::Protolanguage => project.protolanguage(name).map(|l| l as &dyn BaseLanguage),
+        LanguageType::Language => project.language(name).map(|l| l as &dyn BaseLanguage),
+    };
+
+    if let Some(lang) = lang {
+        lang.phonemes()
+            .iter()
+            .map(|(k, v)| (*k, v.clone()))
+            .chain(
+                lang.ancestors()
+                    .into_iter()
+                    .filter_map(|anc| project.protolangs.iter().find(|lang| lang.name == anc))
+                    .flat_map(|lang| lang.phonemes().iter().map(|(k, v)| (*k, v.clone()))),
+            )
+            .collect()
+    } else {
+        vec![]
     }
 }
