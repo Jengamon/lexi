@@ -318,6 +318,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@fontsource/noto-sans", [\
+        ["npm:5.0.5", {\
+          "packageLocation": "./.yarn/cache/@fontsource-noto-sans-npm-5.0.5-4562f3c11b-bda0e12639.zip/node_modules/@fontsource/noto-sans/",\
+          "packageDependencies": [\
+            ["@fontsource/noto-sans", "npm:5.0.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@fontsource/roboto", [\
         ["npm:5.0.5", {\
           "packageLocation": "./.yarn/cache/@fontsource-roboto-npm-5.0.5-aa7051935d-07d3aa70e6.zip/node_modules/@fontsource/roboto/",\
@@ -3499,6 +3508,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["frontend", "workspace:frontend"],\
             ["@emotion/react", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:11.11.1"],\
             ["@emotion/styled", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:11.11.0"],\
+            ["@fontsource/noto-sans", "npm:5.0.5"],\
             ["@fontsource/roboto", "npm:5.0.5"],\
             ["@lexical/react", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:0.11.2"],\
             ["@mui/icons-material", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:5.14.0"],\

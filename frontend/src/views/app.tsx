@@ -52,7 +52,7 @@ export const theme = {
         // Used for display the phone in the phone viewer
         phone: {
             lineHeight: 2,
-            fontFamily: "sans-serif",
+            fontFamily: "Noto Sans",
             fontSize: "6rem",
         },
     },
