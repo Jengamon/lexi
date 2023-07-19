@@ -118,7 +118,7 @@ export default function AboutPage() {
                             setBranner(newBranner);
                         }}
                     />
-                    <Typography variant="body1" fontFamily="serif">
+                    <Typography variant="body1" fontFamily="Noto Sans">
                         {branner}
                     </Typography>
                 </Box>
@@ -140,7 +140,7 @@ export default function AboutPage() {
                             setSil(newSil);
                         }}
                     />
-                    <Typography variant="body1" fontFamily="sans-serif">
+                    <Typography variant="body1" fontFamily="Noto Sans">
                         {sil}
                     </Typography>
                 </Box>
