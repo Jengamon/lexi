@@ -4,7 +4,7 @@ import {
     useLanguageEditorContext,
     useProtolanguage,
 } from "../lang_editor";
-import { Typography } from "@mui/material";
+import { Typography, Link as MUILink } from "@mui/material";
 
 export default function Describer() {
     const { mode } = useLanguageEditorContext();
@@ -72,9 +72,13 @@ export default function Describer() {
             </Typography>
             {targets[mode].map((target) => (
                 // We are at ":langId/describe", so go up a level
-                <Link key={target.loc} to={`../${target.href}`}>
+                <MUILink
+                    component={Link}
+                    key={target.loc}
+                    to={`../${target.href}`}
+                >
                     {target.loc}
-                </Link>
+                </MUILink>
             ))}
         </>
     );
