@@ -23,4 +23,5 @@ langs:
     ancestors:
       - "1"
     dialects: ~
+    standard_dialect: ~
 
