@@ -23,18 +23,18 @@ import { useImmer } from "use-immer";
 
 declare module "@mui/material/styles" {
     interface TypographyVariants {
-        // ipa: React.CSSProperties;
+        phone: React.CSSProperties;
     }
 
     // allow configuration using `createTheme`
     interface TypographyVariantsOptions {
-        // ipa?: React.CSSProperties;
+        phone?: React.CSSProperties;
     }
 }
 
 declare module "@mui/material/Typography" {
     interface TypographyPropsVariantOverrides {
-        // ipa: true;
+        phone: true;
     }
 }
 
@@ -48,11 +48,20 @@ export const theme = {
             main: "#f50057",
         },
     },
-    typography: {},
+    typography: {
+        // Used for display the phone in the phone viewer
+        phone: {
+            lineHeight: 2,
+            fontFamily: "sans-serif",
+            fontSize: "6rem",
+        },
+    },
     components: {
         MuiTypography: {
             defaultProps: {
-                variantMapping: {},
+                variantMapping: {
+                    phone: "h1",
+                },
             },
         },
     },

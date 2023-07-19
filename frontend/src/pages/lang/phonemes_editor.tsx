@@ -32,10 +32,18 @@ import {
     FormControlLabel,
     IconButton,
     Tooltip,
+    Fade,
+    Chip,
 } from "@mui/material";
-import { ReactNode, useEffect, useState } from "react";
-import { Add, KeyboardArrowUp, BugReport, Delete, KeyboardArrowDown } from "@mui/icons-material";
-import { Phone, Phoneme, PlosivePlace } from "~/src/data";
+import { ReactElement, ReactNode, useEffect, useState } from "react";
+import {
+    Add,
+    KeyboardArrowUp,
+    BugReport,
+    Delete,
+    KeyboardArrowDown,
+} from "@mui/icons-material";
+import { ObstruentAttachment, Phone, Phoneme, PlosivePlace } from "~/src/data";
 import { DraftFunction, useImmer } from "use-immer";
 import { invoke } from "@tauri-apps/api";
 import { String, Array, Tuple, Boolean } from "runtypes";
@@ -69,16 +77,14 @@ function PhoneEditorTab({
         >
             {value === index && (
                 <Box sx={{ p: 3 }}>
-                    <Stack spacing={2}>
-                        {children}
-                        <Typography
-                            fontFamily="sans-serif"
-                            align="center"
-                            variant="h1"
-                        >
-                            {phoneText}
-                        </Typography>
-                    </Stack>
+                    <Fade in={value === index}>
+                        <Stack spacing={2}>
+                            {children}
+                            <Typography align="center" variant="phone">
+                                {phoneText}
+                            </Typography>
+                        </Stack>
+                    </Fade>
                 </Box>
             )}
         </Paper>
@@ -95,7 +101,7 @@ function a11yProps(index: number) {
 type PhoneEditorProps = {
     phone: Phone;
     phoneText: string;
-    updatePhone: (delta: DraftFunction<Phone>) => Promise<boolean>;
+    updatePhone: (delta: DraftFunction<Phone>) => void;
 };
 
 const PHONEEDITOR_MODES = ["Null", "Plosive", "Affricative", "Fricative"];
@@ -112,10 +118,10 @@ function PhoneEditor({ phone, phoneText, updatePhone }: PhoneEditorProps) {
                     onChange={async (_ev, value) => {
                         switch (value) {
                             case 0:
-                                await updatePhone(() => "Null");
+                                updatePhone(() => "Null");
                                 break;
                             case 1:
-                                await updatePhone(() => {
+                                updatePhone(() => {
                                     return {
                                         Plosive: {
                                             place: "Bilabial",
@@ -157,7 +163,7 @@ function PhoneEditor({ phone, phoneText, updatePhone }: PhoneEditorProps) {
                                 label="Place"
                                 value={phone.Plosive.place}
                                 onChange={async (ev) =>
-                                    await updatePhone((draft) => {
+                                    updatePhone((draft) => {
                                         if (
                                             typeof draft != "string" &&
                                             "Plosive" in draft
@@ -183,7 +189,7 @@ function PhoneEditor({ phone, phoneText, updatePhone }: PhoneEditorProps) {
                                 <Switch
                                     checked={phone.Plosive.voiced}
                                     onChange={async () =>
-                                        await updatePhone((draft) => {
+                                        updatePhone((draft) => {
                                             if (
                                                 typeof draft != "string" &&
                                                 "Plosive" in draft
@@ -198,6 +204,68 @@ function PhoneEditor({ phone, phoneText, updatePhone }: PhoneEditorProps) {
                             }
                             label={phone.Plosive.voiced ? "Voiced" : "Unvoiced"}
                         />
+                        <Stack
+                            spacing={2}
+                            direction="row"
+                            useFlexGap
+                            sx={{ flexWrap: "wrap" }}
+                        >
+                            {ObstruentAttachment.alternatives.map((alt) => (
+                                <Chip
+                                    label={alt.value}
+                                    variant={
+                                        phone.Plosive.attachments.includes(
+                                            alt.value,
+                                        )
+                                            ? "outlined"
+                                            : undefined
+                                    }
+                                    onClick={
+                                        phone.Plosive.attachments.includes(
+                                            alt.value,
+                                        )
+                                            ? undefined
+                                            : async () => {
+                                                  updatePhone((draft) => {
+                                                      if (
+                                                          typeof draft !=
+                                                              "string" &&
+                                                          "Plosive" in draft
+                                                      ) {
+                                                          draft.Plosive.attachments.push(
+                                                              alt.value,
+                                                          );
+                                                      }
+                                                      return draft;
+                                                  });
+                                              }
+                                    }
+                                    onDelete={
+                                        phone.Plosive.attachments.includes(
+                                            alt.value,
+                                        )
+                                            ? async () => {
+                                                  updatePhone((draft) => {
+                                                      if (
+                                                          typeof draft !=
+                                                              "string" &&
+                                                          "Plosive" in draft
+                                                      ) {
+                                                          draft.Plosive.attachments =
+                                                              draft.Plosive.attachments.filter(
+                                                                  (a) =>
+                                                                      a !==
+                                                                      alt.value,
+                                                              );
+                                                      }
+                                                      return draft;
+                                                  });
+                                              }
+                                            : undefined
+                                    }
+                                />
+                            ))}
+                        </Stack>
                     </>
                 )}
             </PhoneEditorTab>
@@ -208,17 +276,17 @@ function PhoneEditor({ phone, phoneText, updatePhone }: PhoneEditorProps) {
 type PhonemeEditorToolProps = {
     phoneme: Phoneme;
     updatePhoneme: (delta: DraftFunction<Phoneme>) => Promise<boolean>;
-    onClose: () => void;
 };
 
-function PhonemeEditorTool({
-    phoneme,
-    updatePhoneme,
-    onClose,
-}: PhonemeEditorToolProps) {
+function PhonemeEditorTool({ phoneme, updatePhoneme }: PhonemeEditorToolProps) {
     const [allophoneIPA, updateAllophoneIPA] = useImmer<string[]>([]);
-    const [primaryIPA, setPrimaryIPA] = useState<string>("");
+    const [primaryIPA, setPrimaryIPA] = useState("");
     const [selectedPhone, setSelectedPhone] = useState<number | null>(null);
+    const [editedAllophone, updateEditedAllophone] = useImmer<{
+        phone: Phone;
+        source?: number;
+    } | null>(null);
+    const [editedAllophoneIPA, setEditedAllophoneIPA] = useState("");
 
     useEffect(() => {
         (async () => {
@@ -230,6 +298,50 @@ function PhonemeEditorTool({
         })();
         displayPhone(phoneme.primary).then((ipa) => setPrimaryIPA(ipa));
     });
+
+    async function commitEditedAllophone(target: number | null) {
+        if (editedAllophone !== null) {
+            const editedIPA = await displayPhone(editedAllophone.phone);
+            await updatePhoneme((draft) => {
+                if (editedAllophone.source !== undefined) {
+                    const source = editedAllophone.source;
+                    draft.allo[source] = editedAllophone.phone;
+                    updateAllophoneIPA((draft) => {
+                        draft[source] = editedIPA;
+                        return draft;
+                    });
+                } else {
+                    draft.primary = editedAllophone.phone;
+                    setPrimaryIPA(editedIPA);
+                }
+                return draft;
+            });
+        }
+        setSelectedPhone(target);
+        setEditedAllophoneIPA("");
+        updateEditedAllophone(null);
+    }
+
+    async function editPhone(delta: DraftFunction<Phone>, source?: number) {
+        const mod = produce(
+            editedAllophone?.phone ??
+                (source !== undefined ? phoneme.allo[source] : phoneme.primary),
+            delta,
+        );
+        const ipa = await displayPhone(mod);
+        updateEditedAllophone((draft) => {
+            if (draft === null) {
+                draft = {
+                    source,
+                    phone: mod,
+                };
+            } else {
+                draft.phone = mod;
+            }
+            return draft;
+        });
+        setEditedAllophoneIPA(ipa);
+    }
 
     return (
         <Grid container spacing={2}>
@@ -250,21 +362,54 @@ function PhonemeEditorTool({
                             }
                         />
                         <List>
-                            {primaryIPA && (
-                                <ListItem key="primary">
+                            {editedAllophone !== null && (
+                                <ListItem
+                                    key="edited"
+                                    secondaryAction={
+                                        <Tooltip title="Cancel">
+                                            <IconButton
+                                                edge="end"
+                                                aria-label="cancel"
+                                                onClick={() =>
+                                                    updateEditedAllophone(null)
+                                                }
+                                            >
+                                                <Delete />
+                                            </IconButton>
+                                        </Tooltip>
+                                    }
+                                >
                                     <ListItemButton
-                                        onClick={() => setSelectedPhone(null)}
+                                        onClick={async () =>
+                                            await commitEditedAllophone(
+                                                editedAllophone.source ?? null,
+                                            )
+                                        }
                                     >
                                         <ListItemText
                                             sx={{
                                                 fontFamily: "sans-serif",
-                                                color: "secondary.main",
+                                                color: "warning.main",
                                             }}
-                                            primary={primaryIPA}
+                                            primary={editedAllophoneIPA}
                                         />
                                     </ListItemButton>
                                 </ListItem>
                             )}
+                            <ListItem key="primary">
+                                <ListItemButton
+                                    selected={selectedPhone === null}
+                                    onClick={() => commitEditedAllophone(null)}
+                                >
+                                    <ListItemText
+                                        sx={{
+                                            fontFamily: "sans-serif",
+                                            color: "secondary.main",
+                                        }}
+                                        primary={primaryIPA}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
                             {allophoneIPA
                                 .map(
                                     (ipa, index) =>
@@ -300,8 +445,9 @@ function PhonemeEditorTool({
                                         }
                                     >
                                         <ListItemButton
+                                            selected={selectedPhone === index}
                                             onClick={() =>
-                                                setSelectedPhone(index)
+                                                commitEditedAllophone(index)
                                             }
                                         >
                                             <ListItemText
@@ -329,42 +475,26 @@ function PhonemeEditorTool({
                 </Paper>
             </Grid>
             <Grid xs={8} sx={{ height: 1 }}>
-                {selectedPhone !== null &&
-                    selectedPhone < phoneme.allo.length ? (
+                {editedAllophone !== null ? (
+                    <PhoneEditor
+                        phone={editedAllophone.phone}
+                        phoneText={editedAllophoneIPA}
+                        updatePhone={async (delta) => await editPhone(delta)}
+                    />
+                ) : selectedPhone !== null &&
+                  selectedPhone < phoneme.allo.length ? (
                     <PhoneEditor
                         phone={phoneme.allo[selectedPhone]}
                         phoneText={allophoneIPA[selectedPhone]}
-                        updatePhone={async (delta) => {
-                            const mod = produce(
-                                phoneme.allo[selectedPhone],
-                                delta,
-                            );
-                            const res = await updatePhoneme((draft) => {
-                                draft.allo[selectedPhone] = mod;
-                                return draft;
-                            });
-                            const modIPA = await displayPhone(mod);
-                            updateAllophoneIPA((draft) => {
-                                draft[selectedPhone] = modIPA;
-                                return draft;
-                            });
-                            return res;
-                        }}
+                        updatePhone={async (delta) =>
+                            await editPhone(delta, selectedPhone)
+                        }
                     />
                 ) : (
                     <PhoneEditor
                         phone={phoneme.primary}
                         phoneText={primaryIPA}
-                        updatePhone={async (delta) => {
-                            const mod = produce(phoneme.primary, delta);
-                            const res = await updatePhoneme((draft) => {
-                                draft.primary = mod;
-                                return draft;
-                            });
-                            const modIPA = await displayPhone(mod);
-                            setPrimaryIPA(modIPA);
-                            return res;
-                        }}
+                        updatePhone={async (delta) => await editPhone(delta)}
                     />
                 )}
             </Grid>
@@ -423,10 +553,10 @@ export default function PhonemesEditor() {
     async function deletePhoneme() {
         selectedPhoneme !== null
             ? await invoke("delete_phoneme", {
-                name: mode === "protolang" ? protolang?.name : lang?.name,
-                nameType: mode === "protolang" ? "Protolanguage" : "Language",
-                id: selectedPhoneme,
-            })
+                  name: mode === "protolang" ? protolang?.name : lang?.name,
+                  nameType: mode === "protolang" ? "Protolanguage" : "Language",
+                  id: selectedPhoneme,
+              })
             : null;
         setSelectedPhoneme(null);
         await phonemesMutate();
@@ -475,11 +605,11 @@ export default function PhonemesEditor() {
             >
                 <BugReport /> Debug
             </Button>
-            {
-                mode === "lang" && <Button variant="contained">
+            {mode === "lang" && (
+                <Button variant="contained">
                     <KeyboardArrowDown /> Inherit
                 </Button>
-            }
+            )}
         </Stack>
     );
 
@@ -541,7 +671,6 @@ export default function PhonemesEditor() {
                             delta,
                         )
                     }
-                    onClose={() => setSelectedPhoneme(null)}
                 />
             )}
         </Stack>

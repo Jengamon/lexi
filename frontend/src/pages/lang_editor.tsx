@@ -108,7 +108,8 @@ export function LanguageEditorCrumb({
                 langData !== undefined ? langData.name : ""
             }/describe`}
         >
-            {langData !== undefined ? langData.name : "*UNKNOWN*"}
+            {langData !== undefined ? langData.name : "*UNKNOWN*"}{" "}
+            {mode === "protolang" ? "Protolanguage" : "Language"}
         </MUILink>
     );
 }

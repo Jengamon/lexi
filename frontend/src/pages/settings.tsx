@@ -34,7 +34,7 @@ export default function SettingsPage() {
     return (
         <Page>
             <FormLabel>
-                Autosave Interval:  {formatDuration(autosave * 30_000)}
+                Autosave Interval: {formatDuration(autosave * 30_000)}
             </FormLabel>
             <Slider
                 min={1}

@@ -140,6 +140,7 @@ export function NavBar({}: NavbarProps) {
                             noWrap
                             component={NavLink}
                             to=""
+                            relative="path"
                             sx={{
                                 mr: 2,
                                 display: { xs: "flex", md: "none" },
