@@ -22,4 +22,5 @@ langs:
     description: ~
     ancestors:
       - "1"
+    dialects: ~
 

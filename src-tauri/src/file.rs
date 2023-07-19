@@ -11,7 +11,7 @@ use serde::{Serialize, Serializer};
 use tauri::{command, State, Window};
 use uuid::Uuid;
 
-use crate::data::LanguageGroup;
+use crate::data::{LanguageGroup, LanguageGroupError};
 use crate::{ProgramStart, ServiceState};
 
 const VERSION_REQ: &'static str = "^0";
@@ -48,6 +48,8 @@ pub enum Error {
     FamilyMismatch { current: Uuid, merge: Uuid },
     #[error("cannot merge nothing")]
     MergeEmpty,
+    #[error(transparent)]
+    LanguageGroup(#[from] LanguageGroupError),
 }
 
 impl Serialize for Error {
@@ -199,7 +201,7 @@ pub fn load_language_group(filename: String, project: State<Project>) -> Result<
             VersionReq::parse(VERSION_REQ).expect("INTERNAL failed to compile version req string");
 
         if version_req.matches(&lang_group.version) {
-            *project.0.lock().unwrap() = (filename, lang_group);
+            *project.0.lock().unwrap() = (filename, lang_group.validate()?);
             Ok(())
         } else {
             Err(Error::VersionMismatch(lang_group.version))

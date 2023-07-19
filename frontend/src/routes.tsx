@@ -14,6 +14,7 @@ import {
 import KaboomAppView from "./views/kaboom_app";
 import Describer from "./pages/lang/describer";
 import { PlainBreadcrumb } from "./components/plain_breadcrumb";
+import SettingsPage from "./pages/settings";
 
 // "Views" are top-level routes with *no* path.
 // "Pages" make up the children of a view.
@@ -35,6 +36,10 @@ export const ROUTES: readonly RouteObject[] = [
             {
                 path: "/about",
                 element: <AboutPage />,
+            },
+            {
+                path: "/settings",
+                element: <SettingsPage />,
             },
             {
                 path: "/proto/:plangId?",

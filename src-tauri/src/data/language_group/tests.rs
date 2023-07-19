@@ -94,6 +94,7 @@ fn lg_epoch_preserves_protophonemes_in_language() {
                 );
                 map
             },
+            ..Default::default()
         }],
         ..Default::default()
     };
@@ -149,6 +150,7 @@ fn epoch_when_phoneme_and_protophoneme_exist_keeps_phoneme() {
                 );
                 map
             },
+            ..Default::default()
         }],
         ..Default::default()
     };
@@ -176,6 +178,7 @@ fn merge_removes_nonexistant_ancestors() {
             description: None,
             phonemes: HashMap::new(),
             ancestors: vec!["1".to_string()],
+            ..Default::default()
         }],
         ..Default::default()
     };
@@ -188,6 +191,7 @@ fn merge_removes_nonexistant_ancestors() {
             description: None,
             phonemes: HashMap::new(),
             ancestors: vec!["H".to_string()],
+            ..Default::default()
         }],
         ..Default::default()
     };
@@ -200,6 +204,7 @@ fn merge_removes_nonexistant_ancestors() {
             description: None,
             phonemes: HashMap::new(),
             ancestors: vec!["1".to_string()],
+            ..Default::default()
         }],
         ..Default::default()
     };

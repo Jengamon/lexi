@@ -48,6 +48,13 @@ impl Default for LanguageGroup {
     }
 }
 
+// Validating a loaded language group makes for a valid file
+impl LanguageGroup {
+    pub fn validate(self) -> Result<Self, LanguageGroupError> {
+        Ok(self)
+    }
+}
+
 // Adding and removing phonemes from a (proto-)language
 impl LanguageGroup {
     /// Setting a phoneme

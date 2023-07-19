@@ -27,7 +27,6 @@ import {
     Tabs,
     Tab,
     PaperProps,
-    FormLabel,
     InputLabel,
     Switch,
     FormControlLabel,
@@ -35,7 +34,7 @@ import {
     Tooltip,
 } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
-import { Add, KeyboardArrowUp, BugReport, Delete } from "@mui/icons-material";
+import { Add, KeyboardArrowUp, BugReport, Delete, KeyboardArrowDown } from "@mui/icons-material";
 import { Phone, Phoneme, PlosivePlace } from "~/src/data";
 import { DraftFunction, useImmer } from "use-immer";
 import { invoke } from "@tauri-apps/api";
@@ -108,6 +107,7 @@ function PhoneEditor({ phone, phoneText, updatePhone }: PhoneEditorProps) {
         <Box width={1}>
             <Box borderBottom={1} borderColor="divider">
                 <Tabs
+                    variant="scrollable"
                     value={modeSelect}
                     onChange={async (_ev, value) => {
                         switch (value) {
@@ -330,7 +330,7 @@ function PhonemeEditorTool({
             </Grid>
             <Grid xs={8} sx={{ height: 1 }}>
                 {selectedPhone !== null &&
-                selectedPhone < phoneme.allo.length ? (
+                    selectedPhone < phoneme.allo.length ? (
                     <PhoneEditor
                         phone={phoneme.allo[selectedPhone]}
                         phoneText={allophoneIPA[selectedPhone]}
@@ -376,7 +376,6 @@ export default function PhonemesEditor() {
     const { protolang, mutate: protolangMutate } = useProtolanguage();
     const { lang, mutate: langMutate } = useLanguage();
     const { mode } = useLanguageEditorContext();
-    const [showPhonemeWizard, setShowPhoenemeWizard] = useState(false);
     const [showDebugDialog, setShowDebugDialog] = useState(false);
     const [selectedPhoneme, setSelectedPhoneme] = useState<string | null>(null);
     const { showAppNotification } = useAppContext();
@@ -424,10 +423,10 @@ export default function PhonemesEditor() {
     async function deletePhoneme() {
         selectedPhoneme !== null
             ? await invoke("delete_phoneme", {
-                  name: mode === "protolang" ? protolang?.name : lang?.name,
-                  nameType: mode === "protolang" ? "Protolanguage" : "Language",
-                  id: selectedPhoneme,
-              })
+                name: mode === "protolang" ? protolang?.name : lang?.name,
+                nameType: mode === "protolang" ? "Protolanguage" : "Language",
+                id: selectedPhoneme,
+            })
             : null;
         setSelectedPhoneme(null);
         await phonemesMutate();
@@ -476,6 +475,11 @@ export default function PhonemesEditor() {
             >
                 <BugReport /> Debug
             </Button>
+            {
+                mode === "lang" && <Button variant="contained">
+                    <KeyboardArrowDown /> Inherit
+                </Button>
+            }
         </Stack>
     );
 

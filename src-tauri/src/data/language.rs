@@ -18,6 +18,9 @@ pub struct Language {
     pub description: Option<serde_json::Value>,
     /// Protolanguage names that this language is descended from
     pub ancestors: Vec<String>,
+    /// List of dialects, the first one is considered the "standard"
+    /// and is the one that will be used for purposes of epoch-merge
+    pub dialects: Option<Vec<String>>,
 }
 
 impl Default for Language {
@@ -27,6 +30,7 @@ impl Default for Language {
             phonemes: HashMap::new(),
             description: None,
             ancestors: vec![],
+            dialects: None,
         }
     }
 }

@@ -8,6 +8,7 @@ import {
     IconButton,
     Menu,
     MenuItem,
+    Stack,
     Switch,
     Toolbar,
     Typography,
@@ -32,6 +33,10 @@ export function NavBar({}: NavbarProps) {
             href: "/lang",
         },
         {
+            label: "Settings",
+            href: "/settings",
+        },
+        {
             label: "About",
             href: "/about",
         },
@@ -41,18 +46,7 @@ export function NavBar({}: NavbarProps) {
             label: "Home",
             href: "/",
         },
-        {
-            label: "Protolanguages",
-            href: "/proto",
-        },
-        {
-            label: "Languages",
-            href: "/lang",
-        },
-        {
-            label: "About",
-            href: "/about",
-        },
+        ...tabs,
     ];
 
     const { darkMode, setDarkMode } = useAppContext();
@@ -163,24 +157,25 @@ export function NavBar({}: NavbarProps) {
                                 display: { xs: "none", md: "flex" },
                             }}
                         >
-                            {tabs.map((tab) => (
-                                <Button
-                                    key={tab.label}
-                                    component={NavLink}
-                                    to={tab.href}
-                                    sx={{
-                                        my: 2,
-                                        color: "inherit",
-                                        display: "block",
-                                        "&.active": {
-                                            backgroundColor: "white",
-                                            color: "secondary.main",
-                                        },
-                                    }}
-                                >
-                                    {tab.label}
-                                </Button>
-                            ))}
+                            <Stack direction="row" spacing={2}>
+                                {tabs.map((tab) => (
+                                    <Button
+                                        key={tab.label}
+                                        component={NavLink}
+                                        to={tab.href}
+                                        sx={{
+                                            color: "inherit",
+                                            display: "block",
+                                            "&.active": {
+                                                backgroundColor: "white",
+                                                color: "secondary.main",
+                                            },
+                                        }}
+                                    >
+                                        {tab.label}
+                                    </Button>
+                                ))}
+                            </Stack>
                         </Box>
                         <Box sx={{ flexGrow: 0 }}>
                             <FormGroup>
