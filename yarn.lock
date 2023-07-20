@@ -1172,6 +1172,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@parcel/reporter-bundle-analyzer@npm:^2.9.3":
+  version: 2.9.3
+  resolution: "@parcel/reporter-bundle-analyzer@npm:2.9.3"
+  dependencies:
+    "@parcel/plugin": 2.9.3
+    "@parcel/utils": 2.9.3
+    nullthrows: ^1.1.1
+  checksum: 6c33b2f67eb99a593c76319222d2973ca39fb64f740d5c487c1fbe5b2666afca60e78b78d0cc5aa3a166b69b74c16a297606f987611bfa123a5fca55823472c9
+  languageName: node
+  linkType: hard
+
 "@parcel/reporter-cli@npm:2.9.3":
   version: 2.9.3
   resolution: "@parcel/reporter-cli@npm:2.9.3"
@@ -2613,6 +2624,7 @@ __metadata:
     "@mui/material": ^5.14.0
     "@parcel/config-default": ^2.9.3
     "@parcel/core": ^2.9.3
+    "@parcel/reporter-bundle-analyzer": ^2.9.3
     "@tauri-apps/api": ^1.4.0
     "@types/lodash-es": ^4.17.8
     "@types/node": ^20.4.2

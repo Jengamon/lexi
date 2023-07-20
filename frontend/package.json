@@ -2,7 +2,7 @@
     "name": "frontend",
     "packageManager": "yarn@3.6.1",
     "scripts": {
-        "dev": "parcel --dist-dir distDev/",
+        "dev": "parcel",
         "build": "parcel build",
         "fmt": "prettier --write src/",
         "clean": "rimraf dist distDev .parcel-cache"
@@ -14,6 +14,7 @@
     "devDependencies": {
         "@parcel/config-default": "^2.9.3",
         "@parcel/core": "^2.9.3",
+        "@parcel/reporter-bundle-analyzer": "^2.9.3",
         "@types/lodash-es": "^4.17.8",
         "@types/node": "^20.4.2",
         "@types/react": "^18.2.15",

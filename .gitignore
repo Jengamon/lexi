@@ -16,3 +16,4 @@ dist/
 distDev/
 /target/
 .DS_Store
+/parcel-bundle-reports/

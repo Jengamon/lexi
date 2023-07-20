@@ -1841,6 +1841,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@parcel/reporter-bundle-analyzer", [\
+        ["npm:2.9.3", {\
+          "packageLocation": "./.yarn/cache/@parcel-reporter-bundle-analyzer-npm-2.9.3-43e10b4e6e-6c33b2f67e.zip/node_modules/@parcel/reporter-bundle-analyzer/",\
+          "packageDependencies": [\
+            ["@parcel/reporter-bundle-analyzer", "npm:2.9.3"],\
+            ["@parcel/plugin", "npm:2.9.3"],\
+            ["@parcel/utils", "npm:2.9.3"],\
+            ["nullthrows", "npm:1.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@parcel/reporter-cli", [\
         ["npm:2.9.3", {\
           "packageLocation": "./.yarn/cache/@parcel-reporter-cli-npm-2.9.3-d81ba5564f-f274aa2959.zip/node_modules/@parcel/reporter-cli/",\
@@ -3515,6 +3527,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mui/material", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:5.14.0"],\
             ["@parcel/config-default", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:2.9.3"],\
             ["@parcel/core", "npm:2.9.3"],\
+            ["@parcel/reporter-bundle-analyzer", "npm:2.9.3"],\
             ["@tauri-apps/api", "npm:1.4.0"],\
             ["@types/lodash-es", "npm:4.17.8"],\
             ["@types/node", "npm:20.4.2"],\
