@@ -227,41 +227,41 @@ function PhoneEditor({ phone, phoneText, updatePhone }: PhoneEditorProps) {
                                         )
                                             ? undefined
                                             : async () => {
-                                                updatePhone((draft) => {
-                                                    if (
-                                                        typeof draft !=
-                                                        "string" &&
-                                                        "Plosive" in draft
-                                                    ) {
-                                                        draft.Plosive.attachments.push(
-                                                            alt.value,
-                                                        );
-                                                    }
-                                                    return draft;
-                                                });
-                                            }
+                                                  updatePhone((draft) => {
+                                                      if (
+                                                          typeof draft !=
+                                                              "string" &&
+                                                          "Plosive" in draft
+                                                      ) {
+                                                          draft.Plosive.attachments.push(
+                                                              alt.value,
+                                                          );
+                                                      }
+                                                      return draft;
+                                                  });
+                                              }
                                     }
                                     onDelete={
                                         phone.Plosive.attachments.includes(
                                             alt.value,
                                         )
                                             ? async () => {
-                                                updatePhone((draft) => {
-                                                    if (
-                                                        typeof draft !=
-                                                        "string" &&
-                                                        "Plosive" in draft
-                                                    ) {
-                                                        draft.Plosive.attachments =
-                                                            draft.Plosive.attachments.filter(
-                                                                (a) =>
-                                                                    a !==
-                                                                    alt.value,
-                                                            );
-                                                    }
-                                                    return draft;
-                                                });
-                                            }
+                                                  updatePhone((draft) => {
+                                                      if (
+                                                          typeof draft !=
+                                                              "string" &&
+                                                          "Plosive" in draft
+                                                      ) {
+                                                          draft.Plosive.attachments =
+                                                              draft.Plosive.attachments.filter(
+                                                                  (a) =>
+                                                                      a !==
+                                                                      alt.value,
+                                                              );
+                                                      }
+                                                      return draft;
+                                                  });
+                                              }
                                             : undefined
                                     }
                                 />
@@ -326,7 +326,7 @@ function PhonemeEditorTool({ phoneme, updatePhoneme }: PhonemeEditorToolProps) {
     async function editPhone(delta: DraftFunction<Phone>, source?: number) {
         const mod = produce(
             editedAllophone?.phone ??
-            (source !== undefined ? phoneme.allo[source] : phoneme.primary),
+                (source !== undefined ? phoneme.allo[source] : phoneme.primary),
             delta,
         );
         const ipa = await displayPhone(mod);
@@ -506,7 +506,7 @@ function PhonemeEditorTool({ phoneme, updatePhoneme }: PhonemeEditorToolProps) {
                         updatePhone={async (delta) => await editPhone(delta)}
                     />
                 ) : selectedPhone !== null &&
-                    selectedPhone < phoneme.allo.length ? (
+                  selectedPhone < phoneme.allo.length ? (
                     <PhoneEditor
                         phone={phoneme.allo[selectedPhone]}
                         phoneText={allophoneIPA[selectedPhone]}
@@ -577,10 +577,10 @@ export default function PhonemesEditor() {
     async function deletePhoneme() {
         selectedPhoneme !== null
             ? await invoke("delete_phoneme", {
-                name: mode === "protolang" ? protolang?.name : lang?.name,
-                nameType: mode === "protolang" ? "Protolanguage" : "Language",
-                id: selectedPhoneme,
-            })
+                  name: mode === "protolang" ? protolang?.name : lang?.name,
+                  nameType: mode === "protolang" ? "Protolanguage" : "Language",
+                  id: selectedPhoneme,
+              })
             : null;
         setSelectedPhoneme(null);
         await phonemesMutate();

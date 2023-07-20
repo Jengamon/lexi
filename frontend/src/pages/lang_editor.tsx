@@ -40,10 +40,7 @@ import {
 import { Array, String } from "runtypes";
 import { KeyedMutator } from "swr";
 import { Language, Protolanguage } from "~/src/data";
-import {
-    useCheckedInvokeSWR,
-    useCheckedInvoke,
-} from "~/src/stores";
+import { useCheckedInvokeSWR, useCheckedInvoke } from "~/src/stores";
 import { getErrorMessage } from "../util";
 import { AppContext, useAppContext } from "../views/app";
 import { Page } from "./page";
@@ -101,8 +98,9 @@ export function LanguageEditorCrumb({
             underline="hover"
             color="inherit"
             component={Link}
-            to={`/${mode === "protolang" ? "proto" : "lang"}/${langData !== undefined ? langData.name : ""
-                }/describe`}
+            to={`/${mode === "protolang" ? "proto" : "lang"}/${
+                langData !== undefined ? langData.name : ""
+            }/describe`}
         >
             {langData !== undefined ? langData.name : "*UNKNOWN*"}{" "}
             {mode === "protolang" ? "Protolanguage" : "Language"}
@@ -116,21 +114,27 @@ export async function LanguageEditorLoader({
     const currentLang =
         params.langId !== undefined
             ? await useCheckedInvoke(Language, "get_language", {
-                name: params.langId,
-            })
+                  name: params.langId,
+              })
             : undefined;
     const currentProto =
         params.plangId !== undefined
             ? await useCheckedInvoke(Protolanguage, "get_protolanguage", {
-                name: params.plangId,
-            })
+                  name: params.plangId,
+              })
             : undefined;
 
-    const protoNames = await useCheckedInvoke(Array(String),
-        "get_all_protolanguages", {});
+    const protoNames = await useCheckedInvoke(
+        Array(String),
+        "get_all_protolanguages",
+        {},
+    );
 
-    const langNames = await useCheckedInvoke(Array(String),
-        "get_all_languages", {});
+    const langNames = await useCheckedInvoke(
+        Array(String),
+        "get_all_languages",
+        {},
+    );
 
     return {
         currentLang,
@@ -148,13 +152,22 @@ export type LanguageEditorLoaderData = {
 };
 
 export function LanguageEditor({ mode }: LanguageEditorProps) {
-    const { protoNames: loaderProtoNames, langNames: loaderLangNames } = useLoaderData() as LanguageEditorLoaderData;
+    const { protoNames: loaderProtoNames, langNames: loaderLangNames } =
+        useLoaderData() as LanguageEditorLoaderData;
 
-    const { data: protoNames, error: protoError, mutate: protoNamesMutate } = useCheckedInvokeSWR(Array(String), "get_all_protolanguages", {
-        fallbackData: loaderProtoNames
+    const {
+        data: protoNames,
+        error: protoError,
+        mutate: protoNamesMutate,
+    } = useCheckedInvokeSWR(Array(String), "get_all_protolanguages", {
+        fallbackData: loaderProtoNames,
     });
-    const { data: langNames, error: langError, mutate: langNamesMutate } = useCheckedInvokeSWR(Array(String), "get_all_languages", {
-        fallbackData: loaderLangNames
+    const {
+        data: langNames,
+        error: langError,
+        mutate: langNamesMutate,
+    } = useCheckedInvokeSWR(Array(String), "get_all_languages", {
+        fallbackData: loaderLangNames,
     });
 
     const { error: dataError, mutate: langMutate } = useLanguage();

@@ -8,11 +8,15 @@ export function useCheckedInvokeSWR<R extends Runtype<T>, T>(
     expected: R,
     id: string,
     args: any,
-    config?: SWRConfiguration<Static<R>>
+    config?: SWRConfiguration<Static<R>>,
 ): SWRResponse<Static<R>> {
-    return useSWR<T>([id, args], async ([id, args]: [string, any]) => {
-        return await useCheckedInvoke(expected, id, args);
-    }, config);
+    return useSWR<T>(
+        [id, args],
+        async ([id, args]: [string, any]) => {
+            return await useCheckedInvoke(expected, id, args);
+        },
+        config,
+    );
 }
 
 export async function useCheckedInvoke<R extends Runtype<T>, T>(

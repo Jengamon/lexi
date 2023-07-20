@@ -13,7 +13,10 @@ import { getErrorMessage } from "./util";
 class AutosaveService {
     _service: NodeJS.Timeout;
     constructor() {
-        this._service = setTimeout(this.autosaveService.bind(this), this.getAutosaveHalfMiutes() * 30_000);
+        this._service = setTimeout(
+            this.autosaveService.bind(this),
+            this.getAutosaveHalfMiutes() * 30_000,
+        );
     }
 
     getAutosaveHalfMiutes(): number {
@@ -26,14 +29,21 @@ class AutosaveService {
     }
 
     autosaveService() {
-        invoke("request_autosave", {})
-            .catch(e => console.error(`Failed to autosave: ${getErrorMessage(e)}`));
-        this._service = setTimeout(this.autosaveService.bind(this), this.getAutosaveHalfMiutes() * 30_000);
+        invoke("request_autosave", {}).catch((e) =>
+            console.error(`Failed to autosave: ${getErrorMessage(e)}`),
+        );
+        this._service = setTimeout(
+            this.autosaveService.bind(this),
+            this.getAutosaveHalfMiutes() * 30_000,
+        );
     }
 
     resetService() {
         clearTimeout(this._service);
-        this._service = setTimeout(this.autosaveService.bind(this), this.getAutosaveHalfMiutes() * 30_000);
+        this._service = setTimeout(
+            this.autosaveService.bind(this),
+            this.getAutosaveHalfMiutes() * 30_000,
+        );
     }
 }
 
