@@ -84,7 +84,11 @@ pub fn request_autosave(
         if eproject.0.is_empty() {
             format!("autosave_{}", program_start.format("%G%m%d_%H%M%S"))
         } else {
-            eproject.0.clone()
+            format!(
+                "{}_autosave_{}",
+                eproject.0.clone(),
+                program_start.format("%G%m%d_%H%M%S")
+            )
         }
     };
 
