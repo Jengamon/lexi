@@ -679,7 +679,7 @@ export default function PhonemesEditor() {
                         </MenuItem>
                         {phonemes.map(([id, data]) => (
                             <MenuItem value={id} key={id}>
-                                &lt;{data.ortho}&gt; ({id})
+                                &#123;{data.ortho}&#125; ({id})
                             </MenuItem>
                         ))}
                     </Select>
