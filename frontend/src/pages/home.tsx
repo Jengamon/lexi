@@ -33,11 +33,12 @@ import { useEffect, useState } from "react";
 import { Array, String } from "runtypes";
 import { useCheckedInvokeSWR } from "~/src/stores";
 import { getErrorMessage } from "~/src/util";
-import { useAppContext } from "../views/app";
+import { useAppContext, useAutosave } from "../views/app";
 import { Page } from "./page";
 
 export default function HomePage() {
     const [languageGroupNames, setLanguageGroupNames] = useState<string[]>([]);
+    const { autosave } = useAutosave();
     const { showAppNotification } = useAppContext();
 
     const [showMergeDialog, setShowMergeDialog] = useState(false);
@@ -63,7 +64,7 @@ export default function HomePage() {
         mutate: familyIdMutate,
     } = useCheckedInvokeSWR(String, "get_family_id", {});
 
-    useEffect(retrieveLanguageGroupNames, []);
+    useEffect(retrieveLanguageGroupNames, [autosave]);
 
     async function setProjectName(to: string) {
         await invoke("set_project_name", {
@@ -99,6 +100,7 @@ export default function HomePage() {
     async function newProject() {
         try {
             await invoke("new_language_group", {});
+            await familyIdMutate(async () => await invoke("get_family_id"));
             await setProjectName("");
         } catch (e) {
             createError(e);
@@ -116,9 +118,9 @@ export default function HomePage() {
                 message: "Epoch created",
                 action: {
                     label: "Merge",
-                    act: () => setShowMergeDialog(true)
-                }
-            })
+                    act: () => setShowMergeDialog(true),
+                },
+            });
         } catch (e) {
             createError(e);
         }
@@ -153,9 +155,12 @@ export default function HomePage() {
             await invoke("merge_language_group", {
                 filename: name,
             });
-            setMergeError(null);
-            setMergeSource("");
             setShowMergeDialog(false);
+            // again, don't immediately reset state, it ugly
+            setTimeout(() => {
+                setMergeError(null);
+                setMergeSource("");
+            }, 100);
         } catch (e) {
             setMergeError(getErrorMessage(e));
         }
@@ -175,31 +180,37 @@ export default function HomePage() {
     }
 
     const mergeDialog = (
-        <Dialog open={showMergeDialog} onClose={() => {
-            setShowMergeDialog(false);
-            // Don't immediately clear state, it looks ugly
-            setTimeout(() => {
-                setMergeSource("");
-                setMergeError(null);
-            }, 100);
-        }}>
-            <DialogTitle>Merge Language</DialogTitle>
+        <Dialog
+            open={showMergeDialog}
+            onClose={() => {
+                setShowMergeDialog(false);
+                // Don't immediately clear state, it looks ugly
+                setTimeout(() => {
+                    setMergeSource("");
+                    setMergeError(null);
+                }, 100);
+            }}
+            title="Merge Project"
+        >
+            <DialogTitle>Merge Project</DialogTitle>
             <DialogContent>
                 <Box sx={{ my: 2, minWidth: 300 }}>
                     <FormControl fullWidth error={Boolean(mergeError)}>
-                        <InputLabel id="merge-source-label">Merge Source</InputLabel>
+                        <InputLabel id="merge-source-label">
+                            Merge Source
+                        </InputLabel>
                         <Select
                             labelId="merge-source-label"
                             id="merge-source"
                             value={mergeSource}
                             label="Merge Source"
                             required={true}
-                            onChange={(ev) => setMergeSource(ev.target.value)}>
+                            onChange={(ev) => setMergeSource(ev.target.value)}
+                            autoFocus
+                            tabIndex={1}
+                        >
                             {languageGroupNames.map((name) => (
-                                <MenuItem
-                                    key={name}
-                                    value={name}
-                                >
+                                <MenuItem key={name} value={name}>
                                     {name}
                                 </MenuItem>
                             ))}
@@ -210,19 +221,68 @@ export default function HomePage() {
             </DialogContent>
             <DialogActions>
                 <Button
-                    onClick={async () =>
-                        await mergeProject(mergeSource)}>Merge</Button>
+                    onClick={() => {
+                        setShowMergeDialog(false);
+                        // Don't immediately clear state, it looks ugly
+                        setTimeout(() => {
+                            setMergeSource("");
+                            setMergeError(null);
+                        }, 100);
+                    }}
+                    tabIndex={3}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    onClick={async () => await mergeProject(mergeSource)}
+                    tabIndex={2}
+                >
+                    Merge
+                </Button>
             </DialogActions>
-        </Dialog >
+        </Dialog>
+    );
+
+    const toolbar = (
+        <Stack alignSelf="center" spacing={1} direction="row" sx={{ mx: 2 }}>
+            <Tooltip title="Save Project">
+                <IconButton onClick={saveProject} aria-label="save">
+                    <Save />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Export Project">
+                <IconButton onClick={exportProject} aria-label="export">
+                    <FileDownload />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="New Project">
+                <IconButton onClick={newProject} aria-label="new">
+                    <AddBox />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Epoch Project">
+                <IconButton
+                    sx={{ transform: "scaleX(-1)" }}
+                    onClick={epochProject}
+                >
+                    <CallSplit />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Merge Project">
+                <IconButton onClick={() => setShowMergeDialog(true)}>
+                    <Merge />
+                </IconButton>
+            </Tooltip>
+        </Stack>
     );
 
     return (
-        <Page title="Home">
+        <Page>
             {isNameLoading ? (
                 <></>
             ) : (
                 <>
-                    <Box display="flex">
+                    <Box display={{ xs: "none", sm: "flex" }}>
                         <TextField
                             autoCorrect="off"
                             sx={{ flexGrow: 1 }}
@@ -231,52 +291,21 @@ export default function HomePage() {
                             onChange={(ev) => setProjectName(ev.target.value)}
                             value={projectName}
                         />
-                        <Stack
-                            alignSelf="center"
-                            spacing={1}
-                            direction="row"
-                            sx={{ mx: 2 }}
-                        >
-                            <Tooltip title="Save Project">
-                                <IconButton
-                                    onClick={saveProject}
-                                    aria-label="save"
-                                >
-                                    <Save />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Export Project">
-                                <IconButton
-                                    onClick={exportProject}
-                                    aria-label="export"
-                                >
-                                    <FileDownload />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="New Project">
-                                <IconButton
-                                    onClick={newProject}
-                                    aria-label="new"
-                                >
-                                    <AddBox />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Epoch Project">
-                                <IconButton
-                                    sx={{ transform: "scaleX(-1)" }}
-                                    onClick={epochProject}
-                                >
-                                    <CallSplit />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Merge Project">
-                                <IconButton
-                                    onClick={() => setShowMergeDialog(true)}
-                                >
-                                    <Merge />
-                                </IconButton>
-                            </Tooltip>
-                        </Stack>
+                        {toolbar}
+                    </Box>
+                    <Box
+                        display={{ xs: "flex", sm: "none" }}
+                        flexDirection="column"
+                    >
+                        <TextField
+                            autoCorrect="off"
+                            sx={{ flexGrow: 1 }}
+                            size="small"
+                            label="Project Name"
+                            onChange={(ev) => setProjectName(ev.target.value)}
+                            value={projectName}
+                        />
+                        {toolbar}
                     </Box>
                     <Typography sx={{ pt: 2 }} align="center" variant="caption">
                         {isFamilyIdLoading

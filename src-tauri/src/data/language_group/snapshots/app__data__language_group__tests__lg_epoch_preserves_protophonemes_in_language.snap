@@ -1,0 +1,28 @@
+---
+source: src-tauri/src/data/language_group/tests.rs
+expression: pre
+---
+version: 0.1.0
+family_id: 00000000-0000-0000-0000-000000000000
+protolangs:
+  - name: "1'"
+    phonemes:
+      00000000-0000-0000-0000-000000000000:
+        ortho: "1"
+        primary:
+          Plosive:
+            place: Bilabial
+            voiced: false
+            attachments: []
+        allo: []
+      00000000-0000-0000-0000-000000000001:
+        ortho: "2"
+        primary:
+          Plosive:
+            place: Bilabial
+            voiced: true
+            attachments: []
+        allo: []
+    description: ~
+langs: []
+

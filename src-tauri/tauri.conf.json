@@ -1,71 +1,79 @@
 {
-  "build": {
-    "beforeDevCommand": {
-      "cwd": "../frontend",
-      "script": "yarn dev"
+    "build": {
+        "beforeDevCommand": {
+            "script": "just dev"
+        },
+        "beforeBuildCommand": {
+            "script": "just build"
+        },
+        "devPath": "http://localhost:1234",
+        "distDir": "../frontend/dist"
     },
-    "beforeBuildCommand": {
-      "cwd": "../frontend",
-      "script": "yarn build"
+    "package": {
+        "productName": "Lexi",
+        "version": "0.1.0"
     },
-    "devPath": "http://localhost:1234",
-    "distDir": "../frontend/dist"
-  },
-  "package": {
-    "productName": "Lexi",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "io.jengamon",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": false
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "height": 600,
-        "resizable": true,
-        "title": "Lexi",
-        "width": 800
-      }
-    ]
-  }
+    "tauri": {
+        "allowlist": {
+            "all": false
+        },
+        "bundle": {
+            "active": true,
+            "category": "Utility",
+            "copyright": "Copyright 2023 @Jengamon & contributors",
+            "deb": {
+                "depends": []
+            },
+            "externalBin": [],
+            "icon": [
+                "icons/32x32.png",
+                "icons/128x128.png",
+                "icons/128x128@2x.png",
+                "icons/icon.icns",
+                "icons/icon.ico"
+            ],
+            "identifier": "io.jengamon",
+            "longDescription": "",
+            "macOS": {
+                "entitlements": null,
+                "exceptionDomain": "",
+                "frameworks": [],
+                "providerShortName": null,
+                "signingIdentity": null,
+                "license": "../LICENSE"
+            },
+            "resources": [],
+            "shortDescription": "",
+            "targets": "all",
+            "windows": {
+                "certificateThumbprint": null,
+                "digestAlgorithm": "sha256",
+                "timestampUrl": ""
+            }
+        },
+        "security": {
+            "csp": null
+        },
+        "updater": {
+            "active": true,
+            "endpoints": [
+                "https://github.com/Jengamon/lexi/releases/latest/download/latest.json"
+            ],
+            "dialog": true,
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDI0MTBBQTk0OTcyOThDMTIKUldRU2pDbVhsS29RSksvdHVqYng4TkhoN0lQTG5PWGdkUjRTU3ZYa28wUERkT2dQT2hYK1QxcXQK"
+        },
+        "windows": [
+            {
+                "fullscreen": false,
+                "height": 600,
+                "resizable": true,
+                "title": "Lexi",
+                "width": 800
+            }
+        ],
+        "systemTray": {
+            "iconPath": "../icons/template-icon.png",
+            "iconAsTemplate": true
+        }
+    }
 }

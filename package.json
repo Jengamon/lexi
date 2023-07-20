@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "private": true,
+  "name": "lexi",
+  "packageManager": "yarn@3.6.1",
+  "workspaces": [
+    "frontend"
+  ],
+  "devDependencies": {
+    "@parcel/core": "^2.9.3",
+    "prettier": "^3.0.0",
+    "process": "^0.11.10",
+    "typescript": "^5.1.6"
+  }
+}

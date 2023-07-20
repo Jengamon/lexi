@@ -8,6 +8,7 @@ import {
     IconButton,
     Menu,
     MenuItem,
+    Stack,
     Switch,
     Toolbar,
     Typography,
@@ -19,11 +20,9 @@ import { NavLink } from "react-router-dom";
 import { useState, MouseEvent } from "react";
 import { useAppContext } from "../views/app";
 
-export interface NavbarProps {
-    title: string;
-}
+export interface NavbarProps {}
 
-export function NavBar({ title }: NavbarProps) {
+export function NavBar({}: NavbarProps) {
     const tabs = [
         {
             label: "Protolanguages",
@@ -32,6 +31,10 @@ export function NavBar({ title }: NavbarProps) {
         {
             label: "Languages",
             href: "/lang",
+        },
+        {
+            label: "Settings",
+            href: "/settings",
         },
         {
             label: "About",
@@ -43,18 +46,7 @@ export function NavBar({ title }: NavbarProps) {
             label: "Home",
             href: "/",
         },
-        {
-            label: "Protolanguages",
-            href: "/proto",
-        },
-        {
-            label: "Languages",
-            href: "/lang",
-        },
-        {
-            label: "About",
-            href: "/about",
-        },
+        ...tabs,
     ];
 
     const { darkMode, setDarkMode } = useAppContext();
@@ -148,6 +140,7 @@ export function NavBar({ title }: NavbarProps) {
                             noWrap
                             component={NavLink}
                             to=""
+                            relative="path"
                             sx={{
                                 mr: 2,
                                 display: { xs: "flex", md: "none" },
@@ -165,32 +158,39 @@ export function NavBar({ title }: NavbarProps) {
                                 display: { xs: "none", md: "flex" },
                             }}
                         >
-                            {tabs.map((tab) => (
-                                <Button
-                                    key={tab.label}
-                                    component={NavLink}
-                                    to={tab.href}
-                                    sx={{
-                                        my: 2,
-                                        color: "inherit",
-                                        display: "block",
-                                        "&.active": {
-                                            backgroundColor: "white",
-                                            color: "secondary.main",
-                                        },
-                                    }}
-                                >
-                                    {tab.label}
-                                </Button>
-                            ))}
+                            <Stack direction="row" spacing={2}>
+                                {tabs.map((tab) => (
+                                    <Button
+                                        key={tab.label}
+                                        component={NavLink}
+                                        to={tab.href}
+                                        sx={{
+                                            color: "inherit",
+                                            display: "block",
+                                            "&.active": {
+                                                backgroundColor: "white",
+                                                color: "secondary.main",
+                                            },
+                                        }}
+                                    >
+                                        {tab.label}
+                                    </Button>
+                                ))}
+                            </Stack>
                         </Box>
                         <Box sx={{ flexGrow: 0 }}>
                             <FormGroup>
-                                <FormControlLabel control={
-                                    <Switch checked={darkMode}
-                                        onChange={() => setDarkMode(!darkMode)} />} label={
-                                            darkMode ? "Dark" : "Light"
-                                        } />
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={darkMode}
+                                            onChange={() =>
+                                                setDarkMode(!darkMode)
+                                            }
+                                        />
+                                    }
+                                    label={darkMode ? "Dark" : "Light"}
+                                />
                             </FormGroup>
                         </Box>
                     </Toolbar>

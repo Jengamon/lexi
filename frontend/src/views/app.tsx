@@ -1,5 +1,6 @@
 import {
     Alert,
+    Link as MUILink,
     Box,
     Button,
     CssBaseline,
@@ -9,25 +10,33 @@ import {
     createTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Outlet, ScrollRestoration, useOutletContext } from "react-router-dom";
+import {
+    Link,
+    Outlet,
+    ScrollRestoration,
+    useOutletContext,
+} from "react-router-dom";
 import { Record, Static, String } from "runtypes";
 import useSWRSubscription from "swr/subscription";
-import { subscribeGenerator } from "../stores";
+import { subscribeGenerator, useCheckedInvokeSWR } from "../stores";
 import { useImmer } from "use-immer";
 
 declare module "@mui/material/styles" {
     interface TypographyVariants {
+        phone: React.CSSProperties;
         ipa: React.CSSProperties;
     }
 
     // allow configuration using `createTheme`
     interface TypographyVariantsOptions {
+        phone?: React.CSSProperties;
         ipa?: React.CSSProperties;
     }
 }
 
 declare module "@mui/material/Typography" {
     interface TypographyPropsVariantOverrides {
+        phone: true;
         ipa: true;
     }
 }
@@ -39,20 +48,25 @@ export const theme = {
             main: "#aeafbd",
         },
         secondary: {
-            main: '#f50057',
+            main: "#f50057",
         },
     },
     typography: {
-        /// Use for any text meant to contain IPA
+        // Used for display the phone in the phone viewer
+        phone: {
+            lineHeight: 2,
+            fontFamily: "Iosevka Web",
+            fontSize: "6rem",
+        },
         ipa: {
-            fontFamily: "sans-serif",
+            fontFamily: "Iosevka Web",
         },
     },
     components: {
         MuiTypography: {
             defaultProps: {
                 variantMapping: {
-                    ipa: "p",
+                    phone: "h1",
                 },
             },
         },
@@ -95,6 +109,20 @@ export function useAutosave() {
     };
 }
 
+export function AppViewCrumb() {
+    const { data: projectName } = useCheckedInvokeSWR(
+        String,
+        "get_project_name",
+        {},
+    );
+
+    return (
+        <MUILink underline="hover" color="inherit" component={Link} to="/">
+            {projectName}
+        </MUILink>
+    );
+}
+
 export default function AppView() {
     const [notif, setNotif] = useState<AppNotif | null>(null);
     const [hasNotif, setHasNotif] = useState<boolean>(false);
@@ -104,7 +132,7 @@ export default function AppView() {
     const setDarkMode = (darkMode: boolean) => {
         setDarkMode_(darkMode);
         localStorage.setItem("darkMode", darkMode ? "dark" : "light");
-        updateTheme(theme => {
+        updateTheme((theme) => {
             theme.palette.mode = darkMode ? "dark" : "light";
         });
     };
@@ -112,7 +140,7 @@ export default function AppView() {
     useEffect(() => {
         const existingPreference = localStorage.getItem("darkMode");
         if (existingPreference) {
-            (existingPreference === "light")
+            existingPreference === "light"
                 ? setDarkMode(false)
                 : setDarkMode(true);
         } else {

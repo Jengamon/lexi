@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::Phoneme;
+use super::{BaseLanguage, Phoneme};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Language {
@@ -18,6 +18,11 @@ pub struct Language {
     pub description: Option<serde_json::Value>,
     /// Protolanguage names that this language is descended from
     pub ancestors: Vec<String>,
+    /// List of dialects
+    pub dialects: Option<HashMap<String, ()>>,
+    /// "Standard" dialect for the purpose of epoch,
+    /// if unset, the absence of dialect information is "standard".
+    pub standard_dialect: Option<String>,
 }
 
 impl Default for Language {
@@ -27,12 +32,32 @@ impl Default for Language {
             phonemes: HashMap::new(),
             description: None,
             ancestors: vec![],
+            dialects: None,
+            standard_dialect: None,
         }
     }
 }
 
-impl Language {
-    pub fn description(&self) -> Option<&serde_json::Value> {
+impl BaseLanguage for Language {
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn ancestors(&self) -> Vec<String> {
+        self.ancestors.clone()
+    }
+
+    fn description(&self) -> Option<&serde_json::Value> {
         self.description.as_ref()
     }
+
+    fn phonemes(&self) -> &HashMap<Uuid, Phoneme> {
+        &self.phonemes
+    }
+
+    fn phonemes_mut(&mut self) -> &mut HashMap<Uuid, Phoneme> {
+        &mut self.phonemes
+    }
 }
+
+impl Language {}

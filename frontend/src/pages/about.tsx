@@ -9,8 +9,14 @@ import {
 } from "~/src/util";
 import { Phone } from "~/src/data";
 import { useCheckedInvokeSWR } from "../stores";
-import { useAutosave } from "../views/app";
-import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import {
+    Box,
+    Button,
+    Paper,
+    Stack,
+    TextField,
+    Typography,
+} from "@mui/material";
 import { Page } from "./page";
 
 export default function AboutPage() {
@@ -21,7 +27,6 @@ export default function AboutPage() {
     const [branner, setBranner] = useState("");
     const [silInput, setSilInput] = useState("");
     const [sil, setSil] = useState("");
-    const { autosave, error: autosaveError } = useAutosave();
 
     const { data: dumpedLangGroup, error: dumpedLangGroupError } =
         useCheckedInvokeSWR(String, "dump_language_group", {});
@@ -38,8 +43,7 @@ export default function AboutPage() {
             },
         };
 
-        displayPhone(phone)
-            .then((output) => setDisplayPhone(output));
+        displayPhone(phone).then((output) => setDisplayPhone(output));
     });
 
     async function testExportCurrentProject() {
@@ -52,8 +56,8 @@ export default function AboutPage() {
     }
 
     return (
-        <Page title="About">
-            <Typography variant="ipa">
+        <Page>
+            <Typography variant="body1" fontFamily="sans-serif">
                 {testDisplayPhone}
             </Typography>
             <Typography variant="body1" component="em">
@@ -61,28 +65,14 @@ export default function AboutPage() {
                 a programmatic way to store and explore conlangs both
                 synchronically and diachronically.
             </Typography>
-            {autosave ? (
-                <Typography align="center" variant="body1">
-                    Last autosaved: {autosave.name} at{" "}
-                    {new Date(autosave.timestamp).toLocaleDateString()}{" "}
-                    {new Date(autosave.timestamp).toLocaleTimeString()}
-                </Typography>
-            ) : (
-                <Typography align="center" variant="body1">
-                    Have not autosaved this session
-                </Typography>
-            )}
-            {autosaveError && (
-                <Typography variant="body1">
-                    Encountered autosave error: {getErrorMessage(autosaveError)}
-                </Typography>
-            )}
             <Box>
                 <Button onClick={testExportCurrentProject}>Test Export</Button>
                 {testExport && (
                     <Paper component="pre">
                         {String.guard(testExport) ? (
-                            <Typography fontFamily="monospace">{testExport}</Typography>
+                            <Typography fontFamily="monospace">
+                                {testExport}
+                            </Typography>
                         ) : (
                             <Typography fontFamily="monospace" color="error">
                                 {testExport.error}
@@ -96,41 +86,55 @@ export default function AboutPage() {
                     <TextField
                         label="Branner"
                         inputProps={{
-                            autoCorrect: "off"
+                            autoCorrect: "off",
+                            spellCheck: false,
                         }}
                         autoComplete="off"
                         value={brannerInput}
                         onChange={async (ev) => {
-                            const input = ev.target.value.replace(/[\u201C\u201D]/g, '"');
+                            const input = ev.target.value.replace(
+                                /[\u201C\u201D]/g,
+                                '"',
+                            );
                             setBrannerInput(input);
                             const newBranner = await fromBranner(input);
                             setBranner(newBranner);
                         }}
                     />
-                    <Typography variant="ipa">{branner}</Typography>
+                    <Typography variant="ipa" component="p">
+                        {branner}
+                    </Typography>
                 </Box>
                 <Box>
                     <TextField
                         label="SIL"
                         inputProps={{
-                            autoCorrect: "off"
+                            autoCorrect: "off",
+                            spellCheck: false,
                         }}
                         autoComplete="off"
                         value={silInput}
                         onChange={async (ev) => {
-                            const input = ev.target.value.replace(/[\u201C\u201D]/g, '"');
+                            const input = ev.target.value.replace(
+                                /[\u201C\u201D]/g,
+                                '"',
+                            );
                             setSilInput(input);
                             const newSil = await fromSil(input);
                             setSil(newSil);
                         }}
                     />
-                    <Typography variant="ipa">{sil}</Typography>
+                    <Typography variant="ipa" component="p">
+                        {sil}
+                    </Typography>
                 </Box>
             </Stack>
             <Box>
                 <Paper component="pre">
                     {dumpedLangGroup ? (
-                        <Typography fontFamily="monospace">{dumpedLangGroup}</Typography>
+                        <Typography fontFamily="monospace">
+                            {dumpedLangGroup}
+                        </Typography>
                     ) : (
                         <Typography fontFamily="monospace" color="error">
                             {getErrorMessage(dumpedLangGroupError)}
@@ -138,6 +142,6 @@ export default function AboutPage() {
                     )}
                 </Paper>
             </Box>
-        </Page >
+        </Page>
     );
 }

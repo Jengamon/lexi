@@ -11,8 +11,44 @@ pub struct Phoneme {
     pub allo: Vec<Phone>,
 }
 
-#[derive(Serialize, Deserialize, Copy, Clone, Debug)]
-pub enum Place {
+impl Default for Phoneme {
+    fn default() -> Self {
+        Self {
+            ortho: "".to_string(),
+            primary: Phone::Null,
+            allo: vec![],
+        }
+    }
+}
+
+impl Phoneme {
+    /// Validates some desired properties for phonemes
+    pub fn validated(self) -> Self {
+        // Phones should not be duplicated
+        let mut allophones = vec![];
+        for allo in self.allo {
+            if !allophones.contains(&allo) && allo != self.primary {
+                allophones.push(allo);
+            }
+        }
+
+        Self {
+            allo: allophones,
+            ..self
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Eq, Copy, Clone, Debug)]
+pub enum PlosivePlace {
+    Bilabial,
+    Labiodental,
+    Dental,
+    Alveolar,
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Eq, Copy, Clone, Debug)]
+pub enum FricativePlace {
     Bilabial,
     Labiodental,
     Dental,
@@ -29,76 +65,82 @@ pub enum ObstruentAttachment {
     Creaky,
 }
 
-enum PhoneType {
-    Plosive,
-    Fricative,
-    Vowel,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Clone, Debug)]
 pub enum Phone {
     Plosive {
-        place: Place,
+        place: PlosivePlace,
         voiced: bool,
         attachments: HashSet<ObstruentAttachment>,
     },
     Affricative {
-        start_place: Place,
-        end_place: Place,
+        start_place: PlosivePlace,
+        end_place: FricativePlace,
         voiced: bool,
         attachments: HashSet<ObstruentAttachment>,
     },
     Fricative {
-        place: Place,
+        place: FricativePlace,
         voiced: bool,
         attachments: HashSet<ObstruentAttachment>,
     },
     Vowel {},
+    /// Null production
+    Null,
 }
 
 impl Phone {
-    fn get_base(
-        pt: PhoneType,
-        place: &Place,
+    fn get_plosive_base(
+        place: &PlosivePlace,
         voiced: bool,
         attachments: &HashSet<ObstruentAttachment>,
     ) -> String {
-        branner_to_ipa(match pt {
-            PhoneType::Plosive => match place {
-                Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => "p",
-                Place::Bilabial if voiced => "b",
-                Place::Bilabial => "p",
-                Place::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => "p[",
-                Place::Labiodental if voiced => "b[",
-                Place::Labiodental => "p[",
-                Place::Dental if attachments.contains(&ObstruentAttachment::Ejective) => "t[",
-                Place::Dental if voiced => "d[",
-                Place::Dental => "t[",
-                Place::Alveolar if attachments.contains(&ObstruentAttachment::Ejective) => "t",
-                Place::Alveolar if voiced => "d",
-                Place::Alveolar => "t",
-                Place::Postalveolar if attachments.contains(&ObstruentAttachment::Ejective) => "t",
-                Place::Postalveolar if voiced => "d",
-                Place::Postalveolar => "t",
-            },
-            PhoneType::Fricative => match place {
-                Place::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => "P\"",
-                Place::Bilabial if voiced => "B\"",
-                Place::Bilabial => "P\"",
-                Place::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => "f",
-                Place::Labiodental if voiced => "v",
-                Place::Labiodental => "f",
-                Place::Dental if attachments.contains(&ObstruentAttachment::Ejective) => "O-",
-                Place::Dental if voiced => "d-",
-                Place::Dental => "O-",
-                Place::Alveolar if attachments.contains(&ObstruentAttachment::Ejective) => "s",
-                Place::Alveolar if voiced => "z",
-                Place::Alveolar => "s",
-                Place::Postalveolar if attachments.contains(&ObstruentAttachment::Ejective) => "S",
-                Place::Postalveolar if voiced => "3\"",
-                Place::Postalveolar => "S",
-            },
-            PhoneType::Vowel => todo!(),
+        branner_to_ipa(match place {
+            PlosivePlace::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => "p",
+            PlosivePlace::Bilabial if voiced => "b",
+            PlosivePlace::Bilabial => "p",
+            PlosivePlace::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => {
+                "p["
+            }
+            PlosivePlace::Labiodental if voiced => "b[",
+            PlosivePlace::Labiodental => "p[",
+            PlosivePlace::Dental if attachments.contains(&ObstruentAttachment::Ejective) => "t[",
+            PlosivePlace::Dental if voiced => "d[",
+            PlosivePlace::Dental => "t[",
+            PlosivePlace::Alveolar if attachments.contains(&ObstruentAttachment::Ejective) => "t",
+            PlosivePlace::Alveolar if voiced => "d",
+            PlosivePlace::Alveolar => "t",
+        })
+    }
+
+    fn get_fricative_base(
+        place: &FricativePlace,
+        voiced: bool,
+        attachments: &HashSet<ObstruentAttachment>,
+    ) -> String {
+        branner_to_ipa(match place {
+            FricativePlace::Bilabial if attachments.contains(&ObstruentAttachment::Ejective) => {
+                "P\""
+            }
+            FricativePlace::Bilabial if voiced => "B\"",
+            FricativePlace::Bilabial => "P\"",
+            FricativePlace::Labiodental if attachments.contains(&ObstruentAttachment::Ejective) => {
+                "f"
+            }
+            FricativePlace::Labiodental if voiced => "v",
+            FricativePlace::Labiodental => "f",
+            FricativePlace::Dental if attachments.contains(&ObstruentAttachment::Ejective) => "O-",
+            FricativePlace::Dental if voiced => "d-",
+            FricativePlace::Dental => "O-",
+            FricativePlace::Alveolar if attachments.contains(&ObstruentAttachment::Ejective) => "s",
+            FricativePlace::Alveolar if voiced => "z",
+            FricativePlace::Alveolar => "s",
+            FricativePlace::Postalveolar
+                if attachments.contains(&ObstruentAttachment::Ejective) =>
+            {
+                "S"
+            }
+            FricativePlace::Postalveolar if voiced => "3\"",
+            FricativePlace::Postalveolar => "S",
         })
     }
 
@@ -116,12 +158,13 @@ impl Phone {
 impl fmt::Display for Phone {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let phone = match self {
+            Phone::Null => "∅".to_string(),
             Phone::Plosive {
                 place,
                 voiced,
                 attachments,
             } => {
-                let mut phone = Self::get_base(PhoneType::Plosive, place, *voiced, attachments);
+                let mut phone = Self::get_plosive_base(place, *voiced, attachments);
 
                 if attachments.contains(&ObstruentAttachment::Breathy) {
                     phone += &branner_to_ipa(r#"h")"#);
@@ -145,10 +188,8 @@ impl fmt::Display for Phone {
                 voiced,
                 attachments,
             } => {
-                let mut start_phone =
-                    Self::get_base(PhoneType::Plosive, start_place, *voiced, attachments);
-                let mut end_phone =
-                    Self::get_base(PhoneType::Fricative, end_place, *voiced, attachments);
+                let mut start_phone = Self::get_plosive_base(start_place, *voiced, attachments);
+                let mut end_phone = Self::get_fricative_base(end_place, *voiced, attachments);
 
                 if attachments.contains(&ObstruentAttachment::Breathy) {
                     start_phone += &branner_to_ipa(r#"h")"#);

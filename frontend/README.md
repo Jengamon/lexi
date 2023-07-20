@@ -9,6 +9,16 @@ A phoneme consists of an orthography, and as many phones as you want.
 To figure out which phone to use in an environment/morpheme, we will use the phonotactics
 of a (proto-)language.
 
+## Dialectical variation
+
+Phonemes do not belong to a particular dialect, but
+from phonotactics upwards, some objects can belong to dialects, which
+are optional extensions of the language file that either add objects
+to be included or remove objects from consideration.
+
+To request something like phonotactics, you can specify a dialect name, if none is specified, no dialect information will be included
+(the "standard" variety).
+
 ## Phonotactics
 
 Determines how phonemes are realized. (NOTE:
@@ -113,5 +123,5 @@ To look up something in a language, we first check the language to see if it con
 
 - Idioms and idiomatic expressions
 - Syntax
-- Dialects
   - Phonotactic rules for allophone variation and morphemes can be marked as part of a dialect
+- Tree files (automate the epoch-merge process)

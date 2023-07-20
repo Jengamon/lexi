@@ -13,7 +13,13 @@ import {
     Dictionary,
 } from "runtypes";
 
-export const Place = Union(
+export const PlosivePlace = Union(
+    Literal("Bilabial"),
+    Literal("Labiodental"),
+    Literal("Dental"),
+    Literal("Alveolar"),
+);
+export const FricativePlace = Union(
     Literal("Bilabial"),
     Literal("Labiodental"),
     Literal("Dental"),
@@ -30,19 +36,20 @@ export const ObstruentAttachment = Union(
 export const Phone = Union(
     Record({
         Plosive: Record({
-            place: Place,
+            place: PlosivePlace,
             voiced: Boolean,
             attachments: Array(ObstruentAttachment),
         }),
     }),
     Record({
         Affricative: Record({
-            start_place: Place,
-            end_place: Place,
+            start_place: PlosivePlace,
+            end_place: FricativePlace,
             voiced: Boolean,
             attachments: Array(ObstruentAttachment),
         }),
     }),
+    Literal("Null"),
 );
 export const Phoneme = Record({
     ortho: String,
@@ -66,7 +73,8 @@ export const LanguageGroup = Record({
     langs: Array(Language),
 });
 
-export type Place = Static<typeof Place>;
+export type PlosivePlace = Static<typeof PlosivePlace>;
+export type FricativePlace = Static<typeof FricativePlace>;
 export type ObstruentAttachment = Static<typeof ObstruentAttachment>;
 export type Phone = Static<typeof Phone>;
 export type Phoneme = Static<typeof Phoneme>;

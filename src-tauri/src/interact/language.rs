@@ -1,9 +1,8 @@
 use super::Error;
-use crate::data::Language;
+use crate::data::{BaseLanguage, Language, Phoneme};
 use crate::file::Project;
-use crate::ServiceState;
-use std::time::Duration;
-use tauri::{command, State, Window};
+use tauri::{command, State};
+use uuid::Uuid;
 
 #[command]
 pub fn create_language(project: State<Project>, name: String) -> Result<(), Error> {
@@ -36,7 +35,7 @@ pub fn get_language_description(
         .unwrap()
         .1
         .language(name)
-        .and_then(Language::description)
+        .and_then(BaseLanguage::description)
         .cloned()
 }
 
@@ -52,23 +51,27 @@ pub fn set_language_description(
 }
 
 #[command]
-pub fn init_languages_server(
-    project: State<Project>,
-    window: Window,
-    services: State<ServiceState>,
-) {
-    let project = project.inner().clone();
-    if !services.inner().0.read().unwrap().languages {
-        log::info!("Starting languages server...");
-        std::thread::spawn(move || loop {
-            let names: Vec<_> = {
-                let project = &project.0.lock().unwrap().1;
-                project.languages().map(|lang| lang.name.clone()).collect()
-            };
-            window.emit("all_languages", names).unwrap();
+pub fn get_all_languages(project: State<Project>) -> Vec<String> {
+    let project = &project.inner().0.lock().unwrap().1;
+    project
+        .languages()
+        .map(|lang| lang.name.to_string())
+        .collect()
+}
 
-            std::thread::sleep(Duration::from_millis(500));
-        });
-        services.inner().0.write().unwrap().languages = true;
+#[command]
+pub fn create_language_phoneme(
+    project: State<Project>,
+    name: String,
+    phoneme: Phoneme,
+) -> Option<Uuid> {
+    let new_id = Uuid::new_v4();
+    let ref mut project = project.inner().0.lock().unwrap().1;
+    let lang = project.language_mut(name);
+    if let Some(proto) = lang {
+        proto.phonemes.insert(new_id, phoneme.validated());
+        Some(new_id)
+    } else {
+        None
     }
 }

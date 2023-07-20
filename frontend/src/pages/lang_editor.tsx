@@ -1,4 +1,10 @@
-import { Add, Create, Delete, Toc, Language as LanguageIcon } from "@mui/icons-material";
+import {
+    Add,
+    Create,
+    Delete,
+    Toc,
+    Language as LanguageIcon,
+} from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -17,30 +23,35 @@ import {
     TextField,
     Toolbar,
     Typography,
+    Link as MUILink,
     capitalize,
 } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 import {
     Link,
+    LoaderFunctionArgs,
     Outlet,
+    useLoaderData,
     useNavigate,
     useOutletContext,
     useParams,
 } from "react-router-dom";
 import { Array, String } from "runtypes";
 import { KeyedMutator } from "swr";
-import useSWRSubscription from "swr/subscription";
 import { Language, Protolanguage } from "~/src/data";
-import { subscribeGenerator, useCheckedInvokeSWR } from "~/src/stores";
-import { NavBar } from "../components/navbar";
+import { useCheckedInvokeSWR, useCheckedInvoke } from "~/src/stores";
 import { getErrorMessage } from "../util";
-import { useAppContext } from "../views/app";
+import { AppContext, useAppContext } from "../views/app";
 import { Page } from "./page";
 
 export function useProtolanguage() {
     const { plangId } = useParams();
-    const { data, error, mutate } = useCheckedInvokeSWR(Protolanguage, "get_protolanguage", { name: plangId });
+    const { data, error, mutate } = useCheckedInvokeSWR(
+        Protolanguage,
+        "get_protolanguage",
+        { name: plangId },
+    );
 
     return {
         protolang: data,
@@ -51,7 +62,11 @@ export function useProtolanguage() {
 
 export function useLanguage() {
     const { langId } = useParams();
-    const { data, error, mutate } = useCheckedInvokeSWR(Language, "get_language", { name: langId });
+    const { data, error, mutate } = useCheckedInvokeSWR(
+        Language,
+        "get_language",
+        { name: langId },
+    );
 
     return {
         lang: data,
@@ -62,7 +77,7 @@ export function useLanguage() {
 
 export type LanguageEditorContext = {
     mode: "protolang" | "lang";
-};
+} & AppContext;
 
 export function useLanguageEditorContext() {
     return useOutletContext<LanguageEditorContext>();
@@ -72,16 +87,92 @@ export type LanguageEditorProps = {
     mode: "lang" | "protolang";
 };
 
-export function LanguageEditor({ mode }: LanguageEditorProps) {
-    const { data: protoNames, error: protoError } = useSWRSubscription<
-        string[]
-    >("all_protolanguages", subscribeGenerator(Array(String)));
-    const { data: langNames, error: langError } = useSWRSubscription<string[]>(
-        "all_languages",
-        subscribeGenerator(Array(String)),
+export function LanguageEditorCrumb({
+    data,
+    mode,
+}: { data: LanguageEditorLoaderData } & LanguageEditorProps) {
+    const langData =
+        data.currentProto !== undefined ? data.currentProto : data.currentLang;
+    return (
+        <MUILink
+            underline="hover"
+            color="inherit"
+            component={Link}
+            to={`/${mode === "protolang" ? "proto" : "lang"}/${
+                langData !== undefined ? langData.name : ""
+            }/describe`}
+        >
+            {langData !== undefined ? langData.name : "*UNKNOWN*"}{" "}
+            {mode === "protolang" ? "Protolanguage" : "Language"}
+        </MUILink>
     );
+}
+
+export async function LanguageEditorLoader({
+    params,
+}: LoaderFunctionArgs): Promise<LanguageEditorLoaderData> {
+    const currentLang =
+        params.langId !== undefined
+            ? await useCheckedInvoke(Language, "get_language", {
+                  name: params.langId,
+              })
+            : undefined;
+    const currentProto =
+        params.plangId !== undefined
+            ? await useCheckedInvoke(Protolanguage, "get_protolanguage", {
+                  name: params.plangId,
+              })
+            : undefined;
+
+    const protoNames = await useCheckedInvoke(
+        Array(String),
+        "get_all_protolanguages",
+        {},
+    );
+
+    const langNames = await useCheckedInvoke(
+        Array(String),
+        "get_all_languages",
+        {},
+    );
+
+    return {
+        currentLang,
+        currentProto,
+        protoNames,
+        langNames,
+    };
+}
+
+export type LanguageEditorLoaderData = {
+    currentLang?: Language;
+    currentProto?: Protolanguage;
+    protoNames: string[];
+    langNames: string[];
+};
+
+export function LanguageEditor({ mode }: LanguageEditorProps) {
+    const { protoNames: loaderProtoNames, langNames: loaderLangNames } =
+        useLoaderData() as LanguageEditorLoaderData;
+
+    const {
+        data: protoNames,
+        error: protoError,
+        mutate: protoNamesMutate,
+    } = useCheckedInvokeSWR(Array(String), "get_all_protolanguages", {
+        fallbackData: loaderProtoNames,
+    });
+    const {
+        data: langNames,
+        error: langError,
+        mutate: langNamesMutate,
+    } = useCheckedInvokeSWR(Array(String), "get_all_languages", {
+        fallbackData: loaderLangNames,
+    });
+
     const { error: dataError, mutate: langMutate } = useLanguage();
     const { error: protoDataError, mutate: protoMutate } = useProtolanguage();
+
     const { langId, plangId } = useParams();
 
     return mode === "protolang" ? (
@@ -92,7 +183,11 @@ export function LanguageEditor({ mode }: LanguageEditorProps) {
             langMutate={() => {
                 throw new Error("lang mutated in protolang mode");
             }}
-            protolangMutate={protoMutate}
+            protolangMutate={async (proto, opts) => {
+                let ret = await protoMutate(proto, opts);
+                await protoNamesMutate();
+                return ret;
+            }}
             langId={plangId}
             langError={protoDataError}
         />
@@ -101,7 +196,11 @@ export function LanguageEditor({ mode }: LanguageEditorProps) {
             mode={mode}
             names={langNames}
             error={langError}
-            langMutate={langMutate}
+            langMutate={async (proto, opts) => {
+                let ret = await langMutate(proto, opts);
+                await langNamesMutate();
+                return ret;
+            }}
             protolangMutate={() => {
                 throw new Error("protolang mutated in lang mode");
             }}
@@ -133,7 +232,7 @@ function LanguageEditorInner({
     const [createError, setCreateError] = useState<string | null>(null);
     const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-    const { showAppNotification } = useAppContext();
+    const appContext = useAppContext();
     const navigate = useNavigate();
     const noun = mode === "protolang" ? "protolanguage" : "language";
 
@@ -164,7 +263,7 @@ function LanguageEditorInner({
             setNewName("");
             setShowCreateDialog(false);
             setCreateError(null);
-            showAppNotification({
+            appContext.showAppNotification({
                 severity: "info",
                 message: `Created ${noun} ${name}`,
                 action: {
@@ -188,23 +287,21 @@ function LanguageEditorInner({
 
     if (error != undefined) {
         return (
-            <>
-                <NavBar title="Protolanguages" />
+            <Page>
                 <Typography variant="body1">
-                    {getErrorMessage(error)}
+                    ERROR: {getErrorMessage(error)}
                 </Typography>
-            </>
+            </Page>
         );
     }
 
     if (langError != undefined && langId !== undefined) {
         return (
-            <>
-                <NavBar title="Protolanguages" />
+            <Page>
                 <Typography variant="body1">
-                    {getErrorMessage(langError)}
+                    LANG ERROR: {getErrorMessage(langError)}
                 </Typography>
-            </>
+            </Page>
         );
     }
 
@@ -224,7 +321,7 @@ function LanguageEditorInner({
     const fabs = (
         <SpeedDial
             ariaLabel={`Back to ${capitalize(noun)} List`}
-            sx={{ position: "absolute", bottom: 16, right: 16 }}
+            sx={{ position: "fixed", bottom: 16, right: 16 }}
             icon={<SpeedDialIcon />}
         >
             <SpeedDialAction
@@ -237,8 +334,8 @@ function LanguageEditorInner({
                         : navigate("/lang")
                 }
             />
-            {
-                langId !== undefined && <SpeedDialAction
+            {langId !== undefined && (
+                <SpeedDialAction
                     key="back-to-language-root"
                     icon={<LanguageIcon />}
                     tooltipTitle={`${capitalize(noun)} Root`}
@@ -248,7 +345,7 @@ function LanguageEditorInner({
                             : navigate(`/lang/${langId}/describe`)
                     }
                 />
-            }
+            )}
             <SpeedDialAction
                 key="create"
                 icon={<Create />}
@@ -291,13 +388,13 @@ function LanguageEditorInner({
     );
 
     return langId !== undefined ? (
-        <Page title={`${capitalize(noun)}s`}>
+        <Page showBreadcrumbs>
             {dialogs}
             {fabs}
-            <Outlet context={{ mode }} />
+            <Outlet context={{ mode, ...appContext }} />
         </Page>
     ) : (
-        <Page title={`${capitalize(noun)}s`}>
+        <Page>
             <Toolbar>{abs}</Toolbar>
             <List dense>
                 {names &&

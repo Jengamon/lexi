@@ -1,16 +1,32 @@
 fresh:
-    cd frontend && yarn install
+    yarn install
     cargo install tauri-cli --locked
 
+fresh-ci:
+    yarn install
+
 test:
-    -cd src-tauri && cargo insta test
-    cd src-tauri && cargo insta review
+    cargo deny check
+    -cargo insta test
+    cargo insta review
 
 test-ci:
-    cd src-tauri && cargo test
+    cargo test
 
 dev:
-    cargo tauri dev
+    yarn workspace frontend dev
 
 build:
-    cargo tauri build
+    yarn workspace frontend build
+
+fmt:
+    yarn workspace frontend fmt
+    cargo fmt
+
+clean:
+    yarn workspace frontend clean
+    cargo clean
+
+build-local $PASSWORD:
+    yarn workspace frontend clean
+    TAURI_PRIVATE_KEY=$(cat ~/.tauri/lexi.key) TAURI_KEY_PASSWORD=$PASSWORD cargo tauri build

@@ -16,18 +16,14 @@ jobs:
     continue-on-error: ${{ matrix.checks == 'advisories' }}
     steps:
       - uses: actions/checkout@v3
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-      - name: install cargo-deny
-        run: cargo install cargo-deny
-      - name: Run Deny checks
-        run: cargo deny check ${{ matrix.checks }}
+      - uses: EmbarkStudios/cargo-deny-action@v1
+        with:
+          command: check ${{ matrix.checks }}
   test-tauri:
     strategy:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
-
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
@@ -41,16 +37,17 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "build"
-          workspaces: "src-tauri -> target"
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
       - name: install frontend dependencies
-        run: just fresh
+        run: just fresh-ci
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
       - name: run Rust tests
         run: just test-ci

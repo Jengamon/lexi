@@ -1,16 +1,18 @@
 import { ReactNode } from "react";
 import { NavBar } from "../components/navbar";
+import { Breadcrumbs } from "../components/breadcrumbs";
 import { Container } from "@mui/material";
 
 export type PageProps = {
-    title: string;
     children: ReactNode;
+    showBreadcrumbs?: boolean;
 };
 
-export function Page({ title, children }: PageProps) {
+export function Page({ showBreadcrumbs, children }: PageProps) {
     return (
         <>
-            <NavBar title={title} />
+            <NavBar />
+            {showBreadcrumbs && <Breadcrumbs />}
             <Container
                 maxWidth="lg"
                 sx={{
