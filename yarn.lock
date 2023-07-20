@@ -221,10 +221,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/noto-sans@npm:^5.0.5":
+"@fontsource/iosevka@npm:^5.0.5":
   version: 5.0.5
-  resolution: "@fontsource/noto-sans@npm:5.0.5"
-  checksum: bda0e12639d1b468c57bc4a426e15ee9a6d0db614e7bf235730120fb8f327fed7792ec8973fee02f739415fd44644b51f2eb448dc52ae8bab78ed9fd7558de1c
+  resolution: "@fontsource/iosevka@npm:5.0.5"
+  checksum: 309204203554080805c1d6a1dabb29f2e1e1624f67439413d62b6cc9ca0a4e5d0633f6444a4cac92a7b1aca5350a093052b01c4f8f31b1950224aec19a952590
   languageName: node
   linkType: hard
 
@@ -2606,7 +2606,7 @@ __metadata:
   dependencies:
     "@emotion/react": ^11.11.1
     "@emotion/styled": ^11.11.0
-    "@fontsource/noto-sans": ^5.0.5
+    "@fontsource/iosevka": ^5.0.5
     "@fontsource/roboto": ^5.0.5
     "@lexical/react": ^0.11.2
     "@mui/icons-material": ^5.14.0
