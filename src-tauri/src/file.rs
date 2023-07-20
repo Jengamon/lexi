@@ -7,7 +7,7 @@ use directories::ProjectDirs;
 use regex::Regex;
 use semver::{Version, VersionReq};
 use serde::{Serialize, Serializer};
-use tauri::{command, AppHandle, Manager, State, Window};
+use tauri::{command, AppHandle, Manager, State};
 use uuid::Uuid;
 
 use crate::data::{LanguageGroup, LanguageGroupError};

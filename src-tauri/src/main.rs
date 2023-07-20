@@ -12,6 +12,7 @@ mod data;
 mod export;
 mod file;
 mod interact;
+mod parser;
 mod util;
 
 pub struct StateRaw {}

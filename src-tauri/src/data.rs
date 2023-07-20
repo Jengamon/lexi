@@ -1,6 +1,7 @@
 mod language;
 mod language_group;
 mod phoneme;
+mod phoneme_class;
 mod protolanguage;
 
 use std::collections::HashMap;

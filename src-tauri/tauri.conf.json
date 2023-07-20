@@ -52,7 +52,7 @@
             }
         },
         "security": {
-            "csp": "default-src 'self'; img-src *"
+            "csp": null
         },
         "updater": {
             "active": true,
