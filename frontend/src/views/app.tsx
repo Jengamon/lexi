@@ -67,7 +67,6 @@ export const theme = {
             defaultProps: {
                 variantMapping: {
                     phone: "h1",
-                    ipa: "p",
                 },
             },
         },

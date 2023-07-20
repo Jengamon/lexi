@@ -105,6 +105,7 @@ export default function AboutPage() {
                         label="Branner"
                         inputProps={{
                             autoCorrect: "off",
+                            spellCheck: false,
                         }}
                         autoComplete="off"
                         value={brannerInput}
@@ -118,7 +119,7 @@ export default function AboutPage() {
                             setBranner(newBranner);
                         }}
                     />
-                    <Typography variant="ipa">
+                    <Typography variant="ipa" component="p">
                         {branner}
                     </Typography>
                 </Box>
@@ -127,6 +128,7 @@ export default function AboutPage() {
                         label="SIL"
                         inputProps={{
                             autoCorrect: "off",
+                            spellCheck: false,
                         }}
                         autoComplete="off"
                         value={silInput}
@@ -140,7 +142,7 @@ export default function AboutPage() {
                             setSil(newSil);
                         }}
                     />
-                    <Typography variant="ipa">
+                    <Typography variant="ipa" component="p">
                         {sil}
                     </Typography>
                 </Box>
