@@ -1,5 +1,4 @@
 use std::sync::Mutex;
-use std::time::Duration;
 use std::{fs::File, sync::Arc};
 
 use anyhow::Context;
@@ -8,11 +7,11 @@ use directories::ProjectDirs;
 use regex::Regex;
 use semver::{Version, VersionReq};
 use serde::{Serialize, Serializer};
-use tauri::{command, State, Window};
+use tauri::{command, AppHandle, Manager, State, Window};
 use uuid::Uuid;
 
 use crate::data::{LanguageGroup, LanguageGroupError};
-use crate::{ProgramStart, ServiceState};
+use crate::ProgramStart;
 
 const VERSION_REQ: &'static str = "^0";
 
@@ -62,7 +61,7 @@ impl Serialize for Error {
 }
 
 #[derive(Serialize, Clone)]
-struct AutosaveEvent {
+pub struct AutosaveEvent {
     name: String,
     timestamp: DateTime<Local>,
 }
@@ -70,48 +69,40 @@ struct AutosaveEvent {
 // Services do stuff on a thread.
 // Servers actually send stuff to the application.
 #[command]
-pub fn init_autosave_service(
-    half_minutes: u32,
-    window: Window,
+pub fn request_autosave(
+    app: AppHandle,
     project: State<Project>,
-    services: State<ServiceState>,
     program_start: State<ProgramStart>,
 ) {
-    if services.inner().0.read().unwrap().autosave.is_none() {
-        log::info!("Starting autosave service (halfminutes: {half_minutes})...");
-        let project = project.inner().clone();
-        let program_start = program_start.inner().0;
-        std::thread::spawn(move || loop {
-            std::thread::sleep(Duration::from_secs(half_minutes as u64 * 30));
+    let project = project.inner().clone();
+    let program_start = program_start.inner().0;
 
-            let timestamp = Local::now();
+    let timestamp = Local::now();
 
-            let filename = {
-                let eproject = project.0.lock().unwrap();
-                if eproject.0.is_empty() {
-                    format!("autosave_{}", program_start.format("%G%m%d_%H%M%S"))
-                } else {
-                    eproject.0.clone()
-                }
-            };
+    let filename = {
+        let eproject = project.0.lock().unwrap();
+        if eproject.0.is_empty() {
+            format!("autosave_{}", program_start.format("%G%m%d_%H%M%S"))
+        } else {
+            eproject.0.clone()
+        }
+    };
 
-            if let Ok(()) = _save_language_group(filename.clone(), &project, false) {
-                log::info!("Autosaved project to {filename}");
-                window
-                    .emit(
-                        "autosaved",
-                        AutosaveEvent {
-                            name: filename,
-                            timestamp,
-                        },
-                    )
-                    .unwrap();
-            }
-        });
-        services.0.write().unwrap().autosave = Some((half_minutes,));
-    } else {
-        log::info!("Changing wait time (halfminutes: {half_minutes})...");
-        services.0.write().unwrap().autosave = Some((half_minutes,));
+    if let Ok(()) = _save_language_group(filename.clone(), &project, false) {
+        log::info!("Autosaved project to {filename}");
+        let handle = app.tray_handle().get_item("last_autosave");
+        drop(handle.set_title(format!(
+            "Last autosaved: {filename} at {}",
+            timestamp.format("%F %R")
+        )));
+        app.emit_all(
+            "autosaved",
+            AutosaveEvent {
+                name: filename,
+                timestamp,
+            },
+        )
+        .unwrap();
     }
 }
 

@@ -362,7 +362,13 @@ function PhonemeEditorTool({ phoneme, updatePhoneme }: PhonemeEditorToolProps) {
                                 })
                             }
                         />
-                        <List>
+                        <List
+                            sx={{
+                                "& .MuiListItemText-primary": {
+                                    fontFamily: "Iosevka Web",
+                                },
+                            }}
+                        >
                             {editedAllophone !== null && (
                                 <ListItem
                                     key="edited"
@@ -389,7 +395,6 @@ function PhonemeEditorTool({ phoneme, updatePhoneme }: PhonemeEditorToolProps) {
                                     >
                                         <ListItemText
                                             sx={{
-                                                fontFamily: "sans-serif",
                                                 color: "warning.main",
                                             }}
                                             primary={editedAllophoneIPA}
@@ -404,7 +409,6 @@ function PhonemeEditorTool({ phoneme, updatePhoneme }: PhonemeEditorToolProps) {
                                 >
                                     <ListItemText
                                         sx={{
-                                            fontFamily: "sans-serif",
                                             color: "secondary.main",
                                         }}
                                         primary={primaryIPA}
@@ -420,29 +424,53 @@ function PhonemeEditorTool({ phoneme, updatePhoneme }: PhonemeEditorToolProps) {
                                     <ListItem
                                         key={index}
                                         secondaryAction={
-                                            <Tooltip title="Make Primary">
-                                                <IconButton
-                                                    edge="end"
-                                                    aria-label="make-primary"
-                                                    onClick={async () => {
-                                                        await updatePhoneme(
-                                                            (draft) => {
-                                                                let oprim =
-                                                                    draft.primary;
-                                                                draft.primary =
-                                                                    phone;
-                                                                draft.allo[
-                                                                    index
-                                                                ] = oprim;
-                                                                return draft;
-                                                            },
-                                                        );
-                                                        setSelectedPhone(null);
-                                                    }}
-                                                >
-                                                    <KeyboardArrowUp />
-                                                </IconButton>
-                                            </Tooltip>
+                                            phone !== "Null" ? (
+                                                <Tooltip title="Make Primary">
+                                                    <IconButton
+                                                        edge="end"
+                                                        aria-label="make-primary"
+                                                        onClick={async () => {
+                                                            await updatePhoneme(
+                                                                (draft) => {
+                                                                    let oprim =
+                                                                        draft.primary;
+                                                                    draft.primary =
+                                                                        phone;
+                                                                    draft.allo[
+                                                                        index
+                                                                    ] = oprim;
+                                                                    return draft;
+                                                                },
+                                                            );
+                                                            setSelectedPhone(
+                                                                null,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <KeyboardArrowUp />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            ) : (
+                                                <Tooltip title="Delete">
+                                                    <IconButton
+                                                        edge="end"
+                                                        aria-label="delete"
+                                                        onClick={async () => {
+                                                            await updatePhoneme(
+                                                                (draft) => {
+                                                                    draft.allo.splice(
+                                                                        index,
+                                                                        1,
+                                                                    );
+                                                                    return draft;
+                                                                },
+                                                            );
+                                                        }}
+                                                    >
+                                                        <Delete />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            )
                                         }
                                     >
                                         <ListItemButton
@@ -451,12 +479,7 @@ function PhonemeEditorTool({ phoneme, updatePhoneme }: PhonemeEditorToolProps) {
                                                 commitEditedAllophone(index)
                                             }
                                         >
-                                            <ListItemText
-                                                sx={{
-                                                    fontFamily: "sans-serif",
-                                                }}
-                                                primary={ipa}
-                                            />
+                                            <ListItemText primary={ipa} />
                                         </ListItemButton>
                                     </ListItem>
                                 ))}

@@ -1397,17 +1397,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:1c308c72f8f1e1cbf9e7b64a1de16388556365c5f27d982943f3d8f52495f56875be1c20df9ead7aa12a6d38de8f54b9ca83e234a5d628c6ea425e62d694744d#npm:2.9.3", {\
-          "packageLocation": "./.yarn/__virtual__/@parcel-config-default-virtual-a60f147334/0/cache/@parcel-config-default-npm-2.9.3-a459e67e01-61ef21351e.zip/node_modules/@parcel/config-default/",\
+        ["virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:2.9.3", {\
+          "packageLocation": "./.yarn/__virtual__/@parcel-config-default-virtual-4fa6a195e9/0/cache/@parcel-config-default-npm-2.9.3-a459e67e01-61ef21351e.zip/node_modules/@parcel/config-default/",\
           "packageDependencies": [\
-            ["@parcel/config-default", "virtual:1c308c72f8f1e1cbf9e7b64a1de16388556365c5f27d982943f3d8f52495f56875be1c20df9ead7aa12a6d38de8f54b9ca83e234a5d628c6ea425e62d694744d#npm:2.9.3"],\
+            ["@parcel/config-default", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:2.9.3"],\
             ["@parcel/bundler-default", "npm:2.9.3"],\
             ["@parcel/compressor-raw", "npm:2.9.3"],\
             ["@parcel/core", "npm:2.9.3"],\
             ["@parcel/namer-default", "npm:2.9.3"],\
             ["@parcel/optimizer-css", "npm:2.9.3"],\
             ["@parcel/optimizer-htmlnano", "npm:2.9.3"],\
-            ["@parcel/optimizer-image", "virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3"],\
+            ["@parcel/optimizer-image", "virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3"],\
             ["@parcel/optimizer-svgo", "npm:2.9.3"],\
             ["@parcel/optimizer-swc", "npm:2.9.3"],\
             ["@parcel/packager-css", "npm:2.9.3"],\
@@ -1424,8 +1424,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@parcel/transformer-babel", "npm:2.9.3"],\
             ["@parcel/transformer-css", "npm:2.9.3"],\
             ["@parcel/transformer-html", "npm:2.9.3"],\
-            ["@parcel/transformer-image", "virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3"],\
-            ["@parcel/transformer-js", "virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3"],\
+            ["@parcel/transformer-image", "virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3"],\
+            ["@parcel/transformer-js", "virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3"],\
             ["@parcel/transformer-json", "npm:2.9.3"],\
             ["@parcel/transformer-postcss", "npm:2.9.3"],\
             ["@parcel/transformer-posthtml", "npm:2.9.3"],\
@@ -1649,16 +1649,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["@parcel/optimizer-image", [\
         ["npm:2.9.3", {\
-          "packageLocation": "./.yarn/unplugged/@parcel-optimizer-image-virtual-542314f5b3/node_modules/@parcel/optimizer-image/",\
+          "packageLocation": "./.yarn/unplugged/@parcel-optimizer-image-virtual-8e3466c38f/node_modules/@parcel/optimizer-image/",\
           "packageDependencies": [\
             ["@parcel/optimizer-image", "npm:2.9.3"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3", {\
-          "packageLocation": "./.yarn/unplugged/@parcel-optimizer-image-virtual-542314f5b3/node_modules/@parcel/optimizer-image/",\
+        ["virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3", {\
+          "packageLocation": "./.yarn/unplugged/@parcel-optimizer-image-virtual-8e3466c38f/node_modules/@parcel/optimizer-image/",\
           "packageDependencies": [\
-            ["@parcel/optimizer-image", "virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3"],\
+            ["@parcel/optimizer-image", "virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3"],\
             ["@parcel/core", "npm:2.9.3"],\
             ["@parcel/diagnostic", "npm:2.9.3"],\
             ["@parcel/plugin", "npm:2.9.3"],\
@@ -2008,10 +2008,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3", {\
-          "packageLocation": "./.yarn/__virtual__/@parcel-transformer-image-virtual-e1b74a4b7b/0/cache/@parcel-transformer-image-npm-2.9.3-a6b435f582-554ff7c6c2.zip/node_modules/@parcel/transformer-image/",\
+        ["virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3", {\
+          "packageLocation": "./.yarn/__virtual__/@parcel-transformer-image-virtual-f3accc3aa0/0/cache/@parcel-transformer-image-npm-2.9.3-a6b435f582-554ff7c6c2.zip/node_modules/@parcel/transformer-image/",\
           "packageDependencies": [\
-            ["@parcel/transformer-image", "virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3"],\
+            ["@parcel/transformer-image", "virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3"],\
             ["@parcel/core", "npm:2.9.3"],\
             ["@parcel/plugin", "npm:2.9.3"],\
             ["@parcel/utils", "npm:2.9.3"],\
@@ -2028,16 +2028,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["@parcel/transformer-js", [\
         ["npm:2.9.3", {\
-          "packageLocation": "./.yarn/unplugged/@parcel-transformer-js-virtual-71e700bb05/node_modules/@parcel/transformer-js/",\
+          "packageLocation": "./.yarn/unplugged/@parcel-transformer-js-virtual-6081d7d42f/node_modules/@parcel/transformer-js/",\
           "packageDependencies": [\
             ["@parcel/transformer-js", "npm:2.9.3"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3", {\
-          "packageLocation": "./.yarn/unplugged/@parcel-transformer-js-virtual-71e700bb05/node_modules/@parcel/transformer-js/",\
+        ["virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3", {\
+          "packageLocation": "./.yarn/unplugged/@parcel-transformer-js-virtual-6081d7d42f/node_modules/@parcel/transformer-js/",\
           "packageDependencies": [\
-            ["@parcel/transformer-js", "virtual:a60f14733470e8260b4158282af0581e96d5a046b042c27d27b6466405cb93a544df2b58662cff7068ca5127e1ad6192913bef0b0ba39fd70eb88df11cc8405e#npm:2.9.3"],\
+            ["@parcel/transformer-js", "virtual:4fa6a195e9cd72a669d7d6d5375495d2d5a624cab2e1c157cd4c1e08aa4606e7afe867506e861bec8827ac4cd8ee1cd643ad38588d0bb4f2ae80291ce641ac53#npm:2.9.3"],\
             ["@parcel/core", "npm:2.9.3"],\
             ["@parcel/diagnostic", "npm:2.9.3"],\
             ["@parcel/plugin", "npm:2.9.3"],\
@@ -3513,6 +3513,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@lexical/react", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:0.11.2"],\
             ["@mui/icons-material", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:5.14.0"],\
             ["@mui/material", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:5.14.0"],\
+            ["@parcel/config-default", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:2.9.3"],\
             ["@parcel/core", "npm:2.9.3"],\
             ["@tauri-apps/api", "npm:1.4.0"],\
             ["@types/lodash-es", "npm:4.17.8"],\
@@ -3531,6 +3532,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:18.2.0"],\
             ["react-router-dom", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:6.14.2"],\
+            ["rimraf", "npm:5.0.1"],\
             ["runtypes", "npm:6.7.0"],\
             ["swr", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:2.2.0"],\
             ["tauri-plugin-log", "https://github.com/tauri-apps/tauri-plugin-log.git#commit=fbbb126e6d7fba7a7e6772d33f99c0fb689f32b6"],\
@@ -4753,7 +4755,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/__virtual__/parcel-virtual-1c308c72f8/0/cache/parcel-npm-2.9.3-33db24662f-d9b9c0083f.zip/node_modules/parcel/",\
           "packageDependencies": [\
             ["parcel", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:2.9.3"],\
-            ["@parcel/config-default", "virtual:1c308c72f8f1e1cbf9e7b64a1de16388556365c5f27d982943f3d8f52495f56875be1c20df9ead7aa12a6d38de8f54b9ca83e234a5d628c6ea425e62d694744d#npm:2.9.3"],\
+            ["@parcel/config-default", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:2.9.3"],\
             ["@parcel/core", "npm:2.9.3"],\
             ["@parcel/diagnostic", "npm:2.9.3"],\
             ["@parcel/events", "npm:2.9.3"],\
@@ -5358,6 +5360,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["rimraf", "npm:3.0.2"],\
             ["glob", "npm:7.2.3"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:5.0.1", {\
+          "packageLocation": "./.yarn/cache/rimraf-npm-5.0.1-26fb251a1d-bafce85391.zip/node_modules/rimraf/",\
+          "packageDependencies": [\
+            ["rimraf", "npm:5.0.1"],\
+            ["glob", "npm:10.3.3"]\
           ],\
           "linkType": "HARD"\
         }]\

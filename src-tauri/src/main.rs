@@ -1,9 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::RwLock;
+use std::sync::{Arc, RwLock};
 
-use tauri::generate_handler;
+use tauri::{generate_handler, CustomMenuItem, SystemTray, SystemTrayMenu};
 use tauri_plugin_log::LogTarget;
 
 use crate::file::Project;
@@ -14,46 +14,41 @@ mod file;
 mod interact;
 mod util;
 
-pub struct ServiceStateRaw {
-    autosave: Option<(u32,)>,
-    languages: bool,
-    protolanguages: bool,
-}
+pub struct StateRaw {}
 
-impl ServiceStateRaw {
+impl StateRaw {
     fn new() -> Self {
-        Self {
-            autosave: None,
-            languages: false,
-            protolanguages: false,
-        }
+        Self {}
     }
 }
 
-pub struct ServiceState(RwLock<ServiceStateRaw>);
+pub struct AppState(Arc<RwLock<StateRaw>>);
 
-impl ServiceState {
+impl AppState {
     fn new() -> Self {
-        Self(RwLock::new(ServiceStateRaw::new()))
+        Self(Arc::new(RwLock::new(StateRaw::new())))
     }
 }
 
 pub struct ProgramStart(chrono::DateTime<chrono::Local>);
 
 fn main() {
-    // We don't need a system tray (for now)
-    // let tray = SystemTray::new();
+    let last_autosave =
+        CustomMenuItem::new("last_autosave".to_string(), "No autosave this session").disabled();
+    let menu = SystemTrayMenu::new().add_item(last_autosave);
+    let tray = SystemTray::new().with_menu(menu);
     tauri::Builder::default()
         .manage(Project::new())
-        .manage(ServiceState::new())
+        .manage(AppState::new())
         .manage(ProgramStart(chrono::Local::now())) // Program start timestamp
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
                 .build(),
         )
+        .system_tray(tray)
         .invoke_handler(generate_handler![
-            file::init_autosave_service,
+            file::request_autosave,
             file::save_language_group,
             file::load_language_group,
             file::merge_language_group,
@@ -75,14 +70,14 @@ fn main() {
             interact::get_language,
             interact::get_language_description,
             interact::set_language_description,
-            interact::init_languages_server,
+            interact::get_all_languages,
             interact::create_language_phoneme,
             interact::create_protolanguage,
             interact::delete_protolanguage,
             interact::get_protolanguage,
             interact::get_protolanguage_description,
             interact::set_protolanguage_description,
-            interact::init_protolanguages_server,
+            interact::get_all_protolanguages,
             interact::create_protolanguage_phoneme,
             interact::set_phoneme,
             interact::get_phoneme,

@@ -33,11 +33,12 @@ import { useEffect, useState } from "react";
 import { Array, String } from "runtypes";
 import { useCheckedInvokeSWR } from "~/src/stores";
 import { getErrorMessage } from "~/src/util";
-import { useAppContext } from "../views/app";
+import { useAppContext, useAutosave } from "../views/app";
 import { Page } from "./page";
 
 export default function HomePage() {
     const [languageGroupNames, setLanguageGroupNames] = useState<string[]>([]);
+    const { autosave } = useAutosave();
     const { showAppNotification } = useAppContext();
 
     const [showMergeDialog, setShowMergeDialog] = useState(false);
@@ -63,7 +64,7 @@ export default function HomePage() {
         mutate: familyIdMutate,
     } = useCheckedInvokeSWR(String, "get_family_id", {});
 
-    useEffect(retrieveLanguageGroupNames, []);
+    useEffect(retrieveLanguageGroupNames, [autosave]);
 
     async function setProjectName(to: string) {
         await invoke("set_project_name", {

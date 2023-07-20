@@ -39,14 +39,11 @@ import {
 } from "react-router-dom";
 import { Array, String } from "runtypes";
 import { KeyedMutator } from "swr";
-import useSWRSubscription from "swr/subscription";
 import { Language, Protolanguage } from "~/src/data";
 import {
-    subscribeGenerator,
     useCheckedInvokeSWR,
     useCheckedInvoke,
 } from "~/src/stores";
-import { NavBar } from "../components/navbar";
 import { getErrorMessage } from "../util";
 import { AppContext, useAppContext } from "../views/app";
 import { Page } from "./page";
@@ -104,9 +101,8 @@ export function LanguageEditorCrumb({
             underline="hover"
             color="inherit"
             component={Link}
-            to={`/${mode === "protolang" ? "proto" : "lang"}/${
-                langData !== undefined ? langData.name : ""
-            }/describe`}
+            to={`/${mode === "protolang" ? "proto" : "lang"}/${langData !== undefined ? langData.name : ""
+                }/describe`}
         >
             {langData !== undefined ? langData.name : "*UNKNOWN*"}{" "}
             {mode === "protolang" ? "Protolanguage" : "Language"}
@@ -120,36 +116,47 @@ export async function LanguageEditorLoader({
     const currentLang =
         params.langId !== undefined
             ? await useCheckedInvoke(Language, "get_language", {
-                  name: params.langId,
-              })
+                name: params.langId,
+            })
             : undefined;
     const currentProto =
         params.plangId !== undefined
             ? await useCheckedInvoke(Protolanguage, "get_protolanguage", {
-                  name: params.plangId,
-              })
+                name: params.plangId,
+            })
             : undefined;
+
+    const protoNames = await useCheckedInvoke(Array(String),
+        "get_all_protolanguages", {});
+
+    const langNames = await useCheckedInvoke(Array(String),
+        "get_all_languages", {});
 
     return {
         currentLang,
         currentProto,
+        protoNames,
+        langNames,
     };
 }
 
 export type LanguageEditorLoaderData = {
     currentLang?: Language;
     currentProto?: Protolanguage;
-    langId?: string;
+    protoNames: string[];
+    langNames: string[];
 };
 
 export function LanguageEditor({ mode }: LanguageEditorProps) {
-    const { data: protoNames, error: protoError } = useSWRSubscription<
-        string[]
-    >("all_protolanguages", subscribeGenerator(Array(String)));
-    const { data: langNames, error: langError } = useSWRSubscription<string[]>(
-        "all_languages",
-        subscribeGenerator(Array(String)),
-    );
+    const { protoNames: loaderProtoNames, langNames: loaderLangNames } = useLoaderData() as LanguageEditorLoaderData;
+
+    const { data: protoNames, error: protoError, mutate: protoNamesMutate } = useCheckedInvokeSWR(Array(String), "get_all_protolanguages", {
+        fallbackData: loaderProtoNames
+    });
+    const { data: langNames, error: langError, mutate: langNamesMutate } = useCheckedInvokeSWR(Array(String), "get_all_languages", {
+        fallbackData: loaderLangNames
+    });
+
     const { error: dataError, mutate: langMutate } = useLanguage();
     const { error: protoDataError, mutate: protoMutate } = useProtolanguage();
 
@@ -163,7 +170,11 @@ export function LanguageEditor({ mode }: LanguageEditorProps) {
             langMutate={() => {
                 throw new Error("lang mutated in protolang mode");
             }}
-            protolangMutate={protoMutate}
+            protolangMutate={async (proto, opts) => {
+                let ret = await protoMutate(proto, opts);
+                await protoNamesMutate();
+                return ret;
+            }}
             langId={plangId}
             langError={protoDataError}
         />
@@ -172,7 +183,11 @@ export function LanguageEditor({ mode }: LanguageEditorProps) {
             mode={mode}
             names={langNames}
             error={langError}
-            langMutate={langMutate}
+            langMutate={async (proto, opts) => {
+                let ret = await langMutate(proto, opts);
+                await langNamesMutate();
+                return ret;
+            }}
             protolangMutate={() => {
                 throw new Error("protolang mutated in lang mode");
             }}

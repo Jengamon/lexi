@@ -1,3 +1,4 @@
 dist/
+distDev/
 .pnp.*
 .yarn/

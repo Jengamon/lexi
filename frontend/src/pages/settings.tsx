@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Page } from "./page";
 import { FormControlLabel, FormLabel, Slider } from "@mui/material";
 import { invoke } from "@tauri-apps/api";
+import { autosaveService } from "..";
 
 // Stolen from https://www.30secondsofcode.org/js/s/format-duration/
 const formatDuration = (ms: number) => {
@@ -44,10 +45,8 @@ export default function SettingsPage() {
                     setAutosave(Array.isArray(val) ? val[0] : val)
                 }
                 onChangeCommitted={async () => {
-                    await invoke("init_autosave_service", {
-                        halfMinutes: autosave,
-                    });
                     localStorage.setItem("autosave", autosave.toString());
+                    autosaveService.resetService();
                 }}
             />
         </Page>

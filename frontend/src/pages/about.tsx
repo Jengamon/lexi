@@ -9,7 +9,6 @@ import {
 } from "~/src/util";
 import { Phone } from "~/src/data";
 import { useCheckedInvokeSWR } from "../stores";
-import { useAutosave } from "../views/app";
 import {
     Box,
     Button,
@@ -28,7 +27,6 @@ export default function AboutPage() {
     const [branner, setBranner] = useState("");
     const [silInput, setSilInput] = useState("");
     const [sil, setSil] = useState("");
-    const { autosave, error: autosaveError } = useAutosave();
 
     const { data: dumpedLangGroup, error: dumpedLangGroupError } =
         useCheckedInvokeSWR(String, "dump_language_group", {});
@@ -67,22 +65,6 @@ export default function AboutPage() {
                 a programmatic way to store and explore conlangs both
                 synchronically and diachronically.
             </Typography>
-            {autosave ? (
-                <Typography align="center" variant="body1">
-                    Last autosaved: {autosave.name} at{" "}
-                    {new Date(autosave.timestamp).toLocaleDateString()}{" "}
-                    {new Date(autosave.timestamp).toLocaleTimeString()}
-                </Typography>
-            ) : (
-                <Typography align="center" variant="body1">
-                    Have not autosaved this session
-                </Typography>
-            )}
-            {autosaveError && (
-                <Typography variant="body1">
-                    Encountered autosave error: {getErrorMessage(autosaveError)}
-                </Typography>
-            )}
             <Box>
                 <Button onClick={testExportCurrentProject}>Test Export</Button>
                 {testExport && (

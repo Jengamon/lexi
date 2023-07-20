@@ -22,3 +22,11 @@ build:
 fmt:
     yarn workspace frontend fmt
     cargo fmt
+
+clean:
+    yarn workspace frontend clean
+    cargo clean
+
+build-local $PASSWORD:
+    yarn workspace frontend clean
+    TAURI_PRIVATE_KEY=$(cat ~/.tauri/lexi.key) TAURI_KEY_PASSWORD=$PASSWORD cargo tauri build

@@ -60,7 +60,7 @@ export const theme = {
         },
         ipa: {
             fontFamily: "Iosevka Web",
-        }
+        },
     },
     components: {
         MuiTypography: {

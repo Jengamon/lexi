@@ -55,6 +55,8 @@ pub enum Error {
     Askama(#[from] askama::Error),
     #[error("cannot export nameless project")]
     EmptyName,
+    #[error("export cancelled")]
+    ExportCancelled,
 }
 
 impl Serialize for Error {
@@ -116,7 +118,8 @@ pub async fn export_language_group(project: State<'_, Project>) -> Result<(), Er
         let mut file = File::create(file_path)?;
 
         write!(file, "{}", rendered.trim())?;
+        Ok(())
+    } else {
+        Err(Error::ExportCancelled)
     }
-
-    Ok(())
 }

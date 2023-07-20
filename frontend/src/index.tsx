@@ -8,25 +8,36 @@ import {
 } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { invoke } from "@tauri-apps/api";
+import { getErrorMessage } from "./util";
 
-// Start services
-(async () => {
-    await invoke("init_languages_server", {});
-    await invoke("init_protolanguages_server", {});
-    // Just interact with localstorage to change
-    // When changed, remember to reinvoke the service with
-    // the new value
-    let autosaveInterval = localStorage.getItem("autosave");
-    if (autosaveInterval && parseInt(autosaveInterval) > 0) {
-        await invoke("init_autosave_service", {
-            halfMinutes: parseInt(autosaveInterval),
-        });
-    } else {
-        const defaultHM = 4;
-        localStorage.setItem("autosave", defaultHM.toFixed(0));
-        await invoke("init_autosave_service", { halfMinutes: defaultHM });
+class AutosaveService {
+    _service: NodeJS.Timeout;
+    constructor() {
+        this._service = setTimeout(this.autosaveService.bind(this), this.getAutosaveHalfMiutes() * 30_000);
     }
-})();
+
+    getAutosaveHalfMiutes(): number {
+        let autosaveInterval = localStorage.getItem("autosave");
+        if (autosaveInterval && parseInt(autosaveInterval) > 0) {
+            return parseInt(autosaveInterval);
+        } else {
+            return 4;
+        }
+    }
+
+    autosaveService() {
+        invoke("request_autosave", {})
+            .catch(e => console.error(`Failed to autosave: ${getErrorMessage(e)}`));
+        this._service = setTimeout(this.autosaveService.bind(this), this.getAutosaveHalfMiutes() * 30_000);
+    }
+
+    resetService() {
+        clearTimeout(this._service);
+        this._service = setTimeout(this.autosaveService.bind(this), this.getAutosaveHalfMiutes() * 30_000);
+    }
+}
+
+export const autosaveService = new AutosaveService();
 
 const node = document.getElementById("app");
 

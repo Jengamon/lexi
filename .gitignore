@@ -13,5 +13,6 @@
 .parcel-cache/
 node_modules/
 dist/
+distDev/
 /target/
 .DS_Store

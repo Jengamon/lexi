@@ -1,17 +1,18 @@
 import { invoke } from "@tauri-apps/api";
 import { Runtype, Static } from "runtypes";
+import useSWR, { SWRConfiguration, SWRResponse } from "swr";
 import type { SWRSubscription } from "swr/subscription";
 import { listen } from "@tauri-apps/api/event";
-import useSWR, { SWRResponse } from "swr";
 
 export function useCheckedInvokeSWR<R extends Runtype<T>, T>(
     expected: R,
     id: string,
     args: any,
+    config?: SWRConfiguration<Static<R>>
 ): SWRResponse<Static<R>> {
     return useSWR<T>([id, args], async ([id, args]: [string, any]) => {
         return await useCheckedInvoke(expected, id, args);
-    });
+    }, config);
 }
 
 export async function useCheckedInvoke<R extends Runtype<T>, T>(
